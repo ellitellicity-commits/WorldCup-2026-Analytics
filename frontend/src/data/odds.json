@@ -1,0 +1,486 @@
+{
+  "simulations": 10000,
+  "generated": "2026-06-28",
+  "teams": [
+    {
+      "team": "Argentina",
+      "championship_odds": 0.1948,
+      "finalist_odds": 0.2919,
+      "semifinalist_odds": 0.4011,
+      "quarterfinalist_odds": 0.5158,
+      "round_of_16_odds": 0.6875,
+      "round_of_32_odds": 0.9599,
+      "group_stage_exit": 0.0401
+    },
+    {
+      "team": "France",
+      "championship_odds": 0.1415,
+      "finalist_odds": 0.2394,
+      "semifinalist_odds": 0.3692,
+      "quarterfinalist_odds": 0.5066,
+      "round_of_16_odds": 0.6666,
+      "round_of_32_odds": 0.9423,
+      "group_stage_exit": 0.0577
+    },
+    {
+      "team": "Brazil",
+      "championship_odds": 0.1103,
+      "finalist_odds": 0.1966,
+      "semifinalist_odds": 0.3271,
+      "quarterfinalist_odds": 0.5651,
+      "round_of_16_odds": 0.7279,
+      "round_of_32_odds": 0.9578,
+      "group_stage_exit": 0.0422
+    },
+    {
+      "team": "England",
+      "championship_odds": 0.0872,
+      "finalist_odds": 0.164,
+      "semifinalist_odds": 0.2704,
+      "quarterfinalist_odds": 0.4019,
+      "round_of_16_odds": 0.5787,
+      "round_of_32_odds": 0.9523,
+      "group_stage_exit": 0.0477
+    },
+    {
+      "team": "Spain",
+      "championship_odds": 0.0804,
+      "finalist_odds": 0.1425,
+      "semifinalist_odds": 0.2411,
+      "quarterfinalist_odds": 0.3666,
+      "round_of_16_odds": 0.7061,
+      "round_of_32_odds": 0.9734,
+      "group_stage_exit": 0.0266
+    },
+    {
+      "team": "Portugal",
+      "championship_odds": 0.055,
+      "finalist_odds": 0.1088,
+      "semifinalist_odds": 0.208,
+      "quarterfinalist_odds": 0.3366,
+      "round_of_16_odds": 0.5627,
+      "round_of_32_odds": 0.9115,
+      "group_stage_exit": 0.0885
+    },
+    {
+      "team": "Colombia",
+      "championship_odds": 0.0472,
+      "finalist_odds": 0.0955,
+      "semifinalist_odds": 0.1985,
+      "quarterfinalist_odds": 0.3157,
+      "round_of_16_odds": 0.5419,
+      "round_of_32_odds": 0.9127,
+      "group_stage_exit": 0.0873
+    },
+    {
+      "team": "Netherlands",
+      "championship_odds": 0.0385,
+      "finalist_odds": 0.0765,
+      "semifinalist_odds": 0.1746,
+      "quarterfinalist_odds": 0.3456,
+      "round_of_16_odds": 0.6256,
+      "round_of_32_odds": 0.9281,
+      "group_stage_exit": 0.0719
+    },
+    {
+      "team": "Norway",
+      "championship_odds": 0.0326,
+      "finalist_odds": 0.0731,
+      "semifinalist_odds": 0.1499,
+      "quarterfinalist_odds": 0.269,
+      "round_of_16_odds": 0.4607,
+      "round_of_32_odds": 0.8228,
+      "group_stage_exit": 0.1772
+    },
+    {
+      "team": "Switzerland",
+      "championship_odds": 0.0285,
+      "finalist_odds": 0.065,
+      "semifinalist_odds": 0.1479,
+      "quarterfinalist_odds": 0.3294,
+      "round_of_16_odds": 0.5889,
+      "round_of_32_odds": 0.9111,
+      "group_stage_exit": 0.0889
+    },
+    {
+      "team": "Germany",
+      "championship_odds": 0.0214,
+      "finalist_odds": 0.0565,
+      "semifinalist_odds": 0.1285,
+      "quarterfinalist_odds": 0.2841,
+      "round_of_16_odds": 0.5758,
+      "round_of_32_odds": 0.9049,
+      "group_stage_exit": 0.0951
+    },
+    {
+      "team": "Belgium",
+      "championship_odds": 0.0213,
+      "finalist_odds": 0.0583,
+      "semifinalist_odds": 0.1296,
+      "quarterfinalist_odds": 0.2554,
+      "round_of_16_odds": 0.5639,
+      "round_of_32_odds": 0.8768,
+      "group_stage_exit": 0.1232
+    },
+    {
+      "team": "Japan",
+      "championship_odds": 0.021,
+      "finalist_odds": 0.0553,
+      "semifinalist_odds": 0.1372,
+      "quarterfinalist_odds": 0.304,
+      "round_of_16_odds": 0.5763,
+      "round_of_32_odds": 0.9176,
+      "group_stage_exit": 0.0824
+    },
+    {
+      "team": "Ecuador",
+      "championship_odds": 0.0178,
+      "finalist_odds": 0.0542,
+      "semifinalist_odds": 0.1276,
+      "quarterfinalist_odds": 0.2725,
+      "round_of_16_odds": 0.5456,
+      "round_of_32_odds": 0.8924,
+      "group_stage_exit": 0.1076
+    },
+    {
+      "team": "Turkey",
+      "championship_odds": 0.0173,
+      "finalist_odds": 0.0442,
+      "semifinalist_odds": 0.1138,
+      "quarterfinalist_odds": 0.2727,
+      "round_of_16_odds": 0.4907,
+      "round_of_32_odds": 0.8059,
+      "group_stage_exit": 0.1941
+    },
+    {
+      "team": "Mexico",
+      "championship_odds": 0.0141,
+      "finalist_odds": 0.0375,
+      "semifinalist_odds": 0.1043,
+      "quarterfinalist_odds": 0.2861,
+      "round_of_16_odds": 0.5794,
+      "round_of_32_odds": 0.8659,
+      "group_stage_exit": 0.1341
+    },
+    {
+      "team": "Croatia",
+      "championship_odds": 0.0123,
+      "finalist_odds": 0.0349,
+      "semifinalist_odds": 0.0901,
+      "quarterfinalist_odds": 0.1796,
+      "round_of_16_odds": 0.3383,
+      "round_of_32_odds": 0.8406,
+      "group_stage_exit": 0.1594
+    },
+    {
+      "team": "Senegal",
+      "championship_odds": 0.0111,
+      "finalist_odds": 0.0306,
+      "semifinalist_odds": 0.0813,
+      "quarterfinalist_odds": 0.1721,
+      "round_of_16_odds": 0.3533,
+      "round_of_32_odds": 0.7789,
+      "group_stage_exit": 0.2211
+    },
+    {
+      "team": "Uruguay",
+      "championship_odds": 0.0104,
+      "finalist_odds": 0.0318,
+      "semifinalist_odds": 0.0875,
+      "quarterfinalist_odds": 0.2038,
+      "round_of_16_odds": 0.4387,
+      "round_of_32_odds": 0.8001,
+      "group_stage_exit": 0.1999
+    },
+    {
+      "team": "Canada",
+      "championship_odds": 0.0078,
+      "finalist_odds": 0.0275,
+      "semifinalist_odds": 0.079,
+      "quarterfinalist_odds": 0.2319,
+      "round_of_16_odds": 0.5035,
+      "round_of_32_odds": 0.8709,
+      "group_stage_exit": 0.1291
+    },
+    {
+      "team": "Morocco",
+      "championship_odds": 0.0066,
+      "finalist_odds": 0.0186,
+      "semifinalist_odds": 0.0597,
+      "quarterfinalist_odds": 0.1721,
+      "round_of_16_odds": 0.369,
+      "round_of_32_odds": 0.7418,
+      "group_stage_exit": 0.2582
+    },
+    {
+      "team": "Paraguay",
+      "championship_odds": 0.0052,
+      "finalist_odds": 0.016,
+      "semifinalist_odds": 0.051,
+      "quarterfinalist_odds": 0.1621,
+      "round_of_16_odds": 0.3379,
+      "round_of_32_odds": 0.6692,
+      "group_stage_exit": 0.3308
+    },
+    {
+      "team": "Austria",
+      "championship_odds": 0.0042,
+      "finalist_odds": 0.0143,
+      "semifinalist_odds": 0.0447,
+      "quarterfinalist_odds": 0.1045,
+      "round_of_16_odds": 0.2647,
+      "round_of_32_odds": 0.7099,
+      "group_stage_exit": 0.2901
+    },
+    {
+      "team": "United States",
+      "championship_odds": 0.0029,
+      "finalist_odds": 0.0101,
+      "semifinalist_odds": 0.0319,
+      "quarterfinalist_odds": 0.1047,
+      "round_of_16_odds": 0.2541,
+      "round_of_32_odds": 0.5734,
+      "group_stage_exit": 0.4266
+    },
+    {
+      "team": "Australia",
+      "championship_odds": 0.0021,
+      "finalist_odds": 0.0122,
+      "semifinalist_odds": 0.0358,
+      "quarterfinalist_odds": 0.1239,
+      "round_of_16_odds": 0.292,
+      "round_of_32_odds": 0.6378,
+      "group_stage_exit": 0.3622
+    },
+    {
+      "team": "South Korea",
+      "championship_odds": 0.002,
+      "finalist_odds": 0.008,
+      "semifinalist_odds": 0.0315,
+      "quarterfinalist_odds": 0.1248,
+      "round_of_16_odds": 0.3649,
+      "round_of_32_odds": 0.7756,
+      "group_stage_exit": 0.2244
+    },
+    {
+      "team": "Scotland",
+      "championship_odds": 0.0015,
+      "finalist_odds": 0.0074,
+      "semifinalist_odds": 0.034,
+      "quarterfinalist_odds": 0.1306,
+      "round_of_16_odds": 0.315,
+      "round_of_32_odds": 0.7313,
+      "group_stage_exit": 0.2687
+    },
+    {
+      "team": "Algeria",
+      "championship_odds": 0.0011,
+      "finalist_odds": 0.004,
+      "semifinalist_odds": 0.0169,
+      "quarterfinalist_odds": 0.0558,
+      "round_of_16_odds": 0.1724,
+      "round_of_32_odds": 0.5674,
+      "group_stage_exit": 0.4326
+    },
+    {
+      "team": "Iran",
+      "championship_odds": 0.0008,
+      "finalist_odds": 0.0051,
+      "semifinalist_odds": 0.024,
+      "quarterfinalist_odds": 0.0875,
+      "round_of_16_odds": 0.3188,
+      "round_of_32_odds": 0.6911,
+      "group_stage_exit": 0.3089
+    },
+    {
+      "team": "Egypt",
+      "championship_odds": 0.0007,
+      "finalist_odds": 0.0022,
+      "semifinalist_odds": 0.0149,
+      "quarterfinalist_odds": 0.0617,
+      "round_of_16_odds": 0.2672,
+      "round_of_32_odds": 0.657,
+      "group_stage_exit": 0.343
+    },
+    {
+      "team": "Ivory Coast",
+      "championship_odds": 0.0006,
+      "finalist_odds": 0.0036,
+      "semifinalist_odds": 0.0167,
+      "quarterfinalist_odds": 0.0682,
+      "round_of_16_odds": 0.2373,
+      "round_of_32_odds": 0.6808,
+      "group_stage_exit": 0.3192
+    },
+    {
+      "team": "Czechia",
+      "championship_odds": 0.0005,
+      "finalist_odds": 0.0041,
+      "semifinalist_odds": 0.0179,
+      "quarterfinalist_odds": 0.0767,
+      "round_of_16_odds": 0.2534,
+      "round_of_32_odds": 0.6134,
+      "group_stage_exit": 0.3866
+    },
+    {
+      "team": "Bosnia and Herzegovina",
+      "championship_odds": 0.0003,
+      "finalist_odds": 0.001,
+      "semifinalist_odds": 0.0057,
+      "quarterfinalist_odds": 0.0431,
+      "round_of_16_odds": 0.1812,
+      "round_of_32_odds": 0.5941,
+      "group_stage_exit": 0.4059
+    },
+    {
+      "team": "Panama",
+      "championship_odds": 0.0003,
+      "finalist_odds": 0.0032,
+      "semifinalist_odds": 0.0143,
+      "quarterfinalist_odds": 0.0511,
+      "round_of_16_odds": 0.1604,
+      "round_of_32_odds": 0.5941,
+      "group_stage_exit": 0.4059
+    },
+    {
+      "team": "Sweden",
+      "championship_odds": 0.0002,
+      "finalist_odds": 0.0017,
+      "semifinalist_odds": 0.0074,
+      "quarterfinalist_odds": 0.0374,
+      "round_of_16_odds": 0.152,
+      "round_of_32_odds": 0.5331,
+      "group_stage_exit": 0.4669
+    },
+    {
+      "team": "Uzbekistan",
+      "championship_odds": 0.0002,
+      "finalist_odds": 0.0009,
+      "semifinalist_odds": 0.0045,
+      "quarterfinalist_odds": 0.0215,
+      "round_of_16_odds": 0.0912,
+      "round_of_32_odds": 0.3817,
+      "group_stage_exit": 0.6183
+    },
+    {
+      "team": "DR Congo",
+      "championship_odds": 0.0001,
+      "finalist_odds": 0.0011,
+      "semifinalist_odds": 0.0048,
+      "quarterfinalist_odds": 0.0242,
+      "round_of_16_odds": 0.1078,
+      "round_of_32_odds": 0.4557,
+      "group_stage_exit": 0.5443
+    },
+    {
+      "team": "Jordan",
+      "championship_odds": 0.0001,
+      "finalist_odds": 0.0011,
+      "semifinalist_odds": 0.004,
+      "quarterfinalist_odds": 0.0198,
+      "round_of_16_odds": 0.085,
+      "round_of_32_odds": 0.3791,
+      "group_stage_exit": 0.6209
+    },
+    {
+      "team": "New Zealand",
+      "championship_odds": 0.0001,
+      "finalist_odds": 0.0004,
+      "semifinalist_odds": 0.0022,
+      "quarterfinalist_odds": 0.0204,
+      "round_of_16_odds": 0.1142,
+      "round_of_32_odds": 0.4413,
+      "group_stage_exit": 0.5587
+    },
+    {
+      "team": "Cape Verde",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0004,
+      "semifinalist_odds": 0.0027,
+      "quarterfinalist_odds": 0.0259,
+      "round_of_16_odds": 0.1063,
+      "round_of_32_odds": 0.4139,
+      "group_stage_exit": 0.5861
+    },
+    {
+      "team": "Cura\u00e7ao",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0,
+      "semifinalist_odds": 0.0,
+      "quarterfinalist_odds": 0.0032,
+      "round_of_16_odds": 0.0304,
+      "round_of_32_odds": 0.2144,
+      "group_stage_exit": 0.7856
+    },
+    {
+      "team": "Ghana",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0001,
+      "semifinalist_odds": 0.0015,
+      "quarterfinalist_odds": 0.0061,
+      "round_of_16_odds": 0.0382,
+      "round_of_32_odds": 0.2544,
+      "group_stage_exit": 0.7456
+    },
+    {
+      "team": "Haiti",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0002,
+      "semifinalist_odds": 0.0016,
+      "quarterfinalist_odds": 0.0107,
+      "round_of_16_odds": 0.0495,
+      "round_of_32_odds": 0.2386,
+      "group_stage_exit": 0.7614
+    },
+    {
+      "team": "Iraq",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0,
+      "semifinalist_odds": 0.0005,
+      "quarterfinalist_odds": 0.0035,
+      "round_of_16_odds": 0.0247,
+      "round_of_32_odds": 0.174,
+      "group_stage_exit": 0.826
+    },
+    {
+      "team": "Qatar",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0,
+      "semifinalist_odds": 0.0002,
+      "quarterfinalist_odds": 0.0032,
+      "round_of_16_odds": 0.0406,
+      "round_of_32_odds": 0.2994,
+      "group_stage_exit": 0.7006
+    },
+    {
+      "team": "Saudi Arabia",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0002,
+      "semifinalist_odds": 0.0022,
+      "quarterfinalist_odds": 0.0211,
+      "round_of_16_odds": 0.1096,
+      "round_of_32_odds": 0.4283,
+      "group_stage_exit": 0.5717
+    },
+    {
+      "team": "South Africa",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0,
+      "semifinalist_odds": 0.0019,
+      "quarterfinalist_odds": 0.015,
+      "round_of_16_odds": 0.0998,
+      "round_of_32_odds": 0.4012,
+      "group_stage_exit": 0.5988
+    },
+    {
+      "team": "Tunisia",
+      "championship_odds": 0.0,
+      "finalist_odds": 0.0,
+      "semifinalist_odds": 0.0008,
+      "quarterfinalist_odds": 0.0067,
+      "round_of_16_odds": 0.0503,
+      "round_of_32_odds": 0.3221,
+      "group_stage_exit": 0.6779
+    }
+  ]
+}

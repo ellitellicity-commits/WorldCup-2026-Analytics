@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-28T00:00:00Z",
+  "title": "Design System: WorldCup 2026 Analytics",
+  "extensions": {
+    "colorMeta": {
+      "studio-black": { "role": "primary", "displayName": "Studio Black", "canonical": "oklch(15% 0.01 250)", "tonalRamp": ["oklch(15% 0.006 250)", "oklch(26% 0.012 250)", "oklch(37% 0.012 250)", "oklch(48% 0.012 250)", "oklch(59% 0.012 250)", "oklch(70% 0.012 250)", "oklch(82% 0.012 250)", "oklch(93% 0.005 250)"] },
+      "mexican-green": { "role": "secondary", "displayName": "Mexican Green", "canonical": "oklch(72% 0.17 152)", "tonalRamp": ["oklch(15% 0.085 152)", "oklch(26% 0.170 152)", "oklch(37% 0.170 152)", "oklch(48% 0.170 152)", "oklch(59% 0.170 152)", "oklch(70% 0.170 152)", "oklch(82% 0.170 152)", "oklch(93% 0.068 152)"] },
+      "canadian-red": { "role": "secondary", "displayName": "Canadian Red", "canonical": "oklch(64% 0.20 25)", "tonalRamp": ["oklch(15% 0.100 25)", "oklch(26% 0.200 25)", "oklch(37% 0.200 25)", "oklch(48% 0.200 25)", "oklch(59% 0.200 25)", "oklch(70% 0.200 25)", "oklch(82% 0.200 25)", "oklch(93% 0.080 25)"] },
+      "american-blue": { "role": "secondary", "displayName": "American Blue", "canonical": "oklch(68% 0.16 252)", "tonalRamp": ["oklch(15% 0.080 252)", "oklch(26% 0.160 252)", "oklch(37% 0.160 252)", "oklch(48% 0.160 252)", "oklch(59% 0.160 252)", "oklch(70% 0.160 252)", "oklch(82% 0.160 252)", "oklch(93% 0.064 252)"] },
+      "trophy-gold": { "role": "tertiary", "displayName": "Trophy Gold", "canonical": "oklch(82% 0.14 90)", "tonalRamp": ["oklch(15% 0.070 90)", "oklch(26% 0.140 90)", "oklch(37% 0.140 90)", "oklch(48% 0.140 90)", "oklch(59% 0.140 90)", "oklch(70% 0.140 90)", "oklch(82% 0.140 90)", "oklch(93% 0.056 90)"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "oklch(97% 0.005 250)", "tonalRamp": ["oklch(15% 0.006 250)", "oklch(26% 0.012 250)", "oklch(37% 0.012 250)", "oklch(48% 0.012 250)", "oklch(59% 0.012 250)", "oklch(70% 0.012 250)", "oklch(82% 0.012 250)", "oklch(97% 0.005 250)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Match scores, hero team names, champion reveal. The one fluid (clamp) tier — cinematic focal moments only." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles, round labels, feature player names. Barlow Condensed, fixed size." },
+      "title": { "displayName": "Title", "purpose": "Card and panel headers. Inter 600." },
+      "body": { "displayName": "Body", "purpose": "Analysis prose and explanations. Inter 400, max 70ch." },
+      "label": { "displayName": "Label", "purpose": "Chips, status markers, data-column headers. Uppercase only for true headers/chips." },
+      "data": { "displayName": "Data", "purpose": "All numerics. Inter 600 with tabular-nums." }
+    },
+    "shadows": [
+      { "name": "hover-lift", "value": "0 4px 16px rgba(0,0,0,0.45)", "purpose": "Interactive cards and bracket nodes on hover; paired with translateY(-2px). The only resting shadow is none." },
+      { "name": "focus-ring", "value": "0 0 0 2px #080c0f, 0 0 0 4px #f3f5f8", "purpose": "Keyboard focus. Neutral ink ring on a black offset — never a host color, to protect the red = live rule." }
+    ],
+    "motion": [
+      { "name": "ease-out-quint", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Default easing for entrances, count-ups, and bracket reveals. Exponential ease-out, no bounce." },
+      { "name": "dur-ui", "value": "180ms", "purpose": "Working-UI state transitions (hover, focus, selection). Users are in flow." },
+      { "name": "dur-cinematic", "value": "640ms", "purpose": "Focal-moment choreography only — bracket draw, score count-up, champion reveal." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "960px" },
+      { "name": "lg", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Neutral high-contrast action. Host colors are reserved for data, never buttons.",
+      "html": "<button class=\"ds-btn-primary\">VIEW BRACKET</button>",
+      "css": ".ds-btn-primary { font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: #080c0f; background: #f3f5f8; border: none; border-radius: 4px; padding: 10px 20px; cursor: pointer; transition: background 180ms cubic-bezier(0.22,1,0.36,1), transform 180ms cubic-bezier(0.22,1,0.36,1); } .ds-btn-primary:hover { background: #ffffff; } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #080c0f, 0 0 0 4px #f3f5f8; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ghost action: transparent with a structural border.",
+      "html": "<button class=\"ds-btn-secondary\">COMPARE TEAMS</button>",
+      "css": ".ds-btn-secondary { font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: #f3f5f8; background: transparent; border: 1px solid #292e34; border-radius: 4px; padding: 10px 20px; cursor: pointer; transition: background 180ms cubic-bezier(0.22,1,0.36,1), border-color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-btn-secondary:hover { background: #181e23; border-color: #3a4047; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px #080c0f, 0 0 0 4px #f3f5f8; }"
+    },
+    {
+      "name": "Live Chip",
+      "kind": "chip",
+      "refersTo": "chip-live",
+      "description": "Live-state marker. Red text plus a leading dot — the non-color signal that survives CVD.",
+      "html": "<span class=\"ds-chip-live\"><span class=\"ds-chip-live__dot\"></span>LIVE</span>",
+      "css": ".ds-chip-live { display: inline-flex; align-items: center; gap: 6px; font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: #ed4a49; background: #101419; border-radius: 2px; padding: 4px 8px; } .ds-chip-live__dot { width: 6px; height: 6px; border-radius: 9999px; background: #ed4a49; animation: ds-pulse 1.6s cubic-bezier(0.22,1,0.36,1) infinite; } @keyframes ds-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } } @media (prefers-reduced-motion: reduce) { .ds-chip-live__dot { animation: none; } }"
+    },
+    {
+      "name": "Group Chip",
+      "kind": "chip",
+      "refersTo": "chip-group",
+      "description": "Group-stage category marker. Green text with the leading group letter as the non-color signal.",
+      "html": "<span class=\"ds-chip-group\"><span class=\"ds-chip-group__letter\">J</span>GROUP</span>",
+      "css": ".ds-chip-group { display: inline-flex; align-items: center; gap: 6px; font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: #35c26d; background: #101419; border-radius: 2px; padding: 4px 8px; } .ds-chip-group__letter { font-weight: 700; color: #35c26d; }"
+    },
+    {
+      "name": "Match Card",
+      "kind": "card",
+      "refersTo": null,
+      "description": "Core matchup container: condensed team names + tabular score on the card surface.",
+      "html": "<div class=\"ds-match-card\"><div class=\"ds-match-card__row\"><span class=\"ds-match-card__team\">ARGENTINA</span><span class=\"ds-match-card__score\">2</span></div><div class=\"ds-match-card__row\"><span class=\"ds-match-card__team\">BRAZIL</span><span class=\"ds-match-card__score\">1</span></div></div>",
+      "css": ".ds-match-card { background: #101419; border: 1px solid #292e34; border-radius: 8px; padding: 20px 24px; min-width: 240px; transition: transform 180ms cubic-bezier(0.22,1,0.36,1), box-shadow 180ms cubic-bezier(0.22,1,0.36,1); } .ds-match-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.45); } .ds-match-card__row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 6px 0; } .ds-match-card__team { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 1.75rem; line-height: 1.05; color: #f3f5f8; } .ds-match-card__score { font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 1.75rem; font-variant-numeric: tabular-nums; color: #f3f5f8; }"
+    },
+    {
+      "name": "Probability Bar",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Home/Draw/Away outcome bar. Blue marks the prediction channel; neutrals carry the rest. Every segment is labeled, so it is never color-only.",
+      "html": "<div class=\"ds-prob\"><div class=\"ds-prob__seg ds-prob__seg--home\" style=\"flex:53\">53%</div><div class=\"ds-prob__seg ds-prob__seg--draw\" style=\"flex:27\">27%</div><div class=\"ds-prob__seg ds-prob__seg--away\" style=\"flex:20\">20%</div></div>",
+      "css": ".ds-prob { display: flex; width: 100%; height: 28px; border-radius: 4px; overflow: hidden; font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; } .ds-prob__seg { display: flex; align-items: center; justify-content: center; color: #080c0f; min-width: 0; } .ds-prob__seg--home { background: #439bf7; } .ds-prob__seg--draw { background: #8a9096; } .ds-prob__seg--away { background: #a5acb2; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The 2026 Broadcast Desk",
+    "overview": "A deep black studio surface. Three host nation colors holding down three precise data roles — Mexican green for group-stage data, Canadian red for live indicators, American blue for predictions and probability. Trophy gold appearing exactly once per landmark moment. The interface feels like the analyst desk at ESPN or a FIFA broadcast production: high contrast, unhurried authority, every element earning its placement through function. The system is cinematic without being theatrical — motion serves the drama of the game, but the everyday UI loads instantly into the task, and the cinematic register is reserved for focal moments like a match score or a championship.",
+    "keyCharacteristics": [
+      "70%+ deep cool-black surface (#080c0f, OKLCH 15% 0.01 250) — everything else is signal",
+      "Three host nation colors, three locked data roles, zero decorative use",
+      "Barlow Condensed display + Inter body, all numerics in tabular-nums",
+      "Motion anchored to real events; the cinematic tier is saved for focal moments",
+      "Interactive chrome is neutral — color belongs to data, never to buttons"
+    ],
+    "rules": [
+      { "name": "The 70% Rule", "body": "Studio Black covers at least 70% of any view. A new surface element belongs on the black ground, not beside a competing surface.", "section": "colors" },
+      { "name": "The Host Nation Rule", "body": "Three accent colors, three data roles, no exceptions: green = group data, red = live, blue = prediction. Color never appears outside its role; interactive chrome is neutral.", "section": "colors" },
+      { "name": "The Color-Blind Contract", "body": "No data channel uses color as its only differentiator. Each host color pairs with shape, label, position, or pattern, and the three are separated in lightness to aid CVD.", "section": "colors" },
+      { "name": "The Rarity Gradient", "body": "Trophy gold > host accents > neutral text. The more chromatic a color, the rarer its use. Any accent crossing ~20% of a screen is noise.", "section": "colors" },
+      { "name": "The Broadcast Weight Rule", "body": "Barlow Condensed is reserved for scores, team names, and match headlines. Anything read rather than scanned is Inter.", "section": "typography" },
+      { "name": "The Tabular Precision Rule", "body": "All numerics use font-variant-numeric: tabular-nums. A number that shifts column width as it updates is a credibility failure.", "section": "typography" },
+      { "name": "The Fixed-Scale Rule", "body": "Only the Display tier scales with clamp. Headline through Label are fixed rem; product UI should not shrink headings inside a panel.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest; depth is tonal. A shadow visible without interaction is decorative — remove it.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Studio Black (#080c0f) at 70%+ of any view.",
+      "Do use Barlow Condensed only for scores, team names, and match headlines; Inter for everything read or scanned.",
+      "Do keep the host colors role-locked: green = group, red = live, blue = prediction. Neutral chrome for buttons and nav.",
+      "Do reserve trophy gold for one genuine championship moment per view.",
+      "Do pair every color-encoded datum with a non-color signal (dot, label, letter, position).",
+      "Do set font-variant-numeric: tabular-nums on all numerics.",
+      "Do keep motion anchored to events; 150-250ms on working UI, choreography only for focal moments.",
+      "Do test every data visualization in deuteranopia/protanopia simulation."
+    ],
+    "donts": [
+      "Don't use the host accent colors decoratively — a red CTA or green hover is a violation.",
+      "Don't use teal, purple, or gradient combinations (the Vite template's #aa3bff purple is exactly what this system rejects).",
+      "Don't add glow, neon, or cyberpunk RGB; dark must read as broadcast studio, not gaming rig.",
+      "Don't build generic SaaS chrome: sidebar navs, icon-heading-text card grids, blue-accent BI layouts.",
+      "Don't use the sportsbook aesthetic — no dark-green-and-gold odds bars, no betting-slip chips.",
+      "Don't let visualizations look like Jupyter output — no matplotlib frames or academic histogram defaults.",
+      "Don't dump dense tables as the first answer; lead with the narrative, offer the table as drill-down.",
+      "Don't ship resting-state shadows, border-left stripe accents, or gradient text.",
+      "Don't rely on color alone; if a chart breaks when desaturated, it fails the Color-Blind Contract."
+    ]
+  }
+}

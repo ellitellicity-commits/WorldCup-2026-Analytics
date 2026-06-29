@@ -1,8 +1,110 @@
-<!-- SEED: re-run /impeccable document once there's code to capture the actual tokens and components. -->
-
 ---
 name: WorldCup 2026 Analytics
 description: Match predictor, Monte Carlo bracket simulator, and player dashboard for the 2026 FIFA World Cup.
+colors:
+  studio-black: "#080c0f"
+  surface-card: "#101419"
+  surface-elevated: "#181e23"
+  surface-overlay: "#21272d"
+  border-divider: "#292e34"
+  ink: "#f3f5f8"
+  ink-secondary: "#a5acb2"
+  ink-muted: "#8a9096"
+  mexican-green: "#35c26d"
+  mexican-green-deep: "#00a24f"
+  canadian-red: "#ed4a49"
+  canadian-red-deep: "#cc272e"
+  american-blue: "#439bf7"
+  american-blue-deep: "#217fd8"
+  trophy-gold: "#e7bf4a"
+  trophy-gold-deep: "#c7a01e"
+typography:
+  display:
+    fontFamily: "'Barlow Condensed', 'Arial Narrow', sans-serif"
+    fontSize: "clamp(2.5rem, 5vw, 4.5rem)"
+    fontWeight: 800
+    lineHeight: 0.95
+    letterSpacing: "-0.01em"
+  headline:
+    fontFamily: "'Barlow Condensed', 'Arial Narrow', sans-serif"
+    fontSize: "1.75rem"
+    fontWeight: 700
+    lineHeight: 1.05
+    letterSpacing: "0"
+  title:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "1.125rem"
+    fontWeight: 600
+    lineHeight: 1.3
+    letterSpacing: "0"
+  body:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.6
+    letterSpacing: "0"
+  label:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "0.8125rem"
+    fontWeight: 500
+    lineHeight: 1.2
+    letterSpacing: "0.04em"
+  data:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 600
+    lineHeight: 1.2
+    letterSpacing: "0"
+    fontFeature: "tabular-nums"
+rounded:
+  sm: "2px"
+  md: "4px"
+  lg: "8px"
+  full: "9999px"
+spacing:
+  xs: "4px"
+  sm: "8px"
+  md: "16px"
+  lg: "24px"
+  xl: "40px"
+  xxl: "64px"
+components:
+  button-primary:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.studio-black}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: "10px 20px"
+  button-primary-hover:
+    backgroundColor: "#ffffff"
+    textColor: "{colors.studio-black}"
+  button-secondary:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: "10px 20px"
+  button-secondary-hover:
+    backgroundColor: "{colors.surface-elevated}"
+    textColor: "{colors.ink}"
+  chip-live:
+    backgroundColor: "{colors.surface-card}"
+    textColor: "{colors.canadian-red}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "4px 8px"
+  chip-group:
+    backgroundColor: "{colors.surface-card}"
+    textColor: "{colors.mexican-green}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "4px 8px"
+  chip-prediction:
+    backgroundColor: "{colors.surface-card}"
+    textColor: "{colors.american-blue}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "4px 8px"
 ---
 
 # Design System: WorldCup 2026 Analytics
@@ -13,107 +115,130 @@ description: Match predictor, Monte Carlo bracket simulator, and player dashboar
 
 A deep black studio surface. Three host nation colors holding down three precise data roles — Mexican green for group-stage data, Canadian red for live indicators, American blue for predictions and probability. Trophy gold appearing exactly once per landmark moment. The interface feels like the analyst desk at ESPN or a FIFA broadcast production: high contrast, unhurried authority, every element earning its placement through function.
 
-The system is cinematic without being theatrical. Choreographed motion serves the drama of the game — brackets animate on draw, numbers count up, match cards enter with intention — but nothing moves for decoration. The product's credibility comes from the quality of the model; the design's job is to make that credibility legible at a glance.
+The system is cinematic without being theatrical. Motion serves the drama of the game — brackets animate on draw, scores count up, the champion reveal lands gold — but nothing moves for decoration, and the everyday UI loads instantly into the task. The cinematic register is reserved for the focal moments (a match score, a championship), the way a broadcast saves its full-screen graphics for the goal, not the lineup card.
 
 This system explicitly rejects: generic SaaS dashboard chrome (sidebar navs, card grids, blue-accent BI tools); sportsbook gambling aesthetics (dark green + gold odds, transactional feel); academic Jupyter-notebook output (matplotlib charts, pandas-table density, code-visible formatting); overcrowded stats-site data dumps; neon, glow effects, or any cyberpunk RGB aesthetic; and AI-generated default palettes (teal/purple/gradient combos, tinted cream backgrounds, any combination that reads as "first training-data reflex").
 
 **Key Characteristics:**
-- 70% deep black or near-black surface coverage — everything else is signal
-- Three host nation colors, three data roles, no decorative use
-- Condensed display weight for scores, names, and match headlines; humanist sans for prose
-- Choreographed motion anchored to real events (draws, reveals, live state changes)
-- Broadcast-desk authority: confident, precise, never decorative
+- 70%+ deep cool-black surface (`#080c0f`, OKLCH 15% 0.01 250) — everything else is signal
+- Three host nation colors, three locked data roles, zero decorative use
+- Barlow Condensed display (scores, names, headlines) + Inter body (prose, UI, data)
+- All numerics in `tabular-nums` so figures never shift column width
+- Motion anchored to real events; the cinematic tier is saved for focal moments
+- Interactive chrome is neutral — color belongs to data, never to buttons
 
 ## 2. Colors
 
-The palette is four deliberate roles on a black ground. Every color earns its place by encoding meaning. Color alone never carries the only semantic signal.
+Four deliberate roles on a cool near-black ground. Every chromatic color encodes a specific data meaning; nothing chromatic is decorative. Contrast was verified against both the body and card surfaces — every text and data color clears WCAG AA body (≥4.5:1).
 
 ### Primary
-- **Near-Black Studio** (`[to be resolved during implementation]`): The default surface. Carries ~70% of any given view. Not pure black — should carry a slight neutral tint (lean toward cool, not warm) to feel like a studio environment rather than a void or a gaming setup.
+- **Studio Black** (`#080c0f` / oklch(15% 0.01 250)): The default body surface, ≥70% of any view. Cool-tinted (hue 250), not pure black — a studio environment, not a void or a gaming rig.
 
 ### Secondary — Host Nation Roles
 
-**The Host Nation Rule.** Three accent colors, three data roles, no exceptions. Mexican green encodes group-stage data. Canadian red encodes live state (active match, current indicator). American blue encodes predictions and probability. None of these colors appear outside their assigned role. Decorative use of any host nation color is prohibited.
+**The Host Nation Rule.** Three accent colors, three data roles, no exceptions. Green encodes group-stage data. Red encodes live state. Blue encodes predictions and probability. None appears outside its role. A red "save" button or a green hover state is a violation — interactive chrome is neutral (see §5).
 
-- **Mexican Green** (`[to be resolved: OKLCH hue family ~145–160°, mid-high chroma, mid lightness]`): Group data — standings tables, group phase match records, team groupings.
-- **Canadian Red** (`[to be resolved: OKLCH hue family ~25–30°, high chroma, mid lightness]`): Live indicators — active match states, real-time score changes, "LIVE" chips, current-round indicators.
-- **American Blue** (`[to be resolved: OKLCH hue family ~250–265°, mid-high chroma, mid lightness]`): Predictions and probability — win odds, Monte Carlo outputs, model confidence bars, projected paths.
+- **Mexican Green** (`#35c26d` / oklch(72% 0.17 152); deep `#00a24f`): Group data — standings tables, group-phase records, team groupings. Contrast on black: 8.5:1.
+- **Canadian Red** (`#ed4a49` / oklch(64% 0.20 25); deep `#cc272e`): Live state — active-match indicators, real-time score changes, the "LIVE" chip, current-round markers. Contrast on black: 5.3:1.
+- **American Blue** (`#439bf7` / oklch(68% 0.16 252); deep `#217fd8`): Predictions and probability — win odds, Monte Carlo outputs, confidence bars, projected bracket paths. Contrast on black: 6.8:1.
 
 ### Tertiary
-- **Trophy Gold** (`[to be resolved: OKLCH hue family ~85–95°, mid chroma, high lightness]`): Championship moments only — final winner reveal, tournament champion card, top-ranked probability callout. Maximum one deliberate use per full-screen view. Its rarity is the point.
+- **Trophy Gold** (`#e7bf4a` / oklch(82% 0.14 90); deep `#c7a01e`): Championship moments only — the final winner reveal, the champion card, the single top-odds callout. **One deliberate use per full-screen view, maximum.** Contrast on black: 11.2:1.
 
 ### Neutral
-- **Primary Text** (`[to be resolved: high-lightness near-white, chroma ~0]`): Headlines, team names, scores on dark surface.
-- **Secondary Text** (`[to be resolved: mid-lightness neutral, chroma ~0–0.01]`): Labels, captions, supporting data on dark surface. Must meet WCAG AA (4.5:1) against the near-black body — verify before shipping.
-- **Divider / Border** (`[to be resolved: low-lightness neutral, subtle]`): Separators, card edges, structural lines. Never decorative; always structural.
+- **Ink** (`#f3f5f8` / oklch(97% 0.005 250)): Headlines, team names, scores. 18.0:1.
+- **Ink Secondary** (`#a5acb2` / oklch(74% 0.012 250)): Supporting data, captions, secondary labels. 8.5:1.
+- **Ink Muted** (`#8a9096` / oklch(65% 0.012 250)): The quietest legible text — table meta, timestamps. 6.1:1. Do not go lower; this is the muted floor that still clears AA.
+- **Surfaces** (`#101419` card · `#181e23` elevated · `#21272d` overlay): Tonal layering steps above Studio Black (see §4).
+- **Border / Divider** (`#292e34` / oklch(30% 0.012 250)): Structural lines only. 1.4:1 — intentionally below text contrast; a divider is not text.
 
 ### Named Rules
 
-**The 70% Rule.** Near-black body covers 70% or more of any given view. If you're adding a new surface element and the ratio is slipping, the element needs to live on the dark ground, not introduce a new surface.
+**The 70% Rule.** Studio Black covers ≥70% of any view. If a new surface element slips the ratio, it belongs *on* the black ground, not beside a new competing surface.
 
-**The Color-Blind Contract.** No data channel uses color as its only differentiator. Every color-encoded datum (green for group data, red for live, blue for prediction) is also differentiated by shape, label, position, or pattern. Test every data visualization in deuteranopia and protanopia simulation before shipping.
+**The Color-Blind Contract.** No data channel uses color as its only differentiator. Green/red/blue each pair with shape, label, position, or pattern. The three host colors are also separated in lightness (L 0.72 / 0.64 / 0.68) and hue to aid deuteranopia/protanopia, but separation is never relied on alone. Test every data visualization in CVD simulation before shipping.
 
-**The Rarity Gradient.** Trophy gold > host nation accents > neutral text. The more chromatic a color, the rarer its use. If an accent color appears on more than 20% of a given screen, it's no longer an accent — it's noise.
+**The Rarity Gradient.** Trophy gold > host accents > neutral text. The more chromatic a color, the rarer its use. Any accent crossing ~20% of a screen is no longer an accent — it's noise.
 
 ## 3. Typography
 
-**Display Font:** Condensed sans-serif `[font pairing to be chosen at implementation — reference: Barlow Condensed, Neue Haas Grotesk Condensed, or similar broadcast-grade condensed grotesque]`
-**Body Font:** Humanist sans-serif `[font pairing to be chosen at implementation — reference: Inter, Plus Jakarta Sans, or similar readable humanist sans]`
+**Display Font:** Barlow Condensed (with `'Arial Narrow', sans-serif` fallback)
+**Body / UI Font:** Inter (with `system-ui, sans-serif` fallback)
 
-**Character:** The condensed display weight carries the broadcast authority — tight, tall, built for score cards, team names, and matchup headlines. The humanist body handles everything the user needs to read, not just scan: analysis prose, probability explanations, player bios. The two voices stay in their lanes.
+**Character:** Barlow Condensed is a broadcast-grade condensed grotesque — tall, tight, built for score cards, team names, and matchup headlines. Inter is a humanist UI sans with first-class tabular figures for everything the user reads or scans: analysis prose, labels, and every number. The pairing sits on a real contrast axis (condensed display vs. humanist UI); the two voices never blur.
 
 ### Hierarchy
-- **Display** (Black or ExtraBold weight, condensed, `clamp(2rem, 6vw, 4.5rem)`, line-height 0.9–1.0): Match score numerals, team names in hero matchup cards, bracket headlines. Condensed only.
-- **Headline** (Bold or Semibold, condensed, `clamp(1.25rem, 3vw, 2rem)`, line-height 1.1): Section titles, tournament round labels, player names in feature cards.
-- **Title** (Medium or Semibold, humanist, `1rem–1.25rem`, line-height 1.3): Card headers, sidebar section labels, stat group headings.
-- **Body** (Regular, humanist, `1rem`, line-height 1.6, max 65ch): Analysis text, model explanations, match descriptions. Never condensed.
-- **Label** (Medium, humanist or tabular-nums, `0.75rem–0.875rem`, letter-spacing 0.02–0.04em): Data table column headers, chip labels, probability percentages, odds. Use tabular-nums variant for all numeric labels so columns align.
+- **Display** (Barlow Condensed 800, `clamp(2.5rem, 5vw, 4.5rem)`, lh 0.95, ls −0.01em): Match scores, hero matchup team names, the champion reveal. The one fluid tier — these are the cinematic focal moments. Ceiling 4.5rem; never shouts past it.
+- **Headline** (Barlow Condensed 700, `1.75rem`, lh 1.05): Section titles, tournament round labels, feature-card player names. Fixed size.
+- **Title** (Inter 600, `1.125rem`, lh 1.3): Card headers, panel section labels, stat-group headings.
+- **Body** (Inter 400, `1rem`, lh 1.6, max 70ch): Analysis text, model explanations, match notes. Never condensed.
+- **Label** (Inter 500, `0.8125rem`, ls 0.04em): Chip text, status markers, data-table column headers. Uppercase permitted **only** for true data-column headers and status chips — never as a decorative section eyebrow.
+- **Data** (Inter 600, `tabular-nums`): Every numeric — scores, probabilities, ELO, percentages.
 
 ### Named Rules
 
-**The Broadcast Weight Rule.** Condensed display weight is reserved for scores, team names, and match-scale headlines. It never appears in body prose, UI labels, or captions. If a text element is something you read rather than something you scan, it uses the humanist body.
+**The Broadcast Weight Rule.** Barlow Condensed is reserved for scores, team names, and match-scale headlines. It never appears in body prose, UI labels, buttons, or captions. If a text element is read rather than scanned, it's Inter.
 
-**The Tabular Precision Rule.** All numeric output — scores, probabilities, ELO ratings, Monte Carlo percentages — uses `font-variant-numeric: tabular-nums`. Numbers that shift column width as they update are a data credibility failure.
+**The Tabular Precision Rule.** All numeric output uses `font-variant-numeric: tabular-nums`. A number that changes column width as it updates is a data-credibility failure.
+
+**The Fixed-Scale Rule.** Only the Display tier scales (`clamp`). Headline through Label are fixed rem — product UI viewed at consistent DPI should not have headings that shrink inside a panel. The cinematic exception earns its fluidity; the working UI does not.
 
 ## 4. Elevation
 
-The system is dark and layered. Depth is conveyed through lightness delta between surface levels, not through shadow blur. Cards and panels sit one tonal step above the base surface (a lighter shade of the same near-black). Interactive elements lift one further step on hover. No colored shadows; no drop shadows with visible blur radius at rest.
-
-Motion is the primary depth cue at interaction time — elements that are closer to the user respond faster (shorter duration, snappier easing). Elements in the background respond slower or not at all.
+The system is dark and layered. Depth comes from lightness delta between tonal surfaces, not from shadow blur at rest. Studio Black → card → elevated → overlay is four tonal steps (`#080c0f` → `#101419` → `#181e23` → `#21272d`), same hue (250), rising lightness. Shadows appear only as state feedback (hover, focus), never as ambient decoration.
 
 ### Shadow Vocabulary
+- **Hover Lift** (`box-shadow: 0 4px 16px rgba(0,0,0,0.45)`, paired with `transform: translateY(-2px)`): Interactive cards and bracket nodes on hover. The only resting-state shadow is none.
+- **Focus Ring** (`box-shadow: 0 0 0 2px #080c0f, 0 0 0 4px #f3f5f8`): Keyboard focus — a 2px ink ring on a 2px black offset, maximally visible on the dark surface. **Neutral, not red:** a red ring on every focusable element would erode the red = live rule, so focus uses ink. (This refines the earlier seed, which proposed red.)
 
-**The Tonal Layering Rule.** Rest states use no box-shadow. Depth is encoded by surface tone: base → card → elevated card is three tonal steps, not three shadow depths. Shadows appear only as state feedback (hover lift, focus ring). If a shadow is visible at rest, it's decorative — remove it.
+### Named Rules
 
-- **Hover Lift** (`box-shadow: 0 4px 16px rgba(0,0,0,0.4)` — exact value TBD at implementation): Applied to interactive cards on hover. Paired with a `translateY(-2px)` transform.
-- **Focus Ring** (2px offset ring in Canadian red at full opacity — exact value TBD at implementation): Keyboard focus indicator for all interactive elements. Canadian red is the only accent permitted for focus rings; it's already the system's live-state color.
+**The Flat-By-Default Rule.** Surfaces are flat at rest; depth is tonal. A shadow visible without interaction is decorative — remove it. Test: if it looks like a 2014 Material card, the resting shadow is the problem.
 
 ## 5. Components
 
-*Components will be documented in the first `/impeccable document` scan-mode pass once `frontend/src/` contains code. The component inventory is expected to include: match card, bracket node, probability bar, team crest chip, score display, navigation bar, Monte Carlo distribution chart, and simulation controls.*
+No component library exists in code yet; these are the canonical primitives synthesized from the tokens above. Build to them.
+
+### Buttons
+- **Shape:** Slightly squared (4px radius, `{rounded.md}`). Broadcast-sharp, not pill-soft.
+- **Primary:** Neutral, high-contrast — `#f3f5f8` fill, `#080c0f` text, 10px 20px padding, Label type. Host colors are never used for buttons.
+- **Secondary / Ghost:** Transparent fill, `#f3f5f8` text, 1px `#292e34` border.
+- **Hover:** Primary → `#ffffff`; Secondary → `#181e23` fill. Both 150 ms; cards/nodes add the Hover Lift. **Focus:** the neutral Focus Ring.
+
+### Chips (status / category)
+- **Live:** `#101419` surface, `#ed4a49` text + a leading 6px red dot (the non-color signal). Uppercase Label.
+- **Group:** `#101419` surface, `#35c26d` text, leading group letter (A–L).
+- **Prediction:** `#101419` surface, `#439bf7` text, leading "%" or odds glyph.
+- **Shape:** 2px radius (`{rounded.sm}`), 4px 8px padding. Each chip carries a non-color signal so it survives CVD.
+
+### Cards / Match Containers
+- **Corner:** 8px (`{rounded.lg}`). **Background:** `#101419` on the `#080c0f` body. **Border:** 1px `#292e34`. **Shadow:** none at rest; Hover Lift if interactive. **Padding:** 16–24px. Never nest a card in a card.
+
+### Probability Bar (signature component)
+A horizontal three-segment bar for Home / Draw / Away (or projected outcomes). Home = American Blue, Draw = Ink Muted, Away = Ink Secondary — **blue marks the model's prediction channel**, neutrals carry the rest. Each segment is labeled with its tabular-nums percentage *inside or above the segment*, so the bar is never color-only. Segments animate width on mount (count-up), respecting reduced motion.
+
+### Navigation
+- Top bar on Studio Black, 1px bottom divider (`#292e34`). Inter Label type. Default `#a5acb2`, hover/active `#f3f5f8` with a 2px American-blue underline on the active route only (active = a prediction-surface wayfinding cue, used sparingly). No sidebar nav.
 
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** keep the near-black body at 70%+ of any given view. Every new surface element must sit on it, not beside it.
-- **Do** use condensed display type exclusively for scores, team names, and match headlines. Everything else gets the humanist body.
-- **Do** encode live state exclusively with Canadian red — no other color signals "this is happening now."
-- **Do** reserve trophy gold for genuine championship moments — one deliberate use per full view, maximum.
-- **Do** pair every color-encoded data channel with a non-color signal (shape, label, position, pattern) for color-blind safety.
-- **Do** use `font-variant-numeric: tabular-nums` for all numeric output so figures align in columns.
-- **Do** let choreographed motion track real game events: bracket draws animate, scores count up, match cards enter on load. Motion is always anchored to a meaningful moment.
-- **Do** test all data visualizations in deuteranopia and protanopia simulation before shipping.
-- **Do** reference ESPN, TNT Sports, FIFA broadcast, and Apple TV+ MLS Season Pass as the production quality bar.
+- **Do** keep Studio Black (`#080c0f`) at ≥70% of any view.
+- **Do** use Barlow Condensed only for scores, team names, and match headlines; Inter for everything read or scanned.
+- **Do** keep the host colors role-locked: green = group data, red = live, blue = prediction. Neutral chrome for buttons and nav.
+- **Do** reserve trophy gold for one genuine championship moment per view.
+- **Do** pair every color-encoded datum with a non-color signal (dot, label, letter, position).
+- **Do** set `font-variant-numeric: tabular-nums` on all numerics.
+- **Do** keep motion anchored to events: bracket draws, score count-ups, the champion reveal. 150–250 ms on working-UI transitions; choreography only for focal moments.
+- **Do** test every data visualization in deuteranopia/protanopia simulation.
 
 ### Don't:
-- **Don't** use the host nation accent colors (Mexican green, Canadian red, American blue) decoratively. Each color owns one data role. Using Canadian red for a button hover because it looks good is a violation.
-- **Don't** use teal, purple, or gradient combinations. These are the saturated AI-default palette of 2025-2026 and read immediately as generated output.
-- **Don't** add glow effects, neon outlines, or any cyberpunk / gaming RGB aesthetic. Dark backgrounds must feel like a broadcast studio, not a gaming setup.
-- **Don't** build generic SaaS chrome: sidebar navs, card grids with icon + heading + body text, blue-accent BI tool layouts. This is a broadcast product, not a business intelligence tool.
-- **Don't** use the gambling / sportsbook aesthetic — no dark green + gold odds bars, no transactional chip patterns, no odds-format probability display that mimics a betting interface.
-- **Don't** let data visualizations look like Jupyter notebook output — no raw matplotlib chart style, no visible plot borders, no academic histogram defaults.
-- **Don't** dump everything into a table. Dense row-column data is the last resort, not the first. Lead with the narrative (who's favored, what the bracket looks like), offer the table as a drill-down.
-- **Don't** animate for decoration. Every motion must respond to a real event or state change. Uniform entrance animations on every section is the AI motion reflex — reject it.
-- **Don't** rely on color alone for any data channel. If the visualization breaks when you desaturate it, it fails the color-blind contract.
-- **Don't** use side-stripe `border-left` accents on cards or list items. Use full borders, background tints, or leading icons instead.
-- **Don't** use gradient text (`background-clip: text`). Scores and team names are single solid colors.
+- **Don't** use the host accent colors decoratively. Green-on-hover or a red CTA because "it looks good" is a violation.
+- **Don't** use teal, purple, or gradient combinations — the 2026 AI-default palette (the Vite template's `#aa3bff` purple is exactly what this system rejects).
+- **Don't** add glow, neon, or cyberpunk RGB. Dark must read as broadcast studio, not gaming rig.
+- **Don't** build generic SaaS chrome: sidebar navs, icon-heading-text card grids, blue-accent BI layouts.
+- **Don't** use the sportsbook aesthetic — no dark-green-and-gold odds bars, no betting-slip chips.
+- **Don't** let visualizations look like Jupyter output — no raw matplotlib frames, no academic histogram defaults.
+- **Don't** dump dense tables as the first answer. Lead with the narrative, offer the table as drill-down.
+- **Don't** ship resting-state shadows, `border-left` stripe accents, or gradient text (`background-clip: text`).
+- **Don't** rely on color alone. If a chart breaks when desaturated, it fails the Color-Blind Contract.

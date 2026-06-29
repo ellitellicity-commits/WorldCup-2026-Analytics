@@ -1,9 +1,14 @@
 import MatchCard from './components/MatchCard'
 import FixturesRail from './components/FixturesRail'
 import ChampionshipOdds from './components/ChampionshipOdds'
+import Bracket from './components/Bracket'
+import { Mark26, BrandField } from './components/BrandMarks'
+import { getGroups } from './lib/bracket'
 import oddsData from './data/odds.json'
 import fixturesData from './data/fixtures.json'
 import './App.css'
+
+const groups = getGroups()
 
 const TODAY = fixturesData.generated
 
@@ -65,9 +70,16 @@ function App() {
   return (
     <div className="page">
       <header className="masthead">
-        <div className="masthead__brand">
-          <span className="masthead__kicker">FIFA World Cup 26 · USA · Canada · Mexico</span>
-          <h1 className="masthead__title display">Match Predictor</h1>
+        <BrandField className="masthead__field" />
+        <div className="masthead__lead">
+          <Mark26 className="masthead__mark" />
+          <div className="masthead__brand">
+            <span className="masthead__product">Match Predictor</span>
+            <h1 className="masthead__title display">
+              FIFA World Cup <span className="masthead__26">26</span>
+            </h1>
+            <span className="masthead__hosts">USA · Canada · Mexico</span>
+          </div>
         </div>
         <dl className="masthead__model" aria-label="Model summary">
           <div className="masthead__stat">
@@ -93,6 +105,8 @@ function App() {
       </header>
 
       <main className="page__main">
+        <Bracket groups={groups} />
+
         {todaysMatches.length > 0 && (
           <FixturesRail title="Today" eyebrow={`${todaysMatches.length} matches`} fixtures={todaysMatches} todayDate={TODAY} />
         )}

@@ -1,22 +1,23 @@
 /* WorldCup 2026 Analytics — design tokens
-   Canonical source: DESIGN.md ("The 2026 Broadcast Desk"). Hex values are the
-   sRGB renderings of the canonical OKLCH; OKLCH is noted alongside for reference. */
+   FIFA World Cup 26 brand identity: neutral black ground + the official
+   multicolour palette (sampled from the WC2026 art system), Barlow Condensed
+   Ultra Bold display, Noto Sans supporting text. */
 
 :root {
-  /* --- Surfaces (tonal layering, hue 250, cool near-black) --- */
-  --studio-black: #080c0f;        /* oklch(15% 0.01 250)  — body, 70%+ of any view */
-  --surface-card: #101419;        /* oklch(19% 0.012 250) — cards */
-  --surface-elevated: #181e23;    /* oklch(23% 0.014 250) — hover / raised */
-  --surface-overlay: #21272d;     /* oklch(27% 0.014 250) — popovers */
-  --border-divider: #292e34;      /* oklch(30% 0.012 250) — structural lines */
-  --border-strong: #3a4047;       /* hover border */
+  /* --- Surfaces (neutral black, FIFA-brand ground) --- */
+  --studio-black: #0a0a0a;        /* body, 70%+ of any view */
+  --surface-card: #141414;        /* cards */
+  --surface-elevated: #1c1c1c;    /* hover / raised */
+  --surface-overlay: #262626;     /* popovers */
+  --border-divider: #2c2c2c;      /* structural lines */
+  --border-strong: #3d3d3d;       /* hover border */
 
   /* --- Ink --- */
-  --ink: #f3f5f8;                 /* oklch(97% 0.005 250) — headings, scores */
-  --ink-secondary: #a5acb2;       /* oklch(74% 0.012 250) — supporting data */
-  --ink-muted: #8a9096;           /* oklch(65% 0.012 250) — quietest legible text */
+  --ink: #f6f6f6;                 /* headings, scores */
+  --ink-secondary: #a8a8a8;       /* supporting data */
+  --ink-muted: #888888;           /* quietest legible text */
 
-  /* --- Host nation data roles (role-locked) --- */
+  /* --- Host nation data roles (role-locked, used in match cards / prob bar) --- */
   --mexican-green: #35c26d;       /* group-stage data */
   --mexican-green-deep: #00a24f;
   --canadian-red: #ed4a49;        /* live state */
@@ -24,13 +25,33 @@
   --american-blue: #439bf7;       /* predictions / probability */
   --american-blue-deep: #217fd8;
 
-  /* --- Championship --- */
-  --trophy-gold: #e7bf4a;         /* championship moments only */
-  --trophy-gold-deep: #c7a01e;
+  /* --- Championship gold (the one gold moment per view; the masthead "26") --- */
+  --trophy-gold: #ecc94a;         /* championship moments only */
+  --trophy-gold-deep: #c9a227;
+
+  /* --- Official FIFA 26 palette (sampled from WC2026_ArtStyle.png) ---
+     The multicolour brand system. Used in the geometric "26" motif and brand
+     chrome — never as a data encoding. */
+  --fifa-maroon: #751212;
+  --fifa-purple: #6100eb;
+  --fifa-navy: #1a247d;
+  --fifa-pine: #004d40;
+  --fifa-red: #d60000;
+  --fifa-lavender: #b287ff;
+  --fifa-blue: #304fff;
+  --fifa-green: #00c752;
+  --fifa-orange: #ff3d00;
+  --fifa-orchid: #ba69c7;
+  --fifa-sky: #2196f2;
+  --fifa-lime: #b0eb00;
+  --fifa-peach: #ff9e80;
+  --fifa-magenta: #e81f63;
+  --fifa-aqua: #63ffd9;
+  --fifa-yellow: #edff42;
 
   /* --- Type --- */
   --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Noto Sans', system-ui, -apple-system, sans-serif;
 
   --text-display: clamp(2.5rem, 5vw, 4.5rem);
   --text-headline: 1.75rem;

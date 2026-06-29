@@ -1,5 +1,6 @@
 import MatchCard from './components/MatchCard'
 import FixturesRail from './components/FixturesRail'
+import ChampionshipOdds from './components/ChampionshipOdds'
 import oddsData from './data/odds.json'
 import fixturesData from './data/fixtures.json'
 import './App.css'
@@ -102,6 +103,8 @@ function App() {
           fixtures={groupStageRail}
           todayDate={TODAY}
         />
+
+        <ChampionshipOdds odds={oddsData} />
 
         {showDemo && (
           <section className="gallery" aria-label="Match card states">

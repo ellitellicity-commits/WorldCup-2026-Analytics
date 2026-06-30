@@ -5,9 +5,9 @@ import {
   REVEAL_ORDER,
   buildViews,
   liveResults,
-  simulate,
   titleOdds,
 } from '../lib/bracket'
+import { runFullSimulation } from '../lib/simulation'
 import Confetti from './Confetti'
 import './Bracket.css'
 
@@ -215,6 +215,7 @@ function Trophy({ lit }) {
 function Bracket({ groups, initialMode = 'live', autoSimulate = false }) {
   const [mode, setMode] = useState(initialMode)
   const [simResults, setSimResults] = useState(null)
+  const [simR32, setSimR32] = useState(null)
   const [revealed, setRevealed] = useState(() => new Set())
   const [running, setRunning] = useState(false)
   const [champion, setChampion] = useState(null)
@@ -234,22 +235,27 @@ function Bracket({ groups, initialMode = 'live', autoSimulate = false }) {
     if (mode === 'live') return buildViews(liveRes, 'live')
     const partial = {}
     if (simResults) for (const id of revealed) partial[id] = simResults[id]
-    return buildViews(partial, 'simulate')
-  }, [mode, liveRes, simResults, revealed])
+    return buildViews(partial, 'simulate', simR32 || undefined)
+  }, [mode, liveRes, simResults, revealed, simR32])
 
   const switchMode = (next) => {
     if (next === mode) return
     clearTimers()
     setMode(next)
     setSimResults(null)
+    setSimR32(null)
     setRevealed(new Set())
     setRunning(false)
     setChampion(null)
+    // "Run Your Own Simulation" runs immediately on selection; "Run Again"
+    // re-randomises. The Real Tournament view needs no run.
+    if (next === 'simulate') runSimulation()
   }
 
   const runSimulation = () => {
     clearTimers()
-    const results = simulate()
+    const { r32, results } = runFullSimulation()
+    setSimR32(r32)
     setSimResults(results)
     setChampion(null)
     setRunning(true)
@@ -341,10 +347,9 @@ function Bracket({ groups, initialMode = 'live', autoSimulate = false }) {
             Tournament Bracket
           </h2>
           <p className="bk__sub">
-            The locked 32-team knockout, {META.final.stadium} final on {fmtDay(META.final.date)}.{' '}
             {mode === 'live'
-              ? 'Played matches show the result; upcoming ties show the model’s win probability.'
-              : 'Run the model to play out every tie from the Round of 32 to the trophy — a different bracket each time.'}
+              ? `The real tournament — ${META.final.stadium} final on ${fmtDay(META.final.date)}. Played matches show the result; upcoming ties show the model’s win probability.`
+              : 'A what-if run: the remaining group matches and the full knockout bracket are randomised from the model, so the qualifiers and their seeds change every run.'}
           </p>
         </div>
 
@@ -357,7 +362,7 @@ function Bracket({ groups, initialMode = 'live', autoSimulate = false }) {
               className={`bk__mode${mode === 'live' ? ' is-on' : ''}`}
               onClick={() => switchMode('live')}
             >
-              Live bracket
+              Real Tournament
             </button>
             <button
               type="button"
@@ -366,7 +371,7 @@ function Bracket({ groups, initialMode = 'live', autoSimulate = false }) {
               className={`bk__mode${mode === 'simulate' ? ' is-on' : ''}`}
               onClick={() => switchMode('simulate')}
             >
-              Simulate
+              Run Your Own Simulation
             </button>
           </div>
           {mode === 'simulate' && (

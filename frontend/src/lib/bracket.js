@@ -214,8 +214,10 @@ function venueOf(id) {
   return R32_VENUE[id] || KO_VENUE[id] || null
 }
 
-// One full Monte Carlo realisation of the bracket (R32 -> Final + third place).
-export function simulate() {
+// One full Monte Carlo realisation of the knockout bracket (R32 -> Final + third
+// place), given the R32 matchups. Defaults to the locked draw; the group-stage
+// simulator passes its own re-seeded R32 so every run plays different teams.
+export function simulateKnockout(r32 = bracketData.r32) {
   const results = {}
   const decide = (id, homeName, awayName) => {
     const p = winProb(homeName, awayName, venueOf(id)?.country)
@@ -226,7 +228,7 @@ export function simulate() {
       p,
     }
   }
-  for (const m of bracketData.r32) decide(m.id, m.home, m.away)
+  for (const m of r32) decide(m.id, m.home, m.away)
   for (const id of [89, 90, 93, 94, 91, 92, 95, 96, 97, 98, 99, 100, 101, 102, 104, 103]) {
     const [hf, af] = FEEDS[id]
     decide(id, tokenName(hf, results), tokenName(af, results))
@@ -234,15 +236,21 @@ export function simulate() {
   return results
 }
 
+// Back-compat: a knockout-only sim from the locked R32 draw.
+export function simulate() {
+  return simulateKnockout()
+}
+
 // --- Build the full view the bracket renders -------------------------------
 // `mode` is 'live' or 'simulate'. In simulate mode, `results` is a full sim;
 // in live mode it is the real completed matches only.
-export function buildViews(results, mode) {
+export function buildViews(results, mode, r32 = bracketData.r32) {
   const views = {}
   const today = bracketData.today
 
-  // R32 — competitors always known from the fixture data.
-  for (const m of bracketData.r32) {
+  // R32 — competitors always known (locked draw in live mode, or the simulator's
+  // re-seeded qualifiers in simulate mode).
+  for (const m of r32) {
     const home = team(m.home)
     const away = team(m.away)
     const completedLive = mode === 'live' && m.status === 'completed'

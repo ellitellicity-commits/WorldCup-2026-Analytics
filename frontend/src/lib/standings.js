@@ -50,9 +50,11 @@ function blankRow(side) {
   }
 }
 
-// Accumulate overall group-stage record for every team, keep the raw completed
-// matches per group (head-to-head needs them).
-function buildGroups() {
+// Accumulate group-stage record for every team, keep the contributing matches
+// per group (head-to-head needs them). `scoreOf(fixture)` returns the result to
+// count, or null to skip — the real table counts completed results only; the
+// simulator also counts a sampled score for each remaining fixture.
+function buildGroups(scoreOf) {
   const groups = {}
   for (const f of fixturesData.fixtures) {
     const letter = f.group
@@ -61,17 +63,18 @@ function buildGroups() {
     g.teams[f.home.name] ||= blankRow(f.home)
     g.teams[f.away.name] ||= blankRow(f.away)
 
-    if (f.status !== 'completed' || !f.result) continue
-    g.matches.push(f)
+    const result = scoreOf(f)
+    if (!result) continue
+    g.matches.push({ home: f.home, away: f.away, result })
     const home = g.teams[f.home.name]
     const away = g.teams[f.away.name]
-    const hs = f.result.home_score
-    const as = f.result.away_score
+    const hs = result.home_score
+    const as = result.away_score
     home.p++; away.p++
     home.gf += hs; home.ga += as
     away.gf += as; away.ga += hs
-    home.conduct += matchConduct(f.result, 'home')
-    away.conduct += matchConduct(f.result, 'away')
+    home.conduct += matchConduct(result, 'home')
+    away.conduct += matchConduct(result, 'away')
     if (hs > as) { home.w++; home.pts += 3; away.l++ }
     else if (hs < as) { away.w++; away.pts += 3; home.l++ }
     else { home.d++; away.d++; home.pts++; away.pts++ }
@@ -80,6 +83,38 @@ function buildGroups() {
     for (const t of Object.values(g.teams)) t.gd = t.gf - t.ga
   }
   return groups
+}
+
+// Score providers. Real: completed results only. Sim: completed results, plus a
+// sampled scoreline for every not-yet-played fixture (from the model's own
+// outcome probabilities), so each run produces a different but plausible table.
+const realScoreOf = (f) => (f.status === 'completed' && f.result ? f.result : null)
+const simScoreOf = (f) => (f.status === 'completed' && f.result ? f.result : simulateScore(f))
+
+function pick(weights) {
+  const total = weights.reduce((s, [, w]) => s + w, 0)
+  let r = Math.random() * total
+  for (const [v, w] of weights) {
+    if ((r -= w) <= 0) return v
+  }
+  return weights[weights.length - 1][0]
+}
+
+// Sample a plausible scoreline consistent with the fixture's predicted outcome.
+function simulateScore(f) {
+  const p = f.prediction || { home_win: 0.4, draw: 0.3, away_win: 0.3 }
+  const r = Math.random()
+  if (r < p.draw) {
+    const d = pick([[0, 0.32], [1, 0.42], [2, 0.20], [3, 0.06]])
+    return { home_score: d, away_score: d }
+  }
+  const homeWins = r < p.draw + p.home_win
+  const win = pick([[1, 0.30], [2, 0.34], [3, 0.22], [4, 0.10], [5, 0.04]])
+  let lose = pick([[0, 0.46], [1, 0.33], [2, 0.15], [3, 0.06]])
+  if (lose >= win) lose = win - 1
+  return homeWins
+    ? { home_score: win, away_score: lose }
+    : { home_score: lose, away_score: win }
 }
 
 // Head-to-head mini-table among exactly the tied teams (completed matches only).
@@ -152,17 +187,13 @@ function rankThirdPlace(thirds) {
   )
 }
 
-// Single source of truth: ranks every group, builds the third-place table, and
-// stamps each row with its qualification status.
-//   q     — top two: qualified for the Round of 32
-//   q3in  — third place, currently inside the best-8 cut: provisionally through
-//   q3out — third place, currently outside the cut: provisionally out
-//   out   — fourth place: eliminated
-function compute() {
-  const groups = buildGroups()
+// Rank every group and build the cross-group third-place table from a given
+// score provider. The shared core behind both the live table and the simulator.
+function rankAll(scoreOf) {
+  const groups = buildGroups(scoreOf)
   const ranked = Object.keys(groups)
     .sort()
-    .map((letter) => ({ letter, rows: rankGroup(groups[letter]), matches: groups[letter].matches }))
+    .map((letter) => ({ letter, rows: rankGroup(groups[letter]) }))
 
   const thirds = ranked
     .map((g) => (g.rows[AUTO_SLOTS] ? { ...g.rows[AUTO_SLOTS], group: g.letter } : null))
@@ -172,6 +203,16 @@ function compute() {
     thirdRank: idx + 1,
     qualified: idx < THIRD_PLACE_SLOTS,
   }))
+  return { ranked, thirdTable }
+}
+
+// The live view: stamps each row with its qualification status.
+//   q     — top two: qualified for the Round of 32
+//   q3in  — third place, currently inside the best-8 cut: provisionally through
+//   q3out — third place, currently outside the cut: provisionally out
+//   out   — fourth place: eliminated
+function compute() {
+  const { ranked, thirdTable } = rankAll(realScoreOf)
   const thirdStatusByGroup = Object.fromEntries(
     thirdTable.map((t) => [t.group, { thirdRank: t.thirdRank, qualified: t.qualified }]),
   )
@@ -220,3 +261,21 @@ export function getThirdPlaceRace() {
 
 export const QUALIFY_SLOTS = AUTO_SLOTS
 export const THIRD_PLACE_QUALIFIERS = THIRD_PLACE_SLOTS
+
+/**
+ * One Monte Carlo realisation of how the group stage finishes: real results
+ * stand, every remaining fixture is sampled, then the FIFA tiebreakers decide
+ * each group and the third-place race. Returns the 32 qualifiers by slot —
+ * different teams and seeds essentially every run.
+ * @returns {{winners:Object<string,string>, runners:Object<string,string>, thirdsRanked:string[]}}
+ */
+export function simulateGroupQualifiers() {
+  const { ranked, thirdTable } = rankAll(simScoreOf)
+  const winners = {}
+  const runners = {}
+  for (const g of ranked) {
+    winners[g.letter] = g.rows[0].name
+    runners[g.letter] = g.rows[1].name
+  }
+  return { winners, runners, thirdsRanked: thirdTable.map((t) => t.name) }
+}

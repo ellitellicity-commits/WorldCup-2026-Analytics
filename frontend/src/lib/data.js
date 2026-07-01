@@ -36,6 +36,11 @@ const FETCH_TIMEOUT_MS = 6000
 // live name can't be resolved to one of our teams, that match is simply skipped
 // (the fixture keeps its static result), so an unmapped name degrades gracefully
 // rather than corrupting the table. Extend this map as real live data surfaces.
+// Verified against the live football-data.org WC response: the API's 48 team
+// names match ours except for the entries below. Only two actually diverge in
+// live data today — Bosnia and Cape Verde — and each silently dropped every one
+// of that team's matches (both sides of a pairing must resolve). The rest are
+// defensive mappings for naming football-data.org uses across competitions.
 const NAME_ALIASES = {
   'Korea Republic': 'South Korea',
   'Korea DPR': 'North Korea',
@@ -45,7 +50,10 @@ const NAME_ALIASES = {
   USA: 'United States',
   'Côte d’Ivoire': 'Ivory Coast',
   "Côte d'Ivoire": 'Ivory Coast',
+  'Cape Verde Islands': 'Cape Verde', // live API form
   'Cabo Verde': 'Cape Verde',
+  'Bosnia-Herzegovina': 'Bosnia and Herzegovina', // live API form
+  'Bosnia and Herzegovina': 'Bosnia and Herzegovina',
   'Czech Republic': 'Czechia',
   Türkiye: 'Turkey',
   'DR Congo': 'DR Congo',

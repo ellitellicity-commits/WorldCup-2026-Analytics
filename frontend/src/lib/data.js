@@ -18,6 +18,7 @@
 /* global __HAS_LIVE_DATA__ */
 import staticFixtures from '../data/fixtures.json'
 import oddsData from '../data/odds.json'
+import bracketData from '../data/bracket.json'
 import TEAM_META from './teams'
 
 // Compiled in by vite.config.js: true only when FOOTBALL_DATA_API_KEY is set.
@@ -82,11 +83,13 @@ async function fetchLiveMatches() {
   }
 }
 
-// Overlay finished live scorelines onto the static fixtures, keyed by the
-// (unordered) team pair. Predictions, groups, venues, and kickoff times stay
-// from the static snapshot — only the result + status come from the feed.
-function mergeLiveResults(matches) {
-  const liveByPair = new Map()
+// Index every FINISHED live match by its (unordered) team pair. Each entry keeps
+// the goals per team and the decided winner — knockout ties can be level after
+// 90/120 minutes and settled on penalties, so we read the API's own `winner`
+// (falling back to goals, then the penalty shootout) rather than assuming the
+// higher fullTime score won. Unmapped team names are skipped, not guessed.
+function indexFinished(matches) {
+  const idx = new Map()
   for (const m of matches) {
     if (m.status !== 'FINISHED') continue
     const home = resolveTeamName(m.homeTeam?.name)
@@ -94,41 +97,87 @@ function mergeLiveResults(matches) {
     const hs = m.score?.fullTime?.home
     const as = m.score?.fullTime?.away
     if (!home || !away || typeof hs !== 'number' || typeof as !== 'number') continue
-    liveByPair.set(pairKey(home, away), { [home]: hs, [away]: as })
-  }
 
+    let winner = null
+    const w = m.score?.winner
+    if (w === 'HOME_TEAM') winner = home
+    else if (w === 'AWAY_TEAM') winner = away
+    else if (hs > as) winner = home
+    else if (as > hs) winner = away
+    else {
+      const ph = m.score?.penalties?.home
+      const pa = m.score?.penalties?.away
+      if (typeof ph === 'number' && typeof pa === 'number' && ph !== pa) winner = ph > pa ? home : away
+    }
+    idx.set(pairKey(home, away), { scores: { [home]: hs, [away]: as }, winner })
+  }
+  return idx
+}
+
+// Overlay finished scorelines onto a static match list keyed by team pair. Shared
+// by the group fixtures (1–72) and the R32 (73–88): only status + result change;
+// teams, venues, groups, predictions and kickoffs stay from the static scaffold.
+function overlayResults(list, index, nameOf) {
   let applied = 0
-  const fixtures = staticFixtures.fixtures.map((f) => {
-    const scores = liveByPair.get(pairKey(f.home.name, f.away.name))
-    if (!scores || !(f.home.name in scores) || !(f.away.name in scores)) return f
+  const out = list.map((m) => {
+    const { home, away } = nameOf(m)
+    const hit = index.get(pairKey(home, away))
+    if (!hit || !(home in hit.scores) || !(away in hit.scores)) return m
     applied++
     return {
-      ...f,
+      ...m,
       status: 'completed',
-      result: { home_score: scores[f.home.name], away_score: scores[f.away.name] },
+      result: { home_score: hit.scores[home], away_score: hit.scores[away] },
     }
   })
+  return { out, applied }
+}
 
-  return { data: { ...staticFixtures, fixtures }, applied }
+const groupName = (f) => ({ home: f.home.name, away: f.away.name })
+const koName = (m) => ({ home: m.home, away: m.away })
+
+/**
+ * Pure transform: given a football-data.org matches array, produce the merged
+ * fixtures + knockout model. Exported so the live path is testable without a key.
+ *   - fixtures: static group fixtures with live results overlaid (1–72)
+ *   - knockout.r32: static R32 with live results overlaid (73–88)
+ *   - knockout.resultsByPair: every finished live result by team pair — lets the
+ *     bracket resolve R16→final once each round's teams are known (see bracket.js)
+ *   - applied: how many static matches got a live result (0 ⇒ treat as static)
+ */
+export function mergeLiveData(matches) {
+  const index = indexFinished(matches)
+  const group = overlayResults(staticFixtures.fixtures, index, groupName)
+  const ko = overlayResults(bracketData.r32, index, koName)
+  return {
+    fixtures: { ...staticFixtures, fixtures: group.out },
+    knockout: { r32: ko.out, resultsByPair: index },
+    applied: group.applied + ko.applied,
+  }
+}
+
+// The knockout scaffold with no live data — corrected static bracket.json only.
+function staticKnockout() {
+  return { r32: bracketData.r32, resultsByPair: new Map() }
 }
 
 /**
- * Fixtures: schedule, group assignments, results, and the model's per-fixture
- * predictions. Live results are merged in when available; otherwise the static
- * snapshot is returned unchanged.
- * @returns {Promise<{ generated: string, fixtures: object[], source: 'live'|'static' }>}
+ * Fixtures + knockout: schedule, group assignments, results, per-fixture
+ * predictions, and the knockout bracket structure. Live results are merged in
+ * when available; otherwise the static snapshot is returned unchanged.
+ * @returns {Promise<{ generated: string, fixtures: object[], knockout: object, source: 'live'|'static' }>}
  */
 export async function loadFixtures() {
-  if (!HAS_LIVE_DATA) return { ...staticFixtures, source: 'static' }
+  if (!HAS_LIVE_DATA) return { ...staticFixtures, knockout: staticKnockout(), source: 'static' }
   try {
     const matches = await fetchLiveMatches()
-    const { data, applied } = mergeLiveResults(matches)
+    const merged = mergeLiveData(matches)
     // If the feed matched nothing (wrong competition window, all-unmapped names),
     // treat it as static — a "live" badge over untouched static data would lie.
-    if (applied === 0) return { ...staticFixtures, source: 'static' }
-    return { ...data, source: 'live' }
+    if (merged.applied === 0) return { ...staticFixtures, knockout: staticKnockout(), source: 'static' }
+    return { ...merged.fixtures, knockout: merged.knockout, source: 'live' }
   } catch {
-    return { ...staticFixtures, source: 'static' }
+    return { ...staticFixtures, knockout: staticKnockout(), source: 'static' }
   }
 }
 

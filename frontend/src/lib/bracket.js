@@ -194,16 +194,46 @@ function competitorFor(tok, results) {
   return name ? team(name) : { kind: 'placeholder', label: tok }
 }
 
-// The real results known today (only completed R32 matches).
-export function liveResults() {
+const pairKey = (a, b) => [a, b].sort().join('|')
+
+// The static knockout scaffold, used when no live data is threaded in — keeps
+// callers that don't have the tournament context (e.g. currentStageLabel's
+// default) working against corrected bracket.json.
+const STATIC_KNOCKOUT = { r32: bracketData.r32, resultsByPair: new Map() }
+
+// Real knockout results resolved onto the bracket. The R32 comes straight from
+// the (live-merged) r32 list. Later rounds are walked in order: once a match's
+// two teams are known from prior winners, a live result for that exact pairing
+// (knockout.resultsByPair, keyed by team pair) decides it — the same overlay
+// pattern the group stage uses, extended up the tree. Absent live data it
+// resolves to the static scaffold (only completed R32 in bracket.json).
+export function liveResults(knockout = STATIC_KNOCKOUT) {
   const results = {}
-  for (const m of bracketData.r32) {
+  const r32 = knockout.r32 || bracketData.r32
+  for (const m of r32) {
     if (m.status !== 'completed' || !m.result) continue
     const homeWins = m.result.home_score > m.result.away_score
     results[m.id] = {
       winner: homeWins ? m.home : m.away,
       loser: homeWins ? m.away : m.home,
       score: m.result,
+    }
+  }
+
+  // R16 → final. Ordered so each round's feeders are resolved first; third place
+  // (104) before the final (103), both after the semis populate losers/winners.
+  const byPair = knockout.resultsByPair || new Map()
+  for (const id of [89, 90, 93, 94, 91, 92, 95, 96, 97, 98, 99, 100, 101, 102, 104, 103]) {
+    const [hf, af] = FEEDS[id]
+    const homeName = tokenName(hf, results)
+    const awayName = tokenName(af, results)
+    if (!homeName || !awayName) continue // teams not decided yet
+    const hit = byPair.get(pairKey(homeName, awayName))
+    if (!hit || !hit.winner) continue // no live result for this tie yet
+    results[id] = {
+      winner: hit.winner,
+      loser: hit.winner === homeName ? awayName : homeName,
+      score: { home_score: hit.scores[homeName], away_score: hit.scores[awayName] },
     }
   }
   return results
@@ -322,8 +352,8 @@ export function titleOdds(name) {
 // the tournament's live stage. Derived from the same data the bracket renders,
 // so the home hub and the bracket never disagree.
 const STAGE_LABELS = ['Round of 32', 'Round of 16', 'Quarter-finals', 'Semi-finals', 'Third place', 'Final']
-export function currentStageLabel() {
-  const live = liveResults()
+export function currentStageLabel(knockout) {
+  const live = liveResults(knockout)
   for (let i = 0; i < REVEAL_ORDER.length; i++) {
     if (!REVEAL_ORDER[i].every((id) => live[id])) return STAGE_LABELS[i]
   }

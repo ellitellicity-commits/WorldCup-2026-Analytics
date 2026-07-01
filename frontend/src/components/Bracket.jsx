@@ -224,7 +224,7 @@ function Bracket({ groups, initialMode = 'live', autoSimulate = false }) {
   const [runId, setRunId] = useState(0)
   const timers = useRef([])
 
-  const liveRes = useMemo(() => liveResults(), [])
+  const liveRes = useMemo(() => liveResults(fixtures.knockout), [fixtures])
 
   const clearTimers = useCallback(() => {
     timers.current.forEach((t) => clearTimeout(t))
@@ -234,11 +234,11 @@ function Bracket({ groups, initialMode = 'live', autoSimulate = false }) {
   useEffect(() => () => clearTimers(), [clearTimers])
 
   const views = useMemo(() => {
-    if (mode === 'live') return buildViews(liveRes, 'live')
+    if (mode === 'live') return buildViews(liveRes, 'live', fixtures.knockout.r32)
     const partial = {}
     if (simResults) for (const id of revealed) partial[id] = simResults[id]
     return buildViews(partial, 'simulate', simR32 || undefined)
-  }, [mode, liveRes, simResults, revealed, simR32])
+  }, [mode, liveRes, fixtures, simResults, revealed, simR32])
 
   const switchMode = (next) => {
     if (next === mode) return

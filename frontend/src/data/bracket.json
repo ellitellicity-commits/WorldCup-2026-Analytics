@@ -31,7 +31,7 @@
     {
       "id": 74, "date": "2026-06-29", "kickoff": "2026-06-29T19:00:00Z",
       "home": "Germany", "away": "Paraguay",
-      "venue": { "stadium": "AT&T Stadium", "city": "Arlington", "country": "US" },
+      "venue": { "stadium": "Gillette Stadium", "city": "Foxborough", "country": "US" },
       "status": "scheduled"
     },
     {
@@ -43,19 +43,19 @@
     {
       "id": 76, "date": "2026-06-29", "kickoff": "2026-06-29T03:00:00Z",
       "home": "Brazil", "away": "Japan",
-      "venue": { "stadium": "Lumen Field", "city": "Seattle", "country": "US" },
+      "venue": { "stadium": "NRG Stadium", "city": "Houston", "country": "US" },
       "status": "scheduled"
     },
     {
       "id": 77, "date": "2026-06-30", "kickoff": "2026-06-30T19:00:00Z",
       "home": "France", "away": "Sweden",
-      "venue": { "stadium": "Mercedes-Benz Stadium", "city": "Atlanta", "country": "US" },
+      "venue": { "stadium": "MetLife Stadium", "city": "East Rutherford", "country": "US" },
       "status": "scheduled"
     },
     {
       "id": 78, "date": "2026-06-30", "kickoff": "2026-06-30T23:00:00Z",
       "home": "Ivory Coast", "away": "Norway",
-      "venue": { "stadium": "Lincoln Financial Field", "city": "Philadelphia", "country": "US" },
+      "venue": { "stadium": "AT&T Stadium", "city": "Arlington", "country": "US" },
       "status": "scheduled"
     },
     {
@@ -67,7 +67,7 @@
     {
       "id": 80, "date": "2026-07-01", "kickoff": "2026-07-01T19:00:00Z",
       "home": "England", "away": "DR Congo",
-      "venue": { "stadium": "NRG Stadium", "city": "Houston", "country": "US" },
+      "venue": { "stadium": "Mercedes-Benz Stadium", "city": "Atlanta", "country": "US" },
       "status": "scheduled"
     },
     {
@@ -79,19 +79,19 @@
     {
       "id": 82, "date": "2026-07-01", "kickoff": "2026-07-02T01:00:00Z",
       "home": "Belgium", "away": "Senegal",
-      "venue": { "stadium": "Arrowhead Stadium", "city": "Kansas City", "country": "US" },
+      "venue": { "stadium": "Lumen Field", "city": "Seattle", "country": "US" },
       "status": "scheduled"
     },
     {
       "id": 83, "date": "2026-07-02", "kickoff": "2026-07-02T19:00:00Z",
-      "home": "Portugal", "away": "Croatia",
-      "venue": { "stadium": "BMO Field", "city": "Toronto", "country": "CA" },
+      "home": "Spain", "away": "Austria",
+      "venue": { "stadium": "SoFi Stadium", "city": "Inglewood", "country": "US" },
       "status": "scheduled"
     },
     {
       "id": 84, "date": "2026-07-02", "kickoff": "2026-07-02T23:00:00Z",
-      "home": "Spain", "away": "Austria",
-      "venue": { "stadium": "Hard Rock Stadium", "city": "Miami Gardens", "country": "US" },
+      "home": "Portugal", "away": "Croatia",
+      "venue": { "stadium": "BMO Field", "city": "Toronto", "country": "CA" },
       "status": "scheduled"
     },
     {
@@ -103,37 +103,37 @@
     {
       "id": 86, "date": "2026-07-03", "kickoff": "2026-07-03T19:00:00Z",
       "home": "Argentina", "away": "Cape Verde",
-      "venue": { "stadium": "MetLife Stadium", "city": "East Rutherford", "country": "US" },
+      "venue": { "stadium": "Hard Rock Stadium", "city": "Miami Gardens", "country": "US" },
       "status": "scheduled"
     },
     {
       "id": 87, "date": "2026-07-03", "kickoff": "2026-07-03T23:00:00Z",
       "home": "Colombia", "away": "Ghana",
-      "venue": { "stadium": "Gillette Stadium", "city": "Foxborough", "country": "US" },
+      "venue": { "stadium": "Arrowhead Stadium", "city": "Kansas City", "country": "US" },
       "status": "scheduled"
     },
     {
       "id": 88, "date": "2026-07-03", "kickoff": "2026-07-04T01:00:00Z",
       "home": "Australia", "away": "Egypt",
-      "venue": { "stadium": "Estadio Akron", "city": "Guadalajara", "country": "MX" },
+      "venue": { "stadium": "AT&T Stadium", "city": "Arlington", "country": "US" },
       "status": "scheduled"
     }
   ],
   "koVenues": {
-    "89": { "stadium": "AT&T Stadium", "city": "Arlington", "country": "US", "date": "2026-07-04" },
-    "90": { "stadium": "Lumen Field", "city": "Seattle", "country": "US", "date": "2026-07-04" },
-    "91": { "stadium": "Estadio Azteca", "city": "Mexico City", "country": "MX", "date": "2026-07-05" },
-    "92": { "stadium": "Mercedes-Benz Stadium", "city": "Atlanta", "country": "US", "date": "2026-07-05" },
-    "93": { "stadium": "BC Place", "city": "Vancouver", "country": "CA", "date": "2026-07-06" },
-    "94": { "stadium": "NRG Stadium", "city": "Houston", "country": "US", "date": "2026-07-06" },
-    "95": { "stadium": "SoFi Stadium", "city": "Inglewood", "country": "US", "date": "2026-07-07" },
-    "96": { "stadium": "Hard Rock Stadium", "city": "Miami Gardens", "country": "US", "date": "2026-07-07" },
-    "97": { "stadium": "Mercedes-Benz Stadium", "city": "Atlanta", "country": "US", "date": "2026-07-09" },
-    "98": { "stadium": "AT&T Stadium", "city": "Arlington", "country": "US", "date": "2026-07-10" },
-    "99": { "stadium": "Lincoln Financial Field", "city": "Philadelphia", "country": "US", "date": "2026-07-11" },
-    "100": { "stadium": "SoFi Stadium", "city": "Inglewood", "country": "US", "date": "2026-07-11" },
+    "89": { "stadium": "Lincoln Financial Field", "city": "Philadelphia", "country": "US", "date": "2026-07-04" },
+    "90": { "stadium": "NRG Stadium", "city": "Houston", "country": "US", "date": "2026-07-04" },
+    "91": { "stadium": "MetLife Stadium", "city": "East Rutherford", "country": "US", "date": "2026-07-05" },
+    "92": { "stadium": "Estadio Azteca", "city": "Mexico City", "country": "MX", "date": "2026-07-05" },
+    "93": { "stadium": "AT&T Stadium", "city": "Arlington", "country": "US", "date": "2026-07-06" },
+    "94": { "stadium": "Lumen Field", "city": "Seattle", "country": "US", "date": "2026-07-06" },
+    "95": { "stadium": "Mercedes-Benz Stadium", "city": "Atlanta", "country": "US", "date": "2026-07-07" },
+    "96": { "stadium": "BC Place", "city": "Vancouver", "country": "CA", "date": "2026-07-07" },
+    "97": { "stadium": "Gillette Stadium", "city": "Foxborough", "country": "US", "date": "2026-07-09" },
+    "98": { "stadium": "SoFi Stadium", "city": "Inglewood", "country": "US", "date": "2026-07-10" },
+    "99": { "stadium": "Hard Rock Stadium", "city": "Miami Gardens", "country": "US", "date": "2026-07-11" },
+    "100": { "stadium": "Arrowhead Stadium", "city": "Kansas City", "country": "US", "date": "2026-07-11" },
     "101": { "stadium": "AT&T Stadium", "city": "Arlington", "country": "US", "date": "2026-07-14" },
-    "102": { "stadium": "MetLife Stadium", "city": "East Rutherford", "country": "US", "date": "2026-07-15" },
+    "102": { "stadium": "Mercedes-Benz Stadium", "city": "Atlanta", "country": "US", "date": "2026-07-15" },
     "103": { "stadium": "MetLife Stadium", "city": "East Rutherford", "country": "US", "date": "2026-07-19" },
     "104": { "stadium": "Hard Rock Stadium", "city": "Miami Gardens", "country": "US", "date": "2026-07-18" }
   }

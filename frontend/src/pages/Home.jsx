@@ -46,10 +46,10 @@ function buildDestinations({ todaysCount, upcomingCount }) {
 }
 
 function Snapshot() {
-  const { odds } = useTournamentData()
+  const { odds, fixtures } = useTournamentData()
   const favourite = odds.teams[0]
   const favMeta = teamMeta(favourite.team)
-  const stage = currentStageLabel()
+  const stage = currentStageLabel(fixtures.knockout)
   const countdown = daysToFinal()
   const favPct = (favourite.championship_odds * 100).toFixed(1)
   const flag = flagUrl(favMeta.iso)

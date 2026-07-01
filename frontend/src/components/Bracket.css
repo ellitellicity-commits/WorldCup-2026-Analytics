@@ -1,6 +1,7 @@
 .bk {
   --bk-col-w: 152px;
   --bk-gut: 30px;
+  --bk-stub: 10px; /* short horizontal segment from the vertical join into the next box */
   --bk-row-h: 47px;
   --bk-head-h: 34px;
   --bk-box-h: 58px;
@@ -454,14 +455,17 @@
 }
 
 /* --- Connectors -----------------------------------------------------------
-   Forward elbow (::after) reaches the next column; the vertical join links a
-   pair of feeders. Centres always align because of the 16-row grid spans, so
-   no per-match math is needed. */
+   Standard bracket shape: each feeder runs a horizontal out (::after) to a
+   vertical bar (__join) that links the pair, then a short horizontal stub
+   (__join::after) carries into the next round's box. Centres always align
+   because of the 16-row grid spans, so no per-match math is needed.
+   The feeder horizontal stops short of the box by --bk-stub to leave room for
+   the stub; the join sits at that same offset. */
 .bk-grid .bk-match::after {
   content: '';
   position: absolute;
   top: 50%;
-  width: var(--bk-gut);
+  width: calc(var(--bk-gut) - var(--bk-stub));
   height: 2px;
   background: var(--bk-line);
   transform: translateY(-50%);
@@ -485,11 +489,28 @@
   background: var(--bk-line);
   transition: background var(--dur-ui) var(--ease-out-quint);
 }
+/* Vertical bar, offset from the box by the stub; the ::after is the stub that
+   bridges the bar's midpoint into the box. */
 .bk-match__join--left {
-  right: 100%;
+  right: calc(100% + var(--bk-stub));
 }
 .bk-match__join--right {
+  left: calc(100% + var(--bk-stub));
+}
+.bk-match__join::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: var(--bk-stub);
+  height: 2px;
+  background: inherit;
+  transform: translateY(-50%);
+}
+.bk-match__join--left::after {
   left: 100%;
+}
+.bk-match__join--right::after {
+  right: 100%;
 }
 .bk-match.is-decided .bk-match__join {
   background: var(--bk-line-on);
@@ -518,6 +539,24 @@
   height: 60px;
   border-color: color-mix(in oklab, var(--trophy-gold) 35%, var(--border-divider));
   background: var(--surface-overlay);
+}
+/* Stubs that meet the two semi-final horizontals (shortened by --bk-stub) at the
+   final box, so the converging lines don't leave a gap on either side. */
+.bk-final-wrap .bk-match__box::before,
+.bk-final-wrap .bk-match__box::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: var(--bk-stub);
+  height: 2px;
+  background: var(--bk-line);
+  transform: translateY(-50%);
+}
+.bk-final-wrap .bk-match__box::before {
+  right: 100%;
+}
+.bk-final-wrap .bk-match__box::after {
+  left: 100%;
 }
 /* Dedicated "Final" heading right above the M103 box (mirrors the column
    stage headers, emphasised at the box itself). Absolute so it doesn't shift

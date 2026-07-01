@@ -6,10 +6,12 @@
 //
 // Tiebreakers follow the 2026 FIFA regulations (see comparators below).
 
-import fixturesData from '../data/fixtures.json'
+import { loadFixtures } from './data'
 import { teamMeta, flagUrl } from './teams'
 import { GROUP_COLOR, onColor } from './bracket'
 import fifaRankings from '../data/fifa_rankings.json'
+
+const fixturesData = loadFixtures()
 
 const TEAMS_PER_GROUP = 4
 const MATCHES_PER_GROUP = (TEAMS_PER_GROUP * (TEAMS_PER_GROUP - 1)) / 2 // round-robin = 6

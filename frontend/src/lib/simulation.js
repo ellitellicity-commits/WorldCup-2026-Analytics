@@ -4,12 +4,12 @@
 // run produces different qualifiers in different seeded positions.
 
 import bracketData from '../data/bracket.json'
-import oddsData from '../data/odds.json'
+import { loadOdds } from './data'
 import { teamMeta } from './teams'
 import { simulateKnockout } from './bracket'
 import { simulateGroupQualifiers } from './standings'
 
-const ODDS = Object.fromEntries(oddsData.teams.map((t) => [t.team, t.championship_odds]))
+const ODDS = Object.fromEntries(loadOdds().teams.map((t) => [t.team, t.championship_odds]))
 const groupOf = (name) => teamMeta(name).group
 
 // --- R32 slot template -----------------------------------------------------

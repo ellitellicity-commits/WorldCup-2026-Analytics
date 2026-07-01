@@ -1,8 +1,9 @@
 import FixturesRail from '../components/FixturesRail'
 import MatchCard from '../components/MatchCard'
-import fixturesData from '../data/fixtures.json'
+import { loadFixtures } from '../lib/data'
 import './Predictor.css'
 
+const fixturesData = loadFixtures()
 const TODAY = fixturesData.generated
 const fixtures = fixturesData.fixtures
 const completed = fixtures.filter((f) => f.status === 'completed')

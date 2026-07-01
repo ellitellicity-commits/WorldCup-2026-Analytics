@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom'
 import { Mark26 } from './BrandMarks'
-import oddsData from '../data/odds.json'
+import { loadOdds } from '../lib/data'
 import './AppNav.css'
+
+const oddsData = loadOdds()
 
 // Coherent hand-drawn line-icon set (matches the project's inline-SVG idiom:
 // 1.6px stroke, round joins). One glyph per destination — icons reinforce the

@@ -2,9 +2,11 @@ import { NavLink } from 'react-router-dom'
 import { BrandField } from '../components/BrandMarks'
 import { currentStageLabel, daysToFinal } from '../lib/bracket'
 import { teamMeta, flagUrl } from '../lib/teams'
-import oddsData from '../data/odds.json'
-import fixturesData from '../data/fixtures.json'
+import { loadFixtures, loadOdds } from '../lib/data'
 import './Home.css'
+
+const oddsData = loadOdds()
+const fixturesData = loadFixtures()
 
 const favourite = oddsData.teams[0]
 const favMeta = teamMeta(favourite.team)

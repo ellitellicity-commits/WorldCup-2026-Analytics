@@ -3,9 +3,11 @@
 // samplable simulation. No data is invented: team strength is derived from
 // odds.json (the same 10k-sim output the rest of the product shows).
 
-import oddsData from '../data/odds.json'
 import bracketData from '../data/bracket.json'
+import { loadOdds } from './data'
 import { teamMeta, flagUrl } from './teams'
+
+const oddsData = loadOdds()
 
 // --- Strength ratings ------------------------------------------------------
 // A team's knockout strength is the log of its championship odds (the canonical

@@ -1,5 +1,7 @@
 import ChampionshipOdds from '../components/ChampionshipOdds'
-import oddsData from '../data/odds.json'
+import { loadOdds } from '../lib/data'
+
+const oddsData = loadOdds()
 
 function Odds() {
   return <ChampionshipOdds odds={oddsData} />

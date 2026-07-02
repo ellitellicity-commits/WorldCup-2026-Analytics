@@ -2,7 +2,7 @@
    
    # ⚽ World Cup 2026 Predictor & Dashboard
    
-   ![FIFA World Cup 2026](./assets/WC_2026_Animation_Better.gif)
+   **Status:** Beta version, locally hosted.
    
    </div>
 

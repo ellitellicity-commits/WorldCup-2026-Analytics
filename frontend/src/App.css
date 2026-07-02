@@ -6,70 +6,23 @@
   min-height: 100svh;
 }
 
-/* --- Masthead --- */
-.masthead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-lg);
-  max-width: var(--page-max);
-  width: 100%;
-  margin-inline: auto;
-  padding: clamp(var(--space-lg), 5vw, var(--space-2xl)) var(--page-pad) var(--space-lg);
-  border-bottom: 1px solid var(--border-divider);
-}
-
-.masthead__kicker {
-  display: block;
+/* --- Skip link (keyboard / screen-reader first stop) --- */
+.skip-link {
+  position: absolute;
+  left: var(--space-md);
+  top: var(--space-md);
+  z-index: var(--z-tooltip);
+  padding: 8px 14px;
+  background: var(--ink);
+  color: var(--studio-black);
   font-size: var(--text-label);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin-bottom: var(--space-xs);
-}
-
-.masthead__title {
-  /* Cinematic weight — the page's one hero moment, broadcast title-card scale */
-  font-size: clamp(3.25rem, 10vw, 5.75rem);
-  line-height: 0.88;
-  text-transform: uppercase;
-  letter-spacing: -0.03em;
-}
-
-.masthead__model {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: var(--space-sm) var(--space-xl);
-  margin: 0;
-}
-@media (min-width: 720px) {
-  .masthead__model {
-    grid-template-columns: repeat(4, auto);
-  }
-}
-
-.masthead__stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.masthead__stat dt {
-  font-size: var(--text-meta);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-muted);
-}
-.masthead__stat dd {
-  margin: 0;
-  font-size: var(--text-title);
   font-weight: 600;
-  color: var(--ink);
+  border-radius: var(--radius-md);
+  transform: translateY(-200%);
+  transition: transform var(--dur-ui) var(--ease-out-quint);
 }
-/* The one trophy-gold moment per view: the championship favourite. */
-.masthead__fav-odds {
-  color: var(--trophy-gold);
-  font-weight: 700;
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 /* --- Main --- */
@@ -83,46 +36,8 @@
   flex-direction: column;
   gap: clamp(var(--space-2xl), 8vw, 96px);
 }
-
-/* --- States gallery --- */
-.gallery {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-.gallery__head {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  max-width: 60ch;
-}
-.gallery__title {
-  font-size: var(--text-headline);
-  text-transform: uppercase;
-}
-.gallery__sub {
-  font-size: var(--text-body);
-  color: var(--ink-secondary);
-}
-
-.gallery__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-lg);
-}
-
-.gallery__cell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin: 0;
-}
-.gallery__caption {
-  font-size: var(--text-meta);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-muted);
-  font-weight: 500;
+.page__main:focus {
+  outline: none;
 }
 
 /* --- Footer --- */
@@ -135,4 +50,17 @@
   padding: var(--space-lg) var(--page-pad);
   font-size: var(--text-label);
   color: var(--ink-muted);
+}
+
+/* Clear the fixed bottom tab bar on mobile (it overlays the bottom edge). */
+@media (max-width: 859px) {
+  .page__foot {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
 }

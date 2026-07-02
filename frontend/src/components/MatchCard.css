@@ -90,6 +90,23 @@
     opacity: 0.3;
   }
 }
+/* In-play match: same red channel as Today, with the tabular live minute. */
+.mc-chip--live {
+  color: var(--canadian-red);
+  background: color-mix(in oklab, var(--canadian-red) 14%, transparent);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.mc--live {
+  border-color: color-mix(in oklab, var(--canadian-red) 40%, var(--border-divider));
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-chip__dot {
+    animation: none;
+  }
+}
 
 .mc-status {
   font-size: var(--text-label);

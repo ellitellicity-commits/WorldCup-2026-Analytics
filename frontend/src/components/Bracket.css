@@ -328,6 +328,30 @@
     opacity: 0.3;
   }
 }
+/* In-play tie: pulsing red clock in the caption (red is the live channel). The
+   minute is tabular so it doesn't jitter as it ticks. */
+.bk-match__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--canadian-red);
+  font-variant-numeric: tabular-nums;
+}
+.bk-match__live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--canadian-red);
+  animation: bk-pulse 1.6s var(--ease-out-quint) infinite;
+}
+/* Keep the running score visible (not dimmed) while a tie is in play. */
+.bk-match.is-live .bk-match__box {
+  border-color: color-mix(in oklab, var(--canadian-red) 45%, var(--border-divider));
+}
 
 .bk-match__box {
   position: relative;
@@ -782,7 +806,8 @@
   .bk__champ {
     animation: none;
   }
-  .bk-match__today-dot {
+  .bk-match__today-dot,
+  .bk-match__live-dot {
     animation: none;
   }
 }

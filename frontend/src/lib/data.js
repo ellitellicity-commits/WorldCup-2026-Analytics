@@ -62,6 +62,12 @@ const NAME_ALIASES = {
 
 const OUR_NAMES = new Set(Object.keys(TEAM_META))
 
+// A match football-data.org reports as currently being played. IN_PLAY is an
+// active half; PAUSED is half-time (and other in-match stoppages). The docs also
+// expose a pseudo-status LIVE = IN_PLAY + PAUSED for filtering; we key off the
+// concrete statuses so a single match object is enough to classify.
+const LIVE_STATUSES = new Set(['IN_PLAY', 'PAUSED'])
+
 function resolveTeamName(liveName) {
   if (!liveName) return null
   if (OUR_NAMES.has(liveName)) return liveName
@@ -139,27 +145,67 @@ function indexFinished(matches) {
   return idx
 }
 
-// Overlay finished scorelines onto a static match list keyed by team pair. Shared
-// by the group fixtures (1–72) and the R32 (73–88): only status + result change;
+// Index IN_PLAY / PAUSED matches by team pair, capturing the running score and
+// the live minute. During play, football-data.org carries the current score in
+// `score.fullTime`; the free tier can omit `minute`, so it degrades to null (the
+// UI then shows a plain LIVE state without the clock). Winners are NOT read here
+// — an in-play tie has no result yet, so it never feeds knockout resolution.
+function indexLive(matches) {
+  const idx = new Map()
+  for (const m of matches) {
+    if (!LIVE_STATUSES.has(m.status)) continue
+    const home = resolveTeamName(m.homeTeam?.name)
+    const away = resolveTeamName(m.awayTeam?.name)
+    if (!home || !away) continue
+    const ft = m.score?.fullTime || {}
+    idx.set(pairKey(home, away), {
+      scores: { [home]: typeof ft.home === 'number' ? ft.home : 0, [away]: typeof ft.away === 'number' ? ft.away : 0 },
+      minute: typeof m.minute === 'number' ? m.minute : null,
+      injuryTime: typeof m.injuryTime === 'number' ? m.injuryTime : null,
+      paused: m.status === 'PAUSED',
+    })
+  }
+  return idx
+}
+
+// Overlay live scorelines onto a static match list keyed by team pair. Shared by
+// the group fixtures (1–72) and the R32 (73–88): only status + result change;
 // teams, venues, groups, predictions and kickoffs stay from the static scaffold.
-function overlayResults(list, index, nameOf) {
+// A finished result wins over an in-play one for the same pairing (a match only
+// flips to FINISHED once, so this is just defensive ordering).
+function overlayResults(list, finished, live, nameOf) {
   let applied = 0
+  let liveCount = 0
   const out = list.map((m) => {
     const { home, away } = nameOf(m)
-    const hit = index.get(pairKey(home, away))
-    if (!hit || !(home in hit.scores) || !(away in hit.scores)) return m
-    applied++
-    return {
-      ...m,
-      status: 'completed',
-      result: {
-        home_score: hit.scores[home],
-        away_score: hit.scores[away],
-        ...(hit.penalties ? { penalties: { home_score: hit.penalties[home], away_score: hit.penalties[away] } } : {}),
-      },
+    const key = pairKey(home, away)
+    const done = finished.get(key)
+    if (done && home in done.scores && away in done.scores) {
+      applied++
+      return {
+        ...m,
+        status: 'completed',
+        result: {
+          home_score: done.scores[home],
+          away_score: done.scores[away],
+          ...(done.penalties ? { penalties: { home_score: done.penalties[home], away_score: done.penalties[away] } } : {}),
+        },
+      }
     }
+    const now = live.get(key)
+    if (now && home in now.scores && away in now.scores) {
+      applied++
+      liveCount++
+      return {
+        ...m,
+        status: 'live',
+        result: { home_score: now.scores[home], away_score: now.scores[away] },
+        live: { minute: now.minute, injuryTime: now.injuryTime, paused: now.paused },
+      }
+    }
+    return m
   })
-  return { out, applied }
+  return { out, applied, liveCount }
 }
 
 const groupName = (f) => ({ home: f.home.name, away: f.away.name })
@@ -175,13 +221,17 @@ const koName = (m) => ({ home: m.home, away: m.away })
  *   - applied: how many static matches got a live result (0 ⇒ treat as static)
  */
 export function mergeLiveData(matches) {
-  const index = indexFinished(matches)
-  const group = overlayResults(staticFixtures.fixtures, index, groupName)
-  const ko = overlayResults(bracketData.r32, index, koName)
+  const finished = indexFinished(matches)
+  const live = indexLive(matches)
+  const group = overlayResults(staticFixtures.fixtures, finished, live, groupName)
+  const ko = overlayResults(bracketData.r32, finished, live, koName)
   return {
     fixtures: { ...staticFixtures, fixtures: group.out },
-    knockout: { r32: ko.out, resultsByPair: index },
+    // resultsByPair stays finished-only: it drives knockout progression, and an
+    // in-play tie has no winner to advance yet.
+    knockout: { r32: ko.out, resultsByPair: finished },
     applied: group.applied + ko.applied,
+    liveCount: group.liveCount + ko.liveCount,
   }
 }
 
@@ -197,16 +247,16 @@ function staticKnockout() {
  * @returns {Promise<{ generated: string, fixtures: object[], knockout: object, source: 'live'|'static' }>}
  */
 export async function loadFixtures() {
-  if (!HAS_LIVE_DATA) return { ...staticFixtures, knockout: staticKnockout(), source: 'static' }
+  if (!HAS_LIVE_DATA) return { ...staticFixtures, knockout: staticKnockout(), source: 'static', liveCount: 0 }
   try {
     const matches = await fetchLiveMatches()
     const merged = mergeLiveData(matches)
     // If the feed matched nothing (wrong competition window, all-unmapped names),
     // treat it as static — a "live" badge over untouched static data would lie.
-    if (merged.applied === 0) return { ...staticFixtures, knockout: staticKnockout(), source: 'static' }
-    return { ...merged.fixtures, knockout: merged.knockout, source: 'live' }
+    if (merged.applied === 0) return { ...staticFixtures, knockout: staticKnockout(), source: 'static', liveCount: 0 }
+    return { ...merged.fixtures, knockout: merged.knockout, source: 'live', liveCount: merged.liveCount }
   } catch {
-    return { ...staticFixtures, knockout: staticKnockout(), source: 'static' }
+    return { ...staticFixtures, knockout: staticKnockout(), source: 'static', liveCount: 0 }
   }
 }
 

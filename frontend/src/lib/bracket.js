@@ -296,6 +296,7 @@ export function buildViews(results, mode, r32 = bracketData.r32) {
     const home = team(m.home)
     const away = team(m.away)
     const completedLive = mode === 'live' && m.status === 'completed'
+    const inPlayLive = mode === 'live' && m.status === 'live'
     const r = results[m.id] || null
     const vc = m.venue.country
     views[m.id] = {
@@ -310,8 +311,10 @@ export function buildViews(results, mode, r32 = bracketData.r32) {
       date: m.date,
       kickoff: m.kickoff,
       isToday: mode === 'live' && m.status === 'scheduled' && m.date === today,
-      status: completedLive ? 'completed' : 'scheduled',
-      score: completedLive ? m.result : null,
+      status: completedLive ? 'completed' : inPlayLive ? 'live' : 'scheduled',
+      // Show the running score for an in-play tie too; `live` carries the clock.
+      score: completedLive || inPlayLive ? m.result : null,
+      live: inPlayLive ? m.live : null,
       winner: r?.winner ?? null,
       loser: r?.loser ?? null,
     }

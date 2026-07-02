@@ -1,4 +1,5 @@
 import ProbabilityBar from './ProbabilityBar'
+import { liveClock } from '../lib/live'
 import './MatchCard.css'
 
 // Fixture kickoffs/dates are UTC; format in UTC so US-local timezones don't
@@ -66,14 +67,20 @@ function TeamRow({ team, winProb, score, isWinner, dimmed }) {
 function MatchCard({ fixture, isToday = false }) {
   const { home, away, prediction, result, status, group, venue } = fixture
   const isCompleted = status === 'completed'
-  const actual = outcomeOf(result)
+  const isLive = status === 'live'
+  // Only a finished match has a settled winner/loser; an in-play score shows for
+  // both teams without dimming or a called-it verdict.
+  const actual = isCompleted ? outcomeOf(result) : null
   const called = modelCalledIt(prediction, actual)
   const time = kickoffTime(fixture)
 
   const pred = { homeWin: prediction.home_win, draw: prediction.draw, awayWin: prediction.away_win }
 
   return (
-    <article className={`mc${isCompleted ? ' mc--completed' : ''}`} aria-label={`${home.name} versus ${away.name}, Group ${group}`}>
+    <article
+      className={`mc${isCompleted ? ' mc--completed' : ''}${isLive ? ' mc--live' : ''}`}
+      aria-label={`${home.name} versus ${away.name}, Group ${group}`}
+    >
       <header className="mc__head">
         <span className="mc-chip mc-chip--group">
           <span className="mc-chip__badge" aria-hidden="true">
@@ -81,7 +88,12 @@ function MatchCard({ fixture, isToday = false }) {
           </span>
           <span className="mc-chip__text">Group {group}</span>
         </span>
-        {isToday ? (
+        {isLive ? (
+          <span className="mc-chip mc-chip--live">
+            <span className="mc-chip__dot" aria-hidden="true" />
+            {liveClock(fixture.live)}
+          </span>
+        ) : isToday ? (
           <span className="mc-chip mc-chip--today">
             <span className="mc-chip__dot" aria-hidden="true" />
             Today{time ? ` · ${time}` : ''}

@@ -1,3 +1,4 @@
+import { liveClock } from '../lib/live'
 import './KnockoutCard.css'
 
 // Kickoffs/dates are UTC; format in UTC so US-local timezones don't shift the day.
@@ -13,9 +14,10 @@ function whenLabel(view) {
   return view.kickoff ? `${date} · ${TIME_FMT.format(d)}` : date
 }
 
-function TeamRow({ team, pct, favored }) {
+function TeamRow({ team, pct, favored, score }) {
+  const showScore = score != null
   return (
-    <div className={`koc-team${favored ? ' is-fav' : ''}`}>
+    <div className={`koc-team${favored && !showScore ? ' is-fav' : ''}`}>
       {team.flag ? (
         <img className="koc-team__flag" src={team.flag} alt="" width="24" height="18" loading="lazy" decoding="async" />
       ) : (
@@ -23,10 +25,14 @@ function TeamRow({ team, pct, favored }) {
       )}
       <span className="koc-team__code">{team.code}</span>
       <span className="koc-team__name display">{team.name}</span>
-      <span className="koc-team__prob tnum" title="Model win probability">
-        {pct}
-        <span className="koc-team__prob-unit">%</span>
-      </span>
+      {showScore ? (
+        <span className="koc-team__score display tnum">{score}</span>
+      ) : (
+        <span className="koc-team__prob tnum" title="Model win probability">
+          {pct}
+          <span className="koc-team__prob-unit">%</span>
+        </span>
+      )}
     </div>
   )
 }
@@ -41,22 +47,30 @@ function TeamRow({ team, pct, favored }) {
 function KnockoutCard({ view, roundLabel }) {
   const homePct = Math.round(view.pHome * 100)
   const awayPct = 100 - homePct
+  const live = view.status === 'live'
   const when = whenLabel(view)
 
   return (
-    <article className="koc" aria-label={`${view.home.name} versus ${view.away.name}, ${roundLabel}`}>
+    <article className={`koc${live ? ' koc--live' : ''}`} aria-label={`${view.home.name} versus ${view.away.name}, ${roundLabel}`}>
       <header className="koc__head">
         <span className="koc__round">{roundLabel}</span>
-        {when && <span className="koc__when">{when}</span>}
+        {live ? (
+          <span className="koc__live">
+            <span className="koc__live-dot" aria-hidden="true" />
+            {liveClock(view.live)}
+          </span>
+        ) : (
+          when && <span className="koc__when">{when}</span>
+        )}
       </header>
 
       <div className="koc__teams">
-        <TeamRow team={view.home} pct={homePct} favored={homePct >= awayPct} />
-        <TeamRow team={view.away} pct={awayPct} favored={awayPct > homePct} />
+        <TeamRow team={view.home} pct={homePct} favored={homePct >= awayPct} score={live ? view.score.home_score : null} />
+        <TeamRow team={view.away} pct={awayPct} favored={awayPct > homePct} score={live ? view.score.away_score : null} />
       </div>
 
       <div className="koc__pred">
-        <span className="koc__pred-label">Model prediction · to advance</span>
+        <span className="koc__pred-label">{live ? 'Pre-match model · to advance' : 'Model prediction · to advance'}</span>
         <div
           className="koc__bar"
           role="img"

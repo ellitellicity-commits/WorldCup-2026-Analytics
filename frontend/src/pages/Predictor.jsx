@@ -77,6 +77,9 @@ function Predictor() {
     const allFixtures = data.fixtures
     const completed = allFixtures.filter((f) => f.status === 'completed')
     const scheduled = allFixtures.filter((f) => f.status === 'scheduled')
+    // Group-stage matches currently being played (kept out of both buckets above,
+    // so they surface in the "Live now" rail rather than vanishing).
+    const liveGroup = allFixtures.filter((f) => f.status === 'live')
     const todaysMatches = scheduled.filter((f) => f.date === TODAY)
     // Upcoming group matches: today first, then chronological.
     const upcomingGroup = [...scheduled].sort(
@@ -89,15 +92,19 @@ function Predictor() {
     // "upcoming matches" once the group stage is over). Predictions come from the
     // same win-probability model the bracket uses.
     const koViews = buildViews(liveResults(data.knockout), 'live', data.knockout.r32)
-    const upcomingKO = Object.values(koViews)
+    const openKO = Object.values(koViews)
       .filter((v) => v.home?.kind === 'team' && v.away?.kind === 'team' && !v.winner && v.status !== 'completed')
       .sort((a, b) => ROUND_RANK[a.round] - ROUND_RANK[b.round] || a.id - b.id)
+    // In-play ties lead; the rest are the genuine upcoming knockout matches.
+    const liveKO = openKO.filter((v) => v.status === 'live')
+    const upcomingKO = openKO.filter((v) => v.status !== 'live')
 
-    return { TODAY, allFixtures, completed, todaysMatches, upcomingGroup, upcomingKO, finished }
+    return { TODAY, allFixtures, completed, todaysMatches, upcomingGroup, liveGroup, liveKO, upcomingKO, finished }
   }, [data])
 
-  const { TODAY, upcomingGroup, upcomingKO, finished } = view
-  const nothingUpcoming = upcomingGroup.length === 0 && upcomingKO.length === 0
+  const { TODAY, upcomingGroup, liveGroup, liveKO, upcomingKO, finished } = view
+  const hasLive = liveKO.length > 0 || liveGroup.length > 0
+  const nothingUpcoming = upcomingGroup.length === 0 && upcomingKO.length === 0 && !hasLive
 
   return (
     <div className="predictor">
@@ -108,6 +115,17 @@ function Predictor() {
           call — sit in Finished Matches below.
         </p>
       </header>
+
+      {liveKO.length > 0 && <KnockoutRail title="Live now" ties={liveKO} />}
+
+      {liveGroup.length > 0 && (
+        <FixturesRail
+          title={liveKO.length > 0 ? 'Live now — Group Stage' : 'Live now'}
+          eyebrow={`${liveGroup.length} in play`}
+          fixtures={liveGroup}
+          todayDate={TODAY}
+        />
+      )}
 
       {upcomingKO.length > 0 && <KnockoutRail title="Upcoming" ties={upcomingKO} />}
 

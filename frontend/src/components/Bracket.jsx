@@ -8,6 +8,7 @@ import {
   titleOdds,
 } from '../lib/bracket'
 import { runFullSimulation } from '../lib/simulation'
+import { liveClock } from '../lib/live'
 import { useTournamentData } from '../lib/tournamentData'
 import Confetti from './Confetti'
 import './Bracket.css'
@@ -104,7 +105,12 @@ function MatchCaption({ view, mode }) {
     return (
       <div className="bk-match__cap">
         <span className="bk-match__no">M{view.id}</span>
-        {mode === 'live' && view.isToday ? (
+        {mode === 'live' && view.status === 'live' ? (
+          <span className="bk-match__live">
+            <span className="bk-match__live-dot" aria-hidden="true" />
+            {liveClock(view.live)}
+          </span>
+        ) : mode === 'live' && view.isToday ? (
           <span className="bk-match__today">
             <span className="bk-match__today-dot" aria-hidden="true" />
             Today
@@ -129,7 +135,11 @@ function MatchCaption({ view, mode }) {
 
 function BracketMatch({ view, side, revealed, championName, style, hideCaption = false }) {
   const decided = !!view.winner
-  const completed = view.round === 'r32' && view.score != null
+  const live = view.status === 'live'
+  // Both completed and in-play R32 ties carry a score to show; only completed
+  // ties get the finished treatment (dimmed loser, "Full time").
+  const showScore = view.round === 'r32' && view.score != null
+  const completed = showScore && !live
   const both = view.home.kind === 'team' && view.away.kind === 'team'
   const showProb = !decided && !completed && view.pHome != null
   const homeProb = both ? view.pHome : null
@@ -145,8 +155,8 @@ function BracketMatch({ view, side, revealed, championName, style, hideCaption =
   return (
     <div
       className={`bk-match bk-match--${view.round}${decided ? ' is-decided' : ''}${
-        justRevealed ? ' is-pop' : ''
-      }`}
+        live ? ' is-live' : ''
+      }${justRevealed ? ' is-pop' : ''}`}
       style={style}
     >
       {!hideCaption && <MatchCaption view={view} mode={revealed === null ? 'live' : 'sim'} />}
@@ -154,7 +164,7 @@ function BracketMatch({ view, side, revealed, championName, style, hideCaption =
         <TeamLine
           c={view.home}
           prob={showProb ? homeProb : decided ? homeProb : null}
-          score={completed ? view.score.home_score : null}
+          score={showScore ? view.score.home_score : null}
           decided={decided}
           isWinner={homeWinner}
           isLoser={(decided || completed) && !homeWinner && view.home.kind === 'team'}
@@ -165,7 +175,7 @@ function BracketMatch({ view, side, revealed, championName, style, hideCaption =
         <TeamLine
           c={view.away}
           prob={showProb ? awayProb : decided ? awayProb : null}
-          score={completed ? view.score.away_score : null}
+          score={showScore ? view.score.away_score : null}
           decided={decided}
           isWinner={awayWinner}
           isLoser={(decided || completed) && !awayWinner && view.away.kind === 'team'}

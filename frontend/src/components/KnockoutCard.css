@@ -34,6 +34,50 @@
   color: var(--ink-muted);
   white-space: nowrap;
 }
+/* In-play tie: pulsing red clock (red is the live channel, DESIGN.md §5). */
+.koc--live {
+  border-color: color-mix(in oklab, var(--canadian-red) 45%, var(--border-divider));
+}
+.koc__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--canadian-red);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.koc__live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--canadian-red);
+  animation: koc-pulse 1.6s var(--ease-out-quint) infinite;
+}
+@keyframes koc-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .koc__live-dot {
+    animation: none;
+  }
+}
+/* Running score, styled like the win-probability number it replaces. */
+.koc-team__score {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ink);
+  flex: none;
+}
 
 .koc__teams {
   display: flex;

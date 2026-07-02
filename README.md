@@ -1,6 +1,6 @@
 <div align="center">
    
-   # ⚽ World Cup 2026 Predictor & Dashboard
+   # World Cup 2026 Predictor & Dashboard
    
    [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
    [![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)

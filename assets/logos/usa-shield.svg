@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 260" width="140" height="165" fill="none" role="img" aria-label="United States host shield">
+  <defs>
+    <path id="st" d="M0,-18 4.23,-5.83 17.1,-5.56 6.85,2.23 10.58,14.56 0,7.2 -10.58,14.56 -6.85,2.23 -17.1,-5.56 -4.23,-5.83 Z"/>
+  </defs>
+  <path d="M28,20 L192,20 L192,140 L110,240 L28,140 Z" fill="#1e40af" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+  <ellipse cx="110" cy="46" rx="72" ry="18" fill="#ffffff" opacity="0.12"/>
+  <g fill="#ffffff">
+    <use href="#st" transform="translate(110 98)"/>
+    <use href="#st" transform="translate(80 74) scale(0.7)"/>
+    <use href="#st" transform="translate(140 74) scale(0.7)"/>
+    <use href="#st" transform="translate(80 122) scale(0.7)"/>
+    <use href="#st" transform="translate(140 122) scale(0.7)"/>
+  </g>
+</svg>

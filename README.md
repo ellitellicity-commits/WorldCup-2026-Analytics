@@ -1,8 +1,4 @@
-# ⚽ World Cup 2026 Predictor & Dashboard
-
-<p align="center">
-  <img src="./frontend/assets/hero-banner.svg" alt="World Cup 2026" width="100%">
-</p>
+# World Cup 2026 Predictor & Dashboard
 
 ## Overview
 
@@ -20,10 +16,6 @@ A match predictor, Monte Carlo bracket simulator, and live player dashboard for 
 | Two simulation modes | Respect Reality keeps real results and randomizes the future; Reimagine re-rolls the whole tournament. |
 | Championship odds | Per-team title probability, updated from the latest simulation run. |
 | Static-first fallback | Runs fully on a bundled data snapshot with no keys or backend required. |
-
-<p align="center">
-  <img src="./frontend/assets/shields-banner.svg" alt="Host nations: United States, Canada, Mexico" width="100%">
-</p>
 
 ## Tech Stack
 
@@ -96,7 +88,6 @@ The key is deliberately not `VITE_`-prefixed. `VITE_`-prefixed variables are inl
 
 ```
 frontend/
-├── assets/                 # README banners (this document)
 ├── public/                 # Static files served as-is
 ├── src/
 │   ├── assets/             # In-app images (hero, logos)

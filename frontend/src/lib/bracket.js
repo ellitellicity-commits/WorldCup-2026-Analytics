@@ -376,6 +376,21 @@ export function currentStageLabel(knockout) {
   return 'Final'
 }
 
+// The tournament's current round, group stage included — the full picture the
+// home hub needs. currentStageLabel only knows the knockout tree, so on its own
+// it reports "Round of 32" all through the group phase (no R32 is decided yet).
+// This walks the real order — Group Stage → R32 → … → Final — holding on the
+// group phase until every group fixture is completed, then handing off to the
+// knockout walk. `groupFixtures` is the group-stage match list (the 72 fixtures);
+// `knockout` is the live-merged knockout model. Both come from the same
+// live-merged feed the bracket renders, so the two never disagree.
+export function getCurrentRound(groupFixtures, knockout) {
+  const groupComplete =
+    Array.isArray(groupFixtures) && groupFixtures.length > 0 && groupFixtures.every((f) => f.status === 'completed')
+  if (!groupComplete) return 'Group Stage'
+  return currentStageLabel(knockout)
+}
+
 // Live countdown to the final (kickoff 20:00 UTC, 19 July 2026). Reads the real
 // wall clock so the home hub ticks toward kickoff, and degrades through graceful
 // phases: days → hours in the last two days → "Live" during the match → done.

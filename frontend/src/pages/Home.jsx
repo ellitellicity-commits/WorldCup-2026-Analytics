@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { BrandField } from '../components/BrandMarks'
-import { currentStageLabel, finalCountdown } from '../lib/bracket'
+import { getCurrentRound, finalCountdown, META } from '../lib/bracket'
 import { teamMeta, flagUrl } from '../lib/teams'
 import { useTournamentData } from '../lib/tournamentData'
 import './Home.css'
 
 // Dates are stored as UTC instants; format in UTC (matches the rest of the app).
 const DATE_FMT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+
+// The final's kickoff, mirroring finalCountdown()'s 20:00 UTC assumption. A real
+// countdown clock names its target time, so the snapshot shows it beneath the
+// figure ("Kick-off · 19 Jul, 20:00 UTC") — the detail that makes the number
+// read as a countdown rather than just another stat.
+const KICKOFF_ISO = `${META.final.date}T20:00:00Z`
+const KICKOFF_TEXT = `${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(KICKOFF_ISO))} · 20:00 UTC`
 
 // One broadcast-rundown row per destination — a meta figure that actually means
 // something, a condensed title, a one-line read. Not a card grid (a hub menu).
@@ -61,7 +68,7 @@ function Snapshot() {
   const { odds, fixtures } = useTournamentData()
   const favourite = odds.teams[0]
   const favMeta = teamMeta(favourite.team)
-  const stage = currentStageLabel(fixtures.knockout)
+  const stage = getCurrentRound(fixtures.fixtures, fixtures.knockout)
   const countdown = useFinalCountdown()
   const favPct = (favourite.championship_odds * 100).toFixed(1)
   const flag = flagUrl(favMeta.iso)
@@ -79,12 +86,18 @@ function Snapshot() {
         <dt>Stage</dt>
         <dd className="snapshot__big">{stage}</dd>
       </div>
-      <div className="snapshot__item">
+      <div className={`snapshot__item snapshot__item--${countdown.phase}`}>
         <dt>{countdown.label}</dt>
         <dd>
+          {countdown.phase === 'live' && <span className="snapshot__live-dot" aria-hidden="true" />}
           <span className="snapshot__big tnum">{countdown.big}</span>
           {countdown.unit && <span className="snapshot__unit">{countdown.unit}</span>}
         </dd>
+        {countdown.phase === 'countdown' && (
+          <p className="snapshot__kickoff">
+            Kick-off <time dateTime={KICKOFF_ISO} className="tnum">{KICKOFF_TEXT}</time>
+          </p>
+        )}
       </div>
     </dl>
   )

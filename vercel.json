@@ -1,9 +1,6 @@
 {
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
-  "env": [
-    "FOOTBALL_DATA_API_KEY"
-  ],
   "rewrites": [
     {
       "source": "/api/football-api/:path*",

@@ -26,6 +26,7 @@ A match predictor, Monte Carlo bracket simulator, and live player dashboard for 
 | Knockout bracket view | Interactive R32-to-final bracket that redraws as results and simulations change. |
 | Live match panel | Lineups, in-game stats, and current minute pulled from live sources during matches. |
 | Live tournament data | Real results, lineups, and stats from football-data.org and ESPN, polled during live matches. |
+| Player headshots | Resolves photos through a server-side Google image-search proxy with an ESPN fallback (~4%), cached per player in the browser; players with no match render as neutral initials. |
 | Two simulation modes | Respect Reality keeps real results and randomizes the future; Reimagine re-rolls the whole tournament. |
 | Championship odds | Per-team title probability, updated from the latest simulation run. |
 | Static-first fallback | Runs fully on a bundled data snapshot with no keys or backend required. |
@@ -82,8 +83,10 @@ cp .env.example .env
 | Variable | Purpose |
 |---|---|
 | `FOOTBALL_DATA_API_KEY` | Free key from football-data.org. Read only by `vite.config.js` and injected server-side by the proxy, so it never reaches the browser bundle. |
+| `GOOGLE_CUSTOM_SEARCH_KEY` | Optional. Free Google Custom Search API key for player headshots. Injected server-side by the `/photo-api` proxy — never in the bundle. |
+| `GOOGLE_CUSTOM_SEARCH_ENGINE_ID` | Optional. The Custom Search Engine ID (`cx`) paired with the key above. |
 
-The key is deliberately not `VITE_`-prefixed. `VITE_`-prefixed variables are inlined into the client bundle, which would leak the key to anyone viewing source. Requests go through a same-origin `/football-api/*` proxy that adds the auth header on the server. When no key is set, the proxy is disabled and the compiled `__HAS_LIVE_DATA__` flag tells the client to skip the live fetch.
+The keys are deliberately not `VITE_`-prefixed. `VITE_`-prefixed variables are inlined into the client bundle, which would leak the key to anyone viewing source. Requests go through a same-origin `/football-api/*` proxy that adds the auth header on the server. When no key is set, the proxy is disabled and the compiled `__HAS_LIVE_DATA__` flag tells the client to skip the live fetch.
 
 ## Data Sources
 
@@ -198,7 +201,7 @@ Live data comes from two independent sources, chosen for what each does well:
 | Limitation | Detail |
 |---|---|
 | Model accuracy | Around 46.2% on a three-class problem. Good for a football outcome model, but far from certain. |
-| Player headshots | ESPN provides ~4% of 2026 WC headshots; most players show as initials on a neutral background (intentional minimalist design). |
+| Player headshots | ESPN ships headshots for only ~4% of 2026 squads. A Google Custom Search proxy fills the rest when configured; without those keys most players show as neutral initials. Image-search results are best-effort and occasionally imperfect. |
 | Draw modeling | Draws are the hardest class to predict and remain the weakest part of the model. |
 | Live source coupling | Live features depend on two third-party sources whose schemas can change without notice. |
 | No persistence | Simulation results live in memory for the session and are not saved between visits. |
@@ -237,7 +240,7 @@ Standards: function components with hooks, one component and stylesheet pair per
 ### Deploy your own
 
 1. Fork the repo and create a Vercel project pointing at your fork.
-2. Set `FOOTBALL_DATA_API_KEY` (free key from football-data.org) in the Vercel project's environment variables.
+2. Set `FOOTBALL_DATA_API_KEY` (free key from football-data.org) in the Vercel project's environment variables. Optionally add `GOOGLE_CUSTOM_SEARCH_KEY` and `GOOGLE_CUSTOM_SEARCH_ENGINE_ID` for player headshots.
 3. Vercel builds with `cd frontend && npm install && npm run build` (see `vercel.json`) and auto-deploys on push to `main`.
 
 Local development:

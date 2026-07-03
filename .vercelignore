@@ -1,0 +1,10 @@
+# Keep the Vercel deploy Node-only. The ML pipeline (Python) is not part of the
+# web build — excluding it prevents any Python builder detection and speeds uploads.
+requirements.txt
+*.ipynb
+.ipynb_checkpoints/
+notebooks/
+models/
+data/
+scripts/
+src/

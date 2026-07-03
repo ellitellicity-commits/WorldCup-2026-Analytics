@@ -4,6 +4,7 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/football-api/:path*", "destination": "/api?path=:path*" },
+    { "source": "/photo-api", "destination": "/api/photo" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

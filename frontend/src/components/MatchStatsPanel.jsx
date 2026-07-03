@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { loadMatchSummaryByTeams } from '../lib/espn'
+import { getPlayerPhoto, invalidatePhoto } from '../lib/playerPhotoCache'
 import './MatchStatsPanel.css'
 
 // Expandable match-detail panel for a fixture in any state. Collapsed by default;
@@ -30,14 +31,36 @@ function initialsOf(name) {
   return (first + last).toUpperCase()
 }
 
-// Player photo with a neutral initials fallback (photo may 404, or be missing).
-function Avatar({ player }) {
-  const [broken, setBroken] = useState(false)
-  const showImg = player.headshot && !broken
+// Player photo with a neutral initials fallback. ESPN ships a headshot for only
+// ~4% of players; for the rest we resolve one asynchronously via the photo cache
+// (getPlayerPhoto), which prefers ESPN, then a proxied image search, then null.
+// A photo that fails to load purges its cache entry and falls back to initials.
+function Avatar({ player, team }) {
+  const [photoUrl, setPhotoUrl] = useState(player.headshot || null)
+
+  useEffect(() => {
+    let cancelled = false
+    getPlayerPhoto(team, player.name, player.headshot).then((url) => {
+      if (!cancelled) setPhotoUrl(url)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [team, player.name, player.headshot])
+
   return (
     <span className="lsp-avatar" aria-hidden="true">
-      {showImg ? (
-        <img src={player.headshot} alt="" loading="lazy" decoding="async" onError={() => setBroken(true)} />
+      {photoUrl ? (
+        <img
+          src={photoUrl}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={() => {
+            invalidatePhoto(team, player.name)
+            setPhotoUrl(null)
+          }}
+        />
       ) : (
         <span className="lsp-avatar__initials">{initialsOf(player.name)}</span>
       )}
@@ -45,10 +68,10 @@ function Avatar({ player }) {
   )
 }
 
-function PlayerRow({ player }) {
+function PlayerRow({ player, team }) {
   return (
     <li className="lsp-player">
-      <Avatar player={player} />
+      <Avatar player={player} team={team} />
       <span className="lsp-player__jersey tnum">{player.jersey || '–'}</span>
       <span className="lsp-player__name">{player.name}</span>
       {player.pos && <span className="lsp-player__pos">{player.pos}</span>}
@@ -65,7 +88,7 @@ function Lineup({ side, team, lineup }) {
       </div>
       <ul className="lsp-lineup__list">
         {lineup.starters.map((p) => (
-          <PlayerRow key={`${p.jersey}-${p.name}`} player={p} />
+          <PlayerRow key={`${p.jersey}-${p.name}`} player={p} team={team} />
         ))}
       </ul>
       {lineup.bench.length > 0 && (
@@ -73,7 +96,7 @@ function Lineup({ side, team, lineup }) {
           <p className="lsp-lineup__sub">Bench</p>
           <ul className="lsp-lineup__list lsp-lineup__list--bench">
             {lineup.bench.map((p) => (
-              <PlayerRow key={`${p.jersey}-${p.name}`} player={p} />
+              <PlayerRow key={`${p.jersey}-${p.name}`} player={p} team={team} />
             ))}
           </ul>
         </>

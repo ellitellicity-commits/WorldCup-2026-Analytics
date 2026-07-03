@@ -1,10 +1,12 @@
-# Keep the Vercel deploy Node-only. The ML pipeline (Python) is not part of the
-# web build — excluding it prevents any Python builder detection and speeds uploads.
-requirements.txt
-*.ipynb
-.ipynb_checkpoints/
-notebooks/
-models/
-data/
-scripts/
-src/
+# Keep the Vercel deploy Node-only. These are the repo-root ML/Python artifacts,
+# not part of the web build. Every pattern is anchored with a leading slash so it
+# ONLY matches the repo root — never frontend/src, frontend/src/data, etc.
+# (An unanchored "src/" or "data/" would match those nested dirs and break the build.)
+/requirements.txt
+/*.ipynb
+/.ipynb_checkpoints/
+/notebooks/
+/models/
+/data/
+/scripts/
+/src/

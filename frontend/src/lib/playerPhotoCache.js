@@ -137,8 +137,14 @@ function setCachedPhoto(teamCode, playerName, url, source) {
   }
 }
 
-// Called by the caller's <img onError>: the URL cached fine but the browser
-// couldn't render it. Drop it so the next view re-resolves instead of re-failing.
+/**
+ * Purge a single cached photo. Called from the caller's `<img onError>`: the URL
+ * cached fine but the browser couldn't render it (404, hotlink block, etc.), so
+ * we drop it and the next view re-resolves instead of re-failing.
+ * @param {string} teamCode  FIFA code used to scope the cache key, e.g. "USA"
+ * @param {string} playerName full name, e.g. "Matt Freese"
+ * @returns {void}
+ */
 function invalidatePhoto(teamCode, playerName) {
   if (!canUseLocalStorage()) return
   try {
@@ -168,6 +174,12 @@ function setInflightRequest(teamCode, playerName, promise) {
 
 const googleApiUsage = { calls: 0, limit: GOOGLE_DAILY_LIMIT, resetTime: Date.now() + DAY_MS }
 
+/**
+ * Whether the Google Custom Search daily budget is spent. Rolls the 100/day
+ * free-tier counter over once the 24h window elapses, so a new day frees it up.
+ * Exported so callers/tests can branch on it (an exhausted budget → initials).
+ * @returns {boolean} true when no further Google lookups may be made today
+ */
 function isGoogleApiQuotaExhausted() {
   if (Date.now() > googleApiUsage.resetTime) {
     googleApiUsage.calls = 0
@@ -274,7 +286,12 @@ async function getPlayerPhoto(teamCode, playerName, espnUrl) {
   }
 }
 
-// Clear all cached photos for a tournament year (default 2026). Returns count.
+/**
+ * Clear all cached photos for a tournament year. Keys are year-scoped
+ * (`wc-photos-2026-*`), so this never touches another tournament's cache.
+ * @param {string} [year] tournament year to clear (defaults to the current "2026")
+ * @returns {number} how many cached entries were removed
+ */
 function clearPhotoCache(year = YEAR) {
   if (!canUseLocalStorage()) return 0
   const prefix = `${KEY_PREFIX}-${year}`

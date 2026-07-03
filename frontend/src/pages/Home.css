@@ -33,6 +33,49 @@
   text-wrap: pretty;
 }
 
+/* --- Snapshot block: the data-state marker, then the strip it labels --- */
+.snapshot-block {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--space-md), 3vw, var(--space-lg));
+}
+
+/* Data-state marker — a quiet chip stating whether the figures below are live
+   or a bundled snapshot. Live is red's role-locked home (pulsing dot = the
+   non-colour signal); the fallback is neutral, deliberately un-alarming. */
+.data-status {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.data-status--live {
+  color: var(--canadian-red);
+  background: rgba(237, 74, 73, 0.12);
+}
+.data-status--static {
+  color: var(--ink-muted);
+  background: var(--surface-card);
+}
+.data-status--static time {
+  color: var(--ink-secondary);
+}
+.data-status__dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--canadian-red);
+  animation: snapshot-pulse 1.6s var(--ease-out-quint) infinite;
+}
+
 /* --- Snapshot strip --- */
 .snapshot {
   display: flex;
@@ -76,6 +119,56 @@
   letter-spacing: 0.08em;
   color: var(--ink-secondary);
   font-weight: 600;
+}
+
+/* --- Countdown item: a broadcast clock ticking toward the final ---
+   Set apart from its sibling snapshot fields by naming its target — a real
+   countdown always shows the time it's counting to. Colour stays neutral through
+   the days/hours phase (a countdown is neither group, prediction nor champion);
+   red is held back for the live phase alone. */
+.snapshot__kickoff {
+  margin: var(--space-xs) 0 0;
+  font-size: var(--text-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+.snapshot__kickoff time {
+  color: var(--ink-secondary);
+}
+
+/* Live phase — the final is actually under way. This is red's role-locked home:
+   the pulsing dot is the non-colour signal, matching the LIVE chip elsewhere. */
+.snapshot__item--live .snapshot__big,
+.snapshot__item--live .snapshot__unit {
+  color: var(--canadian-red);
+}
+.snapshot__live-dot {
+  align-self: center;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--canadian-red);
+  animation: snapshot-pulse 1.6s var(--ease-out-quint) infinite;
+}
+@keyframes snapshot-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(237, 74, 73, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(237, 74, 73, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(237, 74, 73, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snapshot__live-dot,
+  .data-status__dot {
+    animation: none;
+  }
 }
 
 /* The one trophy-gold moment on the home view: the championship favourite. */

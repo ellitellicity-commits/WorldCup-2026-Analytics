@@ -5,10 +5,10 @@
    [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
    [![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
    [![XGBoost](https://img.shields.io/badge/XGBoost-Predictions-FF6B00?style=flat-square&logo=xgboost&logoColor=white)](https://xgboost.readthedocs.io)
-   [![Status](https://img.shields.io/badge/Status-Beta-FFA500?style=flat-square)](#)
+   [![Status](https://img.shields.io/badge/Status-Live-28A745?style=flat-square)](https://world-cup-2026-analytics-xi.vercel.app)
    [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](#license)
    
-   **Status:** Beta version, locally hosted.
+   **Status:** Live — [Play now →](https://world-cup-2026-analytics-xi.vercel.app)
    
    </div>
 
@@ -25,6 +25,7 @@ A match predictor, Monte Carlo bracket simulator, and live player dashboard for 
 | Live group standings | Real group tables rebuilt from results, with full FIFA 2026 tiebreaker rules applied. |
 | Knockout bracket view | Interactive R32-to-final bracket that redraws as results and simulations change. |
 | Live match panel | Lineups, in-game stats, and current minute pulled from live sources during matches. |
+| Live tournament data | Real results, lineups, and stats from football-data.org and ESPN, polled during live matches. |
 | Two simulation modes | Respect Reality keeps real results and randomizes the future; Reimagine re-rolls the whole tournament. |
 | Championship odds | Per-team title probability, updated from the latest simulation run. |
 | Static-first fallback | Runs fully on a bundled data snapshot with no keys or backend required. |
@@ -197,6 +198,7 @@ Live data comes from two independent sources, chosen for what each does well:
 | Limitation | Detail |
 |---|---|
 | Model accuracy | Around 46.2% on a three-class problem. Good for a football outcome model, but far from certain. |
+| Player headshots | ESPN provides ~4% of 2026 WC headshots; most players show as initials on a neutral background (intentional minimalist design). |
 | Draw modeling | Draws are the hardest class to predict and remain the weakest part of the model. |
 | Live source coupling | Live features depend on two third-party sources whose schemas can change without notice. |
 | No persistence | Simulation results live in memory for the session and are not saved between visits. |
@@ -221,7 +223,30 @@ Live data comes from two independent sources, chosen for what each does well:
 | `npm run preview` | Serve the production build at `http://localhost:4173`. |
 | `npm run lint` | Run oxlint across the source. |
 
-Standards: function components with hooks, one component and stylesheet pair per UI unit, and core logic isolated in `src/lib/` so views stay thin. Numeric output uses tabular figures for stable alignment. The production build is verified with `npm run build` before commits that touch the app. Deployment targets any static host, since the build output in `dist/` is fully static and the live proxy runs through the same Vite server config in preview.
+Standards: function components with hooks, one component and stylesheet pair per UI unit, and core logic isolated in `src/lib/` so views stay thin. Numeric output uses tabular figures for stable alignment. The production build is verified with `npm run build` before commits that touch the app. The build output in `dist/` is fully static; in production a Vercel serverless function proxies live data, and the same `/football-api` path is proxied by Vite in local dev and preview (see [Deployment](#deployment)).
+
+## Deployment
+
+**Live:** https://world-cup-2026-analytics-xi.vercel.app
+
+- **Frontend** — React 19 + Vite, built to static assets and served by Vercel.
+- **Live data** — football-data.org through a Vercel serverless proxy (`api/index.js`) that injects the API token server-side, plus ESPN fetched directly from the browser. In local dev and preview the same `/football-api` path is proxied by Vite (`vite.config.js`).
+- **Fallback** — with no `FOOTBALL_DATA_API_KEY` configured, the app runs entirely on the bundled JSON snapshot (no keys or backend required).
+- **Polling** — live results and status refresh roughly every 60s; an open live match panel refreshes every 30s. Polling pauses while the tab is hidden.
+
+### Deploy your own
+
+1. Fork the repo and create a Vercel project pointing at your fork.
+2. Set `FOOTBALL_DATA_API_KEY` (free key from football-data.org) in the Vercel project's environment variables.
+3. Vercel builds with `cd frontend && npm install && npm run build` (see `vercel.json`) and auto-deploys on push to `main`.
+
+Local development:
+
+```bash
+cd frontend
+npm install
+npm run dev   # http://localhost:5173
+```
 
 ## Credits
 
@@ -237,4 +262,4 @@ Standards: function components with hooks, one component and stylesheet pair per
 
 Released under the MIT License. See the [`LICENSE`](./LICENSE) file at the repository root.
 
-Questions, ideas, or issues are welcome. This is a beta portfolio project: honest about its limits, and built to grow toward a genuinely useful tournament companion.
+Questions, ideas, or issues are welcome. This is a live portfolio project: honest about its limits, and built to grow toward a genuinely useful tournament companion.

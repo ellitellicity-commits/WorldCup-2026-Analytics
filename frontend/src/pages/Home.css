@@ -33,6 +33,49 @@
   text-wrap: pretty;
 }
 
+/* --- Snapshot block: the data-state marker, then the strip it labels --- */
+.snapshot-block {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--space-md), 3vw, var(--space-lg));
+}
+
+/* Data-state marker — a quiet chip stating whether the figures below are live
+   or a bundled snapshot. Live is red's role-locked home (pulsing dot = the
+   non-colour signal); the fallback is neutral, deliberately un-alarming. */
+.data-status {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.data-status--live {
+  color: var(--canadian-red);
+  background: rgba(237, 74, 73, 0.12);
+}
+.data-status--static {
+  color: var(--ink-muted);
+  background: var(--surface-card);
+}
+.data-status--static time {
+  color: var(--ink-secondary);
+}
+.data-status__dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--canadian-red);
+  animation: snapshot-pulse 1.6s var(--ease-out-quint) infinite;
+}
+
 /* --- Snapshot strip --- */
 .snapshot {
   display: flex;
@@ -122,7 +165,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .snapshot__live-dot {
+  .snapshot__live-dot,
+  .data-status__dot {
     animation: none;
   }
 }

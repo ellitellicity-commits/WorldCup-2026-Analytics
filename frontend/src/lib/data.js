@@ -134,17 +134,31 @@ function indexFinished(matches) {
     }
     if (!home || !away || typeof hs !== 'number' || typeof as !== 'number') continue
 
+    // The real shootout score. football-data.org's `penalties` field is
+    // occasionally degenerate — we've seen a decided tie reported as pens 4–4
+    // with a null winner — so don't trust it blindly. `fullTime` (the combined
+    // total) minus the 120-minute score (hs/as) is the reliable derivation; use
+    // it whenever it yields a valid, decisive shootout, and fall back to the raw
+    // field otherwise. Without this, a bad `penalties` field shows e.g. "EGY win
+    // 4–4 pens" and leaves the tie with no winner to advance.
+    let shoot = pens
+    if (pens && typeof s.fullTime?.home === 'number') {
+      const dh = s.fullTime.home - hs
+      const da = s.fullTime.away - as
+      if (dh >= 0 && da >= 0 && dh !== da) shoot = { home: dh, away: da }
+    }
+
     let winner = null
     if (s.winner === 'HOME_TEAM') winner = home
     else if (s.winner === 'AWAY_TEAM') winner = away
     else if (hs > as) winner = home
     else if (as > hs) winner = away
-    else if (pens && pens.home !== pens.away) winner = pens.home > pens.away ? home : away
+    else if (shoot && shoot.home !== shoot.away) winner = shoot.home > shoot.away ? home : away
 
     idx.set(pairKey(home, away), {
       scores: { [home]: hs, [away]: as },
       winner,
-      penalties: pens ? { [home]: pens.home, [away]: pens.away } : null,
+      penalties: shoot ? { [home]: shoot.home, [away]: shoot.away } : null,
     })
   }
   return idx

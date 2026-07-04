@@ -8,6 +8,13 @@
   width: 100%;
   height: min(68vh, 620px);
 }
+.sim__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+  justify-content: center;
+}
 .sim__btn {
   background: var(--ink);
   color: var(--studio-black);
@@ -18,4 +25,31 @@
   border-radius: var(--radius-md);
   padding: 12px 22px;
   cursor: pointer;
+}
+.sim__emblems {
+  display: flex;
+  gap: var(--space-sm);
+}
+.sim__emblem-btn {
+  background: transparent;
+  color: var(--ink-secondary);
+  font: 500 var(--text-label) / 1 var(--font-body);
+  letter-spacing: 0.04em;
+  border: 1px solid var(--border-divider);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: border-color var(--dur-ui) var(--ease-out-quint), color var(--dur-ui) var(--ease-out-quint);
+}
+.sim__emblem-btn:hover {
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+.sim__status {
+  min-height: 1em;
+  margin: 0;
+  color: var(--ink-muted);
+  font: 500 var(--text-label) / 1 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }

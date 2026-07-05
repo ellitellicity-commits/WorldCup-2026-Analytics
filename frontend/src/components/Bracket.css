@@ -516,7 +516,10 @@
 .bk-grid--right .bk-match::after {
   right: 100%;
 }
-.bk-grid .bk-match.is-decided::after {
+/* Outgoing line lights only when this team's advance is confirmed by winning the
+   next round too (is-out-lit) — so the lit trail traces one team forward, never
+   the loser's dead-ended branch. */
+.bk-grid .bk-match.is-out-lit::after {
   background: var(--bk-line-on);
 }
 
@@ -527,6 +530,28 @@
   width: 2px;
   background: var(--bk-line);
   transition: background var(--dur-ui) var(--ease-out-quint);
+}
+/* Winner's half of the vertical join, laid over the dim full bar. The join spans
+   25%–75% of the box (its own 0–100%), with the midpoint stub at 50%; the winner
+   enters from the top feeder (0–50%) or the bottom (50–100%). Only that half —
+   plus the stub into the box (.is-hi::after) — carries the lit colour, so the
+   loser's incoming half stays dim. */
+.bk-match__join-hi {
+  position: absolute;
+  left: 0;
+  width: 2px;
+  background: var(--bk-line-on);
+}
+.bk-match__join-hi--top {
+  top: 0;
+  height: 50%;
+}
+.bk-match__join-hi--bottom {
+  top: 50%;
+  height: 50%;
+}
+.bk-match__join.is-hi::after {
+  background: var(--bk-line-on);
 }
 /* Vertical bar, offset from the box by the stub; the ::after is the stub that
    bridges the bar's midpoint into the box. */
@@ -550,9 +575,6 @@
 }
 .bk-match__join--right::after {
   right: 100%;
-}
-.bk-match.is-decided .bk-match__join {
-  background: var(--bk-line-on);
 }
 
 /* --- Centre column: final + trophy + third place --- */
@@ -603,6 +625,12 @@
 }
 .bk-final-wrap .bk-match__box::after {
   left: 100%;
+}
+/* Light only the incoming stub on the side the champion advanced from (left SF =
+   M101, right SF = M102), matching the winner-scoped highlight in the grids. */
+.bk-final-wrap.is-from-left .bk-match__box::before,
+.bk-final-wrap.is-from-right .bk-match__box::after {
+  background: var(--bk-line-on);
 }
 /* Dedicated "Final" heading right above the M103 box (mirrors the column
    stage headers, emphasised at the box itself). Absolute so it doesn't shift

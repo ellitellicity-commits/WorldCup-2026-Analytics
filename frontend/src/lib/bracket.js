@@ -146,6 +146,20 @@ const FEEDS = {
   104: ['L101', 'L102'],
 }
 
+// Winner-advancement parent of every knockout match: PARENT_OF[74] === 89 means
+// the winner of M74 walks into M89. Inverted from FEEDS' "W" tokens only (the "L"
+// tokens feed the third-place play-off, which draws no connector line). Used to
+// scope the path highlight to a single team's advancement, not the whole tree.
+export const PARENT_OF = (() => {
+  const map = {}
+  for (const [pid, feeders] of Object.entries(FEEDS)) {
+    for (const tok of feeders) {
+      if (tok.startsWith('W')) map[+tok.slice(1)] = +pid
+    }
+  }
+  return map
+})()
+
 // Display geometry: which ids sit in which column, top-to-bottom, per side.
 export const LAYOUT = {
   left: {
@@ -256,6 +270,36 @@ function venueOf(id) {
   return R32_VENUE[id] || KO_VENUE[id] || null
 }
 
+// Knuth's Poisson sampler — a small goal count from a mean λ.
+function samplePoisson(lambda) {
+  const L = Math.exp(-lambda)
+  let k = 0
+  let p = 1
+  do {
+    k += 1
+    p *= Math.random()
+  } while (p > L)
+  return k - 1
+}
+
+// A plausible knockout scoreline consistent with the tie's decided winner. Goal
+// expectations widen with the model's edge (p), so a heavy favourite tends to
+// win by more. Knockouts are decided outright here (no draws), so we retry until
+// the regulation score is decisive AND matches `homeWins`; a 1–0 fallback keeps
+// the loop finite. Returns { home_score, away_score } for the tie's home slot.
+function simulateScore(homeWins, p) {
+  const edge = Math.abs(p - 0.5) * 2 // 0 (coin-flip) … 0.8 (clamped favourite)
+  const strong = 1.5 + edge * 0.9
+  const weak = Math.max(0.5, 1.15 - edge * 0.55)
+  for (let i = 0; i < 8; i++) {
+    const hs = samplePoisson(homeWins ? strong : weak)
+    const as = samplePoisson(homeWins ? weak : strong)
+    if (hs === as) continue
+    if (hs > as === homeWins) return { home_score: hs, away_score: as }
+  }
+  return homeWins ? { home_score: 1, away_score: 0 } : { home_score: 0, away_score: 1 }
+}
+
 // One full Monte Carlo realisation of the knockout bracket (R32 -> Final + third
 // place), given the R32 matchups. Defaults to the locked draw; the group-stage
 // simulator passes its own re-seeded R32 so every run plays different teams.
@@ -268,6 +312,7 @@ export function simulateKnockout(r32 = bracketData.r32) {
       winner: homeWins ? homeName : awayName,
       loser: homeWins ? awayName : homeName,
       p,
+      score: simulateScore(homeWins, p),
     }
   }
   for (const m of r32) decide(m.id, m.home, m.away)
@@ -312,8 +357,9 @@ export function buildViews(results, mode, r32 = bracketData.r32) {
       kickoff: m.kickoff,
       isToday: mode === 'live' && m.status === 'scheduled' && m.date === today,
       status: completedLive ? 'completed' : inPlayLive ? 'live' : 'scheduled',
-      // Show the running score for an in-play tie too; `live` carries the clock.
-      score: completedLive || inPlayLive ? m.result : null,
+      // Live mode shows the real running/finished score; a re-roll ("simulate")
+      // shows the sampled scoreline once the match is revealed (`r.score`).
+      score: mode === 'live' ? (completedLive || inPlayLive ? m.result : null) : r?.score ?? null,
       live: inPlayLive ? m.live : null,
       winner: r?.winner ?? null,
       loser: r?.loser ?? null,
@@ -342,6 +388,10 @@ export function buildViews(results, mode, r32 = bracketData.r32) {
       pHome: bothKnown ? winProb(home.name, away.name, vc) : null,
       venue,
       status: r ? 'decided' : 'pending',
+      // Real knockout ties (liveResults) and re-rolls (simulateKnockout) both
+      // carry a scoreline now, so every decided round renders goal digits — the
+      // same treatment R32 already got — instead of only a win-probability split.
+      score: r?.score ?? null,
       winner: r?.winner ?? null,
       loser: r?.loser ?? null,
     }

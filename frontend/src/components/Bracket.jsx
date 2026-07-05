@@ -137,9 +137,10 @@ function MatchCaption({ view, mode }) {
 function BracketMatch({ view, side, revealed, championName, style, hideCaption = false }) {
   const decided = !!view.winner
   const live = view.status === 'live'
-  // Both completed and in-play R32 ties carry a score to show; only completed
-  // ties get the finished treatment (dimmed loser, "Full time").
-  const showScore = view.round === 'r32' && view.score != null
+  // Any tie carrying a score shows goal digits — real R32 results, real knockout
+  // results, and re-rolled ties alike. In-play ties keep the running score; a
+  // finished tie (completed) gets the dimmed-loser / "Full time" treatment.
+  const showScore = view.score != null
   const completed = showScore && !live
   const both = view.home.kind === 'team' && view.away.kind === 'team'
   const showProb = !decided && !completed && view.pHome != null

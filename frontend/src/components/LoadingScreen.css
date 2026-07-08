@@ -35,16 +35,55 @@
   height: 100%;
 }
 
-.loading__logo {
-  width: clamp(180px, 40vw, 260px);
-  height: auto;
-  margin-bottom: var(--space-sm, 8px);
-}
-
-.loading__mark {
+/* Rolling match ball — the loader's motion. Rolls across a short track and back
+   (alternate), the spin matched to the travel so it reads as a real roll. */
+.loading__ball {
+  display: block;
   width: 64px;
   height: 64px;
-  animation: loading-mark-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: loading-roll 2.4s ease-in-out infinite alternate;
+}
+.loading__ball-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+@keyframes loading-roll {
+  from {
+    transform: translateX(-84px) rotate(0deg);
+  }
+  to {
+    transform: translateX(84px) rotate(300deg);
+  }
+}
+
+/* Rotating reel of real tournament facts, typed in. */
+.loading__facts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  min-height: 4.5em;
+  max-width: min(90vw, 34rem);
+  text-align: center;
+}
+.loading__facts-label {
+  margin: 0;
+  font-family: var(--font-body, Inter, system-ui, sans-serif);
+  font-size: var(--text-meta, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.loading__fact {
+  margin: 0;
+  font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--ink);
 }
 
 .loading__label {
@@ -57,54 +96,9 @@
   color: var(--ink-muted);
 }
 
-/* A single thin rule with a gold segment sweeping across — the "on air" cue. */
-.loading__sweep {
-  position: relative;
-  width: 180px;
-  max-width: 60vw;
-  height: 2px;
-  overflow: hidden;
-  background: var(--border-divider);
-  border-radius: 9999px;
-}
-
-.loading__sweep-bar {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 40%;
-  border-radius: 9999px;
-  background: var(--trophy-gold);
-  animation: loading-sweep 1100ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-
-@keyframes loading-sweep {
-  0% {
-    transform: translateX(-110%);
-  }
-  100% {
-    transform: translateX(360%);
-  }
-}
-
-@keyframes loading-mark-in {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .loading__mark {
-    animation: none;
-  }
-  /* No sweep: a steady gold rule stands in for the moving segment. */
-  .loading__sweep-bar {
-    position: static;
-    width: 100%;
+  /* No roll: the ball rests centred (the typing facts still signal progress). */
+  .loading__ball {
     animation: none;
   }
 }

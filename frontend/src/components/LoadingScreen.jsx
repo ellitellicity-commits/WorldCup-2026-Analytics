@@ -1,5 +1,5 @@
-import { Mark26 } from './BrandMarks'
-import wcLogo from '../assets/WC_26_Animations.gif'
+import { useEffect, useState } from 'react'
+import Typewriter from './Typewriter'
 import './LoadingScreen.css'
 
 // Faint host-city skylines behind the loading content — Toronto (CN Tower),
@@ -49,31 +49,77 @@ function CitySkylines() {
   )
 }
 
+// A white match ball, reusing the pentagon + seam geometry from GoalBurst so the
+// loader speaks the same visual language as the live-goal cue. The wrapper rolls
+// (translate + spin) via CSS; the ball itself is a light disc with a dark
+// pentagon so it reads against the studio-black gate.
+function SoccerBall() {
+  return (
+    <span className="loading__ball" aria-hidden="true">
+      <svg viewBox="0 0 16 16" width="64" height="64" className="loading__ball-svg">
+        <circle cx="8" cy="8" r="6.4" fill="var(--ink)" stroke="var(--studio-black)" strokeWidth="0.9" />
+        <path d="M8 5.7 10.19 7.29 9.35 9.86 6.65 9.86 5.81 7.29Z" fill="var(--studio-black)" />
+        <path
+          d="M8 5.7V1.9M10.19 7.29 13.8 6.12M9.35 9.86 11.59 12.93M6.65 9.86 4.41 12.93M5.81 7.29 2.2 6.12"
+          fill="none"
+          stroke="var(--studio-black)"
+          strokeWidth="0.9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  )
+}
+
+// Real, checkable World Cup 2026 facts — no fabrication.
+const FACTS = [
+  'The 2026 World Cup is the first to feature 48 teams',
+  'MetLife Stadium in New Jersey hosts the Final on 19 July',
+  'Three nations host for the first time: USA, Canada & Mexico',
+  '48 teams · 16 groups · 104 matches',
+  'Argentina are the defending champions',
+  'The tournament spans 3 countries and 16 cities',
+]
+
+// Time to type a fact (mirrors Typewriter's own cadence) plus a 2s read hold,
+// so the next fact begins only once this one has landed and been read.
+function factDuration(text) {
+  const perChar = Math.max(9, Math.min(22, 1500 / text.length))
+  return 160 + text.length * perChar + 2000
+}
+
+function FunFacts() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setTimeout(() => setI((n) => (n + 1) % FACTS.length), factDuration(FACTS[i]))
+    return () => clearTimeout(t)
+  }, [i])
+  return (
+    <div className="loading__facts">
+      <p className="loading__facts-label">Did you know</p>
+      {/* key={i} remounts the typewriter so each fact types in from empty. */}
+      <Typewriter key={i} text={FACTS[i]} className="loading__fact" />
+    </div>
+  )
+}
+
 /**
- * Full-screen gate shown while tournament data resolves. Usually a brief flash
- * (static fallback resolves in one tick; a live fetch takes a moment). The
- * broadcast register: studio-black surface, the gold mark, a single sweeping
- * rule — "coming on air", not a generic spinner.
+ * Full-screen gate shown while tournament data resolves (and for a 3s minimum,
+ * so it never flashes past). The broadcast register: studio-black surface, faint
+ * host-city skylines, a rolling match ball, and a rotating reel of real
+ * tournament facts — "coming on air", not a generic spinner.
  */
 function LoadingScreen({ failed = false }) {
   return (
     <div className="loading" role="status" aria-live="polite">
       <CitySkylines />
       <div className="loading__inner">
-        <img
-          className="loading__logo"
-          src={wcLogo}
-          alt="FIFA World Cup 26 — USA · Canada · Mexico"
-          width="800"
-          height="495"
-        />
-        <Mark26 className="loading__mark" />
+        <SoccerBall />
+        <FunFacts />
         <p className="loading__label">
           {failed ? 'Loading tournament data…' : 'Loading tournament data'}
         </p>
-        <div className="loading__sweep" aria-hidden="true">
-          <span className="loading__sweep-bar" />
-        </div>
         <span className="visually-hidden">Loading the World Cup 2026 desk</span>
       </div>
     </div>

@@ -16,8 +16,19 @@ const TournamentDataContext = createContext(null)
 const POLL_LIVE_S = 60
 const POLL_IDLE_S = 300
 
+// Minimum time the loading gate stays up, even if data resolves in one tick —
+// so the loader (rolling ball + a tournament fact) is actually seen rather than
+// flashing past. Data still gates beyond this if it takes longer.
+const MIN_LOADING_MS = 3000
+
 export function TournamentDataProvider({ children }) {
   const [state, setState] = useState({ status: 'loading' })
+  // Held false for MIN_LOADING_MS so the gate never flashes past on a fast load.
+  const [minElapsed, setMinElapsed] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setMinElapsed(true), MIN_LOADING_MS)
+    return () => clearTimeout(t)
+  }, [])
 
   // Initial load — gates the app on first data arrival.
   useEffect(() => {
@@ -82,7 +93,8 @@ export function TournamentDataProvider({ children }) {
     }
   }, [pollable, liveCount])
 
-  if (state.status !== 'ready') return <LoadingScreen failed={state.status === 'error'} />
+  if (state.status === 'error') return <LoadingScreen failed />
+  if (state.status !== 'ready' || !minElapsed) return <LoadingScreen />
 
   return <TournamentDataContext.Provider value={state}>{children}</TournamentDataContext.Provider>
 }

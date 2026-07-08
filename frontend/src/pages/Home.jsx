@@ -171,11 +171,16 @@ function Home() {
   useEffect(() => {
     const root = heroRef.current
     if (!root || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
-    const q = gsap.utils.selector(root)
-    const tl = gsap.timeline()
-    tl.from(q('.home-hero__intro'), { y: 30, opacity: 0, duration: 0.6, ease: 'power2.out' })
-      .from([q('.data-status'), q('.snapshot__item')], { y: 30, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.25')
-    return () => tl.kill()
+    // gsap.context + revert() (not tl.kill()) so React StrictMode's mount →
+    // cleanup → remount can't strand the from({opacity:0}) targets at 0 and leave
+    // the hero text invisible; revert() restores the pre-tween styles each time.
+    const ctx = gsap.context(() => {
+      const q = gsap.utils.selector(root)
+      gsap.timeline()
+        .from(q('.home-hero__intro'), { y: 30, opacity: 0, duration: 0.6, ease: 'power2.out' })
+        .from([q('.data-status'), q('.snapshot__item')], { y: 30, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.25')
+    }, root)
+    return () => ctx.revert()
   }, [])
 
   return (

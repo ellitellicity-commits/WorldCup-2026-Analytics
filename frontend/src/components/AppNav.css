@@ -169,31 +169,6 @@
   }
 }
 
-.nav__badge {
-  justify-self: end;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.4ch;
-  padding: 5px 10px;
-  border: 1px solid var(--border-divider);
-  border-radius: var(--radius-full);
-  font-size: var(--text-label);
-  color: var(--ink-secondary);
-  white-space: nowrap;
-}
-.nav__badge-engine {
-  color: var(--ink);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-.nav__badge-dot {
-  color: var(--ink-muted);
-}
-.nav__badge-sims {
-  color: var(--ink);
-  font-weight: 600;
-}
-
 /* ============================================================================
    Bottom tab bar — fixed, mobile only
    ========================================================================== */
@@ -278,13 +253,6 @@
   .nav__title {
     font-size: 1.2rem;
   }
-  .nav__badge {
-    padding: 4px 8px;
-    gap: 0.3ch;
-  }
-  .nav__badge-unit {
-    display: none; /* keep "Model · 10,000" — drop the trailing word only */
-  }
 }
 
 /* Below tablet the masthead can't hold two full chips beside the wordmark, so the
@@ -296,16 +264,6 @@
   }
   .nav__source {
     padding: 6px;
-  }
-}
-
-/* On phones the model badge can't sit beside the wordmark without colliding with
-   it, and the bottom tab bar (not the masthead) is the primary nav here — so drop
-   the badge below the phablet width. The live/source chip stays as the state cue,
-   and the model story still leads the home hero. */
-@media (max-width: 560px) {
-  .nav__badge {
-    display: none;
   }
 }
 

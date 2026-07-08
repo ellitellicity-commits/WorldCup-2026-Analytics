@@ -210,7 +210,11 @@
 }
 .sim-result__verdict {
   margin: 0;
+  /* The whole verdict line — "[COUNTRY] advance" and the level fallback — reads
+     in the display face, so "advance" no longer drops to the body font. */
+  font-family: var(--font-display);
   font-size: var(--text-title);
+  letter-spacing: 0.01em;
   color: var(--ink-secondary);
   text-align: center;
 }

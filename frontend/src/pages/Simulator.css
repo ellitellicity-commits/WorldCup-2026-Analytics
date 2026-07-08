@@ -93,10 +93,17 @@
   border-radius: var(--radius-md);
   padding: 13px 24px;
   cursor: pointer;
-  transition: background var(--dur-ui) var(--ease-out-quint);
+  transition: background var(--dur-ui) var(--ease-out-quint),
+    transform var(--dur-ui) var(--ease-out-quint), filter var(--dur-ui) var(--ease-out-quint);
 }
 .sim__go:hover:not(:disabled) {
   background: #ffffff;
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sim__go { transition: none; }
+  .sim__go:hover:not(:disabled) { transform: none; }
 }
 .sim__go:disabled {
   opacity: 0.5;

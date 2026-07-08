@@ -1,5 +1,6 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { gsap } from 'gsap'
 import { BrandField } from '../components/BrandMarks'
 import { getCurrentRound, finalCountdown, META } from '../lib/bracket'
 import { teamMeta, flagUrl } from '../lib/teams'
@@ -163,6 +164,20 @@ function Home() {
     }
   }, [fixturesData])
 
+  // One-time broadcast entrance: the intro line, then the data-state marker and
+  // each snapshot figure drift up and fade in, staggered. Guarded for reduced
+  // motion (holds the resting layout) and killed on unmount.
+  const heroRef = useRef(null)
+  useEffect(() => {
+    const root = heroRef.current
+    if (!root || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
+    const q = gsap.utils.selector(root)
+    const tl = gsap.timeline()
+    tl.from(q('.home-hero__intro'), { y: 30, opacity: 0, duration: 0.6, ease: 'power2.out' })
+      .from([q('.data-status'), q('.snapshot__item')], { y: 30, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.25')
+    return () => tl.kill()
+  }, [])
+
   return (
     <div className="home">
       <section className="home-hero">
@@ -170,7 +185,7 @@ function Home() {
         <Suspense fallback={null}>
           <FloatingShapes className="home-hero__shapes" />
         </Suspense>
-        <div className="home-hero__inner">
+        <div className="home-hero__inner" ref={heroRef}>
           <p className="home-hero__intro">
             Broadcast-grade intelligence for the 2026 FIFA World Cup — a machine-learning model turns
             historical results, Elo ratings and live tournament data into win probabilities, championship

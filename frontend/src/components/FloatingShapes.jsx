@@ -31,6 +31,10 @@ const SHAPES = [
   { geo: 'torus', x: -2.6, y: -0.4, z: -3.0, s: 0.5 },
   { geo: 'tetra', x: 0.6, y: -2.3, z: -2.8, s: 0.46 },
   { geo: 'octa', x: -1.1, y: 2.7, z: -3.8, s: 0.34 },
+  { geo: 'box', x: -4.6, y: 0.5, z: -0.6, s: 0.5 },
+  { geo: 'box', x: 1.4, y: -1.0, z: -4.4, s: 0.3 },
+  { geo: 'dodeca', x: 3.1, y: 0.3, z: -0.4, s: 0.4 },
+  { geo: 'torus', x: 2.9, y: -2.6, z: -3.6, s: 0.34 },
 ]
 
 function makeGeometry(kind, s) {
@@ -43,6 +47,8 @@ function makeGeometry(kind, s) {
       return new THREE.DodecahedronGeometry(s)
     case 'torus':
       return new THREE.TorusGeometry(s, s * 0.4, 8, 20)
+    case 'box':
+      return new THREE.BoxGeometry(s * 1.3, s * 1.3, s * 1.3)
     case 'ico':
     default:
       return new THREE.IcosahedronGeometry(s)
@@ -143,6 +149,21 @@ export default function FloatingShapes({ className = '' }) {
     }
     window.addEventListener('resize', onResize)
 
+    // Mouse-parallax — glide the camera a hair toward the pointer so the field
+    // gains a subtle "3D glasses" depth read: perspective makes the nearer shapes
+    // shift more than the far ones. The move is tiny and eased, never a lurch,
+    // and rendering already rides the ticker so it updates for free. Skipped
+    // under reduced motion.
+    let onPointer
+    if (!reduce) {
+      onPointer = (e) => {
+        const nx = e.clientX / window.innerWidth - 0.5
+        const ny = e.clientY / window.innerHeight - 0.5
+        gsap.to(camera.position, { x: nx * 0.6, y: -ny * 0.4, duration: 0.7, ease: 'power2.out', overwrite: true })
+      }
+      window.addEventListener('pointermove', onPointer)
+    }
+
     // Pause the ticker work when the tab is hidden (and when the hero scrolls out
     // of view) — no point burning GPU on shapes nobody can see.
     const io = new IntersectionObserver(
@@ -157,6 +178,7 @@ export default function FloatingShapes({ className = '' }) {
 
     return () => {
       window.removeEventListener('resize', onResize)
+      if (onPointer) window.removeEventListener('pointermove', onPointer)
       io.disconnect()
       gsap.ticker.remove(render)
       tweens.forEach((t) => t.kill())

@@ -219,6 +219,19 @@
   font-size: clamp(1.25rem, 3vw, 1.75rem);
   font-weight: 700;
   color: var(--trophy-gold);
+  /* A one-shot gold shimmer on load draws the eye to the single championship
+     moment on the view — the favourite's title odds. Transient by design: it
+     resolves to no shadow, so nothing glows at rest (DESIGN.md forbids resting
+     glow), and gold stays confined to this one figure. */
+  animation: fav-shimmer 1.1s var(--ease-out-quint) 200ms both;
+}
+@keyframes fav-shimmer {
+  0% { text-shadow: 0 0 0 transparent; }
+  45% { text-shadow: 0 0 16px color-mix(in srgb, var(--trophy-gold) 55%, transparent); }
+  100% { text-shadow: 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snapshot__fav-odds { animation: none; }
 }
 
 /* ============================================================================

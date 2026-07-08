@@ -213,25 +213,32 @@ export default function HostMascot({ iso }) {
   const [factIdx, setFactIdx] = useState(0)
 
   // Entrance + looping idle + blink. Rebuilds when the host nation changes.
+  //
+  // Scoped to a gsap.context and torn down with ctx.revert() (not a bare kill).
+  // Under React StrictMode the effect mounts → cleans up → remounts, and a killed
+  // gsap.from() leaves its targets frozen at the from-state (opacity 0, off to the
+  // left) — so on remount a fresh gsap.from({opacity:0}) reads that 0 as its END
+  // value and animates 0→0, leaving the character permanently invisible while the
+  // un-animated bubble still shows. revert() restores the original inline styles,
+  // so every (re)mount animates in from a clean, visible baseline.
   useEffect(() => {
     setFactIdx(0)
     const root = rootRef.current
-    if (!def || !root) return undefined
-    const q = gsap.utils.selector(root)
-    const tweens = []
-    if (!reduced()) {
-      tweens.push(gsap.from(q('.m-torso'), { x: -240, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' }))
-      tweens.push(gsap.from(q('.m-head'), { x: -240, opacity: 0, duration: 0.5, delay: 0.08, ease: 'back.out(1.7)' }))
-      tweens.push(gsap.from([q('.m-legs'), q('.m-ball'), q('.m-tail')], { y: 46, opacity: 0, duration: 0.42, delay: 0.22, stagger: 0.05, ease: 'power2.out' }))
+    if (!def || !root || reduced()) return undefined
+    const ctx = gsap.context(() => {
+      const q = gsap.utils.selector(root)
+      gsap.from(q('.m-torso'), { x: -240, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' })
+      gsap.from(q('.m-head'), { x: -240, opacity: 0, duration: 0.5, delay: 0.08, ease: 'back.out(1.7)' })
+      gsap.from([q('.m-legs'), q('.m-ball'), q('.m-tail')], { y: 46, opacity: 0, duration: 0.42, delay: 0.22, stagger: 0.05, ease: 'power2.out' })
       // Idle: body bob + head sway, starting once the entrance has landed.
-      tweens.push(gsap.to(q('.m-torso'), { y: -6, duration: 0.95, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.75 }))
-      tweens.push(gsap.to(q('.m-head'), { rotation: 3, duration: 1.4, repeat: -1, yoyo: true, ease: 'sine.inOut', svgOrigin: '101 124', delay: 0.75 }))
+      gsap.to(q('.m-torso'), { y: -6, duration: 0.95, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.75 })
+      gsap.to(q('.m-head'), { rotation: 3, duration: 1.4, repeat: -1, yoyo: true, ease: 'sine.inOut', svgOrigin: '101 124', delay: 0.75 })
       // Blink.
-      const blink = gsap.timeline({ repeat: -1, repeatDelay: 2.6, delay: 1.4 })
-      blink.to(q('.m-eyes'), { scaleY: 0.12, duration: 0.08, transformOrigin: '50% 50%' }).to(q('.m-eyes'), { scaleY: 1, duration: 0.09 })
-      tweens.push(blink)
-    }
-    return () => tweens.forEach((t) => t.kill())
+      gsap.timeline({ repeat: -1, repeatDelay: 2.6, delay: 1.4 })
+        .to(q('.m-eyes'), { scaleY: 0.12, duration: 0.08, transformOrigin: '50% 50%' })
+        .to(q('.m-eyes'), { scaleY: 1, duration: 0.09 })
+    }, root)
+    return () => ctx.revert()
   }, [def])
 
   if (!def) return null

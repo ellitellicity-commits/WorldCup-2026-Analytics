@@ -7,16 +7,21 @@
   --bk-box-h: 58px;
   --bk-rail-w: 150px;
   --bk-center-w: 158px;
-  /* Connector system (Fix 3): one uniform thickness everywhere; paths read by
-     brightness, not weight. Three tiers — faint structural skeleton (undecided),
-     muted for a knocked-out team's path, bright + soft glow for a still-alive /
-     champion path. Gold stays reserved for the champion card + trophy (DESIGN.md),
-     so the winning line is neutral ink, not gold. */
+  /* Connector system (Part D): three tiers tell each team's story on the tree.
+     • Faint skeleton (--bk-line): undecided ties, and the leg where a team was
+       knocked out — the dimmed default, unchanged.
+     • Red (--bk-line-elim): the segments a team EARNED by winning before going
+       out — its "how far it got" trail. Deeper rounds thicken (see below), so a
+       semi-final run reads bolder than an early exit. NB this red and the green
+       below are path-depth encodings on the tree, distinct from the app's
+       role-locked live-red / group-green; the champion card + trophy keep gold.
+     • Green + glow (--bk-line-win): the champion's full path only — the one team
+       that never loses, so the only path still lit in a finished bracket. */
   --bk-line-w: 3px;
   --bk-line: var(--border-divider);
-  --bk-line-elim: color-mix(in oklab, var(--ink-muted) 80%, var(--studio-black));
-  --bk-line-win: var(--ink);
-  --bk-line-glow: 0 0 5px color-mix(in oklab, var(--ink) 42%, transparent);
+  --bk-line-elim: color-mix(in oklab, var(--canadian-red) 82%, var(--studio-black));
+  --bk-line-win: var(--mexican-green);
+  --bk-line-glow: 0 0 6px color-mix(in oklab, var(--mexican-green) 55%, transparent);
   --bk-canvas-h: calc(var(--bk-head-h) + 16 * var(--bk-row-h));
 
   display: flex;
@@ -558,6 +563,26 @@
 .bk-match__join.is-vert-win::after {
   background: var(--bk-line-win);
   box-shadow: var(--bk-line-glow);
+}
+
+/* Depth cue on the red "progressed" trail: the further a team got, the thicker
+   its earned segments — a quarter- or semi-final run reads bolder than an early
+   exit. Thickness is `height` on the horizontals (out ::after and the join stub)
+   and `width` on the vertical join bar. Champion green stays a uniform weight;
+   its glow carries the prominence. R32/R16 keep the 3px base. */
+.bk-grid .bk-match--qf.is-out-elim::after,
+.bk-match__join--qf.is-vert-elim::after {
+  height: 4px;
+}
+.bk-match__join--qf.is-vert-elim {
+  width: 4px;
+}
+.bk-grid .bk-match--sf.is-out-elim::after,
+.bk-match__join--sf.is-vert-elim::after {
+  height: 5px;
+}
+.bk-match__join--sf.is-vert-elim {
+  width: 5px;
 }
 /* Vertical bar, offset from the box by the stub; the ::after is the stub that
    bridges the bar's midpoint into the box. */

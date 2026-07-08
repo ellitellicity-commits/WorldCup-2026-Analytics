@@ -71,12 +71,70 @@
     animation: none;
   }
 }
-/* Running score, styled like the win-probability number it replaces. */
+/* Running score (live) or final score (decided), styled like the number it
+   replaces. Loser dims; winner keeps full ink. */
 .koc-team__score {
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--ink);
   flex: none;
+}
+.koc-team {
+  transition: opacity var(--dur-ui) var(--ease-out-quint);
+}
+.koc-team.is-dim {
+  opacity: 0.45;
+}
+.koc-team__score.is-win {
+  color: var(--ink);
+}
+
+/* Finished tie — a quiet full-time marker in place of the kickoff time. */
+.koc__ft {
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.koc__pens {
+  margin: 0;
+  font-size: var(--text-label);
+  color: var(--ink-secondary);
+}
+
+/* Model verdict on a finished tie. Neutral by design — green/red are role-locked,
+   not success/error; hit vs miss reads by icon + label + ink weight, not hue.
+   Mirrors MatchCard's group-card verdict. */
+.koc__pred-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.koc-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  background: var(--studio-black);
+  white-space: nowrap;
+}
+.koc-verdict.is-hit {
+  color: var(--ink);
+}
+.koc-verdict.is-miss {
+  color: var(--ink-muted);
+}
+.koc-verdict__icon {
+  width: 11px;
+  height: 11px;
 }
 
 .koc__teams {

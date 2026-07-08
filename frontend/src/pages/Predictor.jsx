@@ -99,11 +99,18 @@ function Predictor() {
     // In-play ties lead; the rest are the genuine upcoming knockout matches.
     const liveKO = openKO.filter((v) => v.status === 'live')
     const upcomingKO = openKO.filter((v) => v.status !== 'live')
+    // Finished knockout ties — decided ('completed' for R32, 'decided' for R16+),
+    // both teams known. Same match-status logic as the live/upcoming split above;
+    // these previously had no home on this page and now join Finished Matches.
+    // Most-advanced round first (a Final reads as more recent than an R32).
+    const finishedKO = Object.values(koViews)
+      .filter((v) => v.home?.kind === 'team' && v.away?.kind === 'team' && (v.winner != null || v.status === 'completed'))
+      .sort((a, b) => ROUND_RANK[b.round] - ROUND_RANK[a.round] || b.id - a.id)
 
-    return { TODAY, allFixtures, completed, todaysMatches, upcomingGroup, liveGroup, liveKO, upcomingKO, finished }
+    return { TODAY, allFixtures, completed, todaysMatches, upcomingGroup, liveGroup, liveKO, upcomingKO, finished, finishedKO }
   }, [data])
 
-  const { TODAY, upcomingGroup, liveGroup, liveKO, upcomingKO, finished } = view
+  const { TODAY, upcomingGroup, liveGroup, liveKO, upcomingKO, finished, finishedKO } = view
   const hasLive = liveKO.length > 0 || liveGroup.length > 0
   const nothingUpcoming = upcomingGroup.length === 0 && upcomingKO.length === 0 && !hasLive
 
@@ -146,9 +153,13 @@ function Predictor() {
         </section>
       )}
 
+      {finishedKO.length > 0 && (
+        <KnockoutRail title={finished.length > 0 ? 'Finished — Knockouts' : 'Finished Matches'} ties={finishedKO} />
+      )}
+
       {finished.length > 0 && (
         <FixturesRail
-          title="Finished Matches"
+          title={finishedKO.length > 0 ? 'Finished — Group Stage' : 'Finished Matches'}
           eyebrow={`${finished.length} played`}
           fixtures={finished}
           todayDate={TODAY}

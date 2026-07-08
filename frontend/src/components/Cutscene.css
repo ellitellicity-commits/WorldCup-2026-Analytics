@@ -45,6 +45,16 @@
   text-anchor: middle;
 }
 
+/* Host-nation coastlines — hand-drawn vintage look: thin sepia stroke over a
+   barely-there land tint, so the route and pin read clearly on top. */
+.cut__geo path {
+  fill: color-mix(in srgb, var(--cut-ink) 7%, transparent);
+  stroke: var(--cut-frame);
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
 /* --- Beat 1: VS card --- */
 .cut__vs {
   position: relative;

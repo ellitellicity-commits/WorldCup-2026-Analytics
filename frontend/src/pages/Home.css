@@ -33,29 +33,6 @@
   gap: clamp(var(--space-lg), 4vw, var(--space-2xl));
 }
 
-/* Animated World Cup 26 logo — the hero's brand centrepiece (credit near the
-   foot of the page). The wrap lays a soft studio-black disc under the mark so
-   the drifting shapes clear the logo and it reads as the focal element. */
-.home-hero__logo-wrap {
-  display: grid;
-  place-items: center;
-  padding: 3% 7%;
-  background: radial-gradient(ellipse at center, var(--studio-black) 42%, transparent 76%);
-}
-
-/* Sized as a mark, not a banner; height follows the GIF's natural 800×495 ratio
-   so there's no reserved-box layout shift on load. The source GIF is dark
-   line-art on a near-white plate (built for light themes); invert() flips it to a
-   light mark, then screen blending drops the now-black plate out against the
-   dark disc behind it, leaving only the trophy. */
-.home-hero__logo {
-  width: clamp(200px, 32vw, 380px);
-  height: auto;
-  display: block;
-  filter: invert(1);
-  mix-blend-mode: screen;
-}
-
 .home-hero__intro {
   max-width: 60ch;
   margin-inline: auto;

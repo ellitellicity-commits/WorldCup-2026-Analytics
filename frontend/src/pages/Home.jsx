@@ -4,7 +4,6 @@ import { BrandField } from '../components/BrandMarks'
 import { getCurrentRound, finalCountdown, META } from '../lib/bracket'
 import { teamMeta, flagUrl } from '../lib/teams'
 import { useTournamentData } from '../lib/tournamentData'
-import wcLogo from '../assets/WC_26_Animations.gif'
 import './Home.css'
 
 // The 3D shape field pulls in three.js — lazy-load it so it never weighs down the
@@ -172,15 +171,6 @@ function Home() {
           <FloatingShapes className="home-hero__shapes" />
         </Suspense>
         <div className="home-hero__inner">
-          <span className="home-hero__logo-wrap">
-            <img
-              className="home-hero__logo"
-              src={wcLogo}
-              alt="FIFA World Cup 26 — USA · Canada · Mexico"
-              width="800"
-              height="495"
-            />
-          </span>
           <p className="home-hero__intro">
             Broadcast-grade intelligence for the 2026 FIFA World Cup — a machine-learning model turns
             historical results, Elo ratings and live tournament data into win probabilities, championship

@@ -8,11 +8,31 @@
 }
 
 .loading__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-lg, 24px);
   padding: var(--space-xl, 40px);
+}
+
+/* Faint host-city skylines anchored to the bottom edge, behind the content.
+   A tonal surface step over studio-black — depth from lightness, not glow. */
+.loading__skyline {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 0;
+  height: clamp(120px, 22vh, 220px);
+  fill: var(--surface-overlay);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.loading__skyline svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .loading__logo {

@@ -89,17 +89,30 @@ function factDuration(text) {
   return 160 + text.length * perChar + 2000
 }
 
+// Fisher-Yates — a fresh, unbiased order each time the loader mounts.
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 function FunFacts() {
+  // Shuffle once on mount so the reel starts somewhere different each visit, then
+  // advance sequentially through the whole shuffled set before looping.
+  const [facts] = useState(() => shuffle(FACTS))
   const [i, setI] = useState(0)
   useEffect(() => {
-    const t = setTimeout(() => setI((n) => (n + 1) % FACTS.length), factDuration(FACTS[i]))
+    const t = setTimeout(() => setI((n) => (n + 1) % facts.length), factDuration(facts[i]))
     return () => clearTimeout(t)
-  }, [i])
+  }, [i, facts])
   return (
     <div className="loading__facts">
       <p className="loading__facts-label">Did you know</p>
-      {/* key={i} remounts the typewriter so each fact types in from empty. */}
-      <Typewriter key={i} text={FACTS[i]} className="loading__fact" />
+      {/* key remounts the typewriter so each fact types in from empty. */}
+      <Typewriter key={`${i}-${facts[i]}`} text={facts[i]} className="loading__fact" />
     </div>
   )
 }

@@ -69,12 +69,37 @@ const FLAG_LIFT = R * 1.006
 // wide countries (Argentina, Australia) don't sink through the surface.
 const MAX_EDGE_DEG = 2.5
 
+// UV basis for the flag = the bounding box of the country's *largest* landmass,
+// not shape.bbox (which spans every polygon). A distant overseas territory blows
+// the full bbox out so far that the mainland maps into a single flag stripe:
+// France's metropolitan shape fell entirely inside the tricolour's right band and
+// filled solid red (its bbox reached French Guiana at lng −54.5); the USA's did
+// the same via Alaska. Mapping across the dominant polygon restores the true fill.
+// Single-landmass nations are unaffected — their main bbox equals shape.bbox.
+function mainBBox(shape) {
+  let best = null
+  let bestArea = -1
+  for (const poly of shape.polys) {
+    let a = 0
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      a += (poly[j][0] + poly[i][0]) * (poly[j][1] - poly[i][1])
+    }
+    a = Math.abs(a / 2)
+    if (a <= bestArea) continue
+    let mnx = 180, mny = 90, mxx = -180, mxy = -90
+    for (const [x, y] of poly) { if (x < mnx) mnx = x; if (x > mxx) mxx = x; if (y < mny) mny = y; if (y > mxy) mxy = y }
+    best = [mnx, mny, mxx, mxy]
+    bestArea = a
+  }
+  return best || shape.bbox
+}
+
 // Build a flag-fill geometry for one country shape ({ bbox, polys }): triangulate
 // each ring in lng/lat space, subdivide long edges, project to the sphere, and
-// UV-map the flag across the country's bounding box so the pattern stretches to
-// fill the true silhouette (Argentina's bands run north–south across the shape).
+// UV-map the flag across the main-landmass bounding box so the pattern stretches
+// to fill the true silhouette (Argentina's bands run north–south across the shape).
 function buildFlagGeometry(shape, lift = FLAG_LIFT) {
-  const [minLng, minLat, maxLng, maxLat] = shape.bbox
+  const [minLng, minLat, maxLng, maxLat] = mainBBox(shape)
   const w = maxLng - minLng || 1
   const h = maxLat - minLat || 1
   const verts = [] // [lng,lat]

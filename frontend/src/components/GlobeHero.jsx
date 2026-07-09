@@ -511,6 +511,14 @@ function GlobeHero({
       controls.autoRotateSpeed = 0.35
       controls.update()
 
+      // Staggered venue-dot pulse (Part 5g) — a soft breathing scale, 1 → ~1.22.
+      if (!reduceMotion && E.markerMeshes.length) {
+        const pt = performance.now() * 0.0028
+        for (const m of E.markerMeshes) {
+          if (m.userData.pulse) m.scale.setScalar(1 + 0.22 * (0.5 + 0.5 * Math.sin(pt + m.userData.phase)))
+        }
+      }
+
       const fl = E.flight
       if (fl) {
         fl.t = Math.min(1, fl.t + fl.speed)
@@ -587,12 +595,16 @@ function GlobeHero({
     }
     E.markerMeshes = []
     const geo = new THREE.SphereGeometry(0.016, 12, 12)
+    let venueN = 0
     for (const mk of markers) {
       const mat = new THREE.MeshBasicMaterial({ color: mk.hot ? COL.markerHot : COL.marker })
       const mesh = new THREE.Mesh(geo.clone(), mat)
       const [x, y, z] = llToXYZ(mk.lat, mk.lng, R * 1.01)
       mesh.position.set(x, y, z)
       mesh.userData.payload = mk
+      // Part 5g — venue dots breathe with a gentle, staggered pulse (each offset
+      // by a phase so they never pulse in unison). Country markers stay steady.
+      if (mk.kind === 'venue') { mesh.userData.pulse = true; mesh.userData.phase = venueN++ * 0.7 }
       E.markerGroup.add(mesh)
       E.markerMeshes.push(mesh)
     }

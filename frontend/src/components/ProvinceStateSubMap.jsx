@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import hostSubs from '../data/hostSubdivisions.json'
+import { subAbbr } from '../data/subdivisionAbbr'
 import './ProvinceStateSubMap.css'
 
 // Host-nation sub-map (B3). For the three 2026 hosts only, an SVG inset of the
@@ -44,33 +45,45 @@ export default function ProvinceStateSubMap({ code }) {
     const k = Math.cos(((minLat + maxLat) / 2) * Math.PI / 180)
     const project = (lng, lat) => [(lng - minLng) * k, maxLat - lat]
 
+    // Signed-area centroid of a projected ring, so the abbreviation lands at the
+    // visual centre of each subdivision's largest landmass (returns area too, to
+    // pick that largest ring). Falls back to the bbox centre for degenerate rings.
+    const centroidOf = (ring) => {
+      let a = 0, cx = 0, cy = 0
+      for (let i = 0, n = ring.length; i < n; i++) {
+        const [x0, y0] = ring[i]
+        const [x1, y1] = ring[(i + 1) % n]
+        const cross = x0 * y1 - x1 * y0
+        a += cross; cx += (x0 + x1) * cross; cy += (y0 + y1) * cross
+      }
+      if (Math.abs(a) < 1e-6) {
+        let bx1 = Infinity, by1 = Infinity, bx2 = -Infinity, by2 = -Infinity
+        for (const [x, y] of ring) { if (x < bx1) bx1 = x; if (x > bx2) bx2 = x; if (y < by1) by1 = y; if (y > by2) by2 = y }
+        return [(bx1 + bx2) / 2, (by1 + by2) / 2, Math.abs((bx2 - bx1) * (by2 - by1))]
+      }
+      a /= 2
+      return [cx / (6 * a), cy / (6 * a), Math.abs(a)]
+    }
+
+    // Each subdivision is filled with one of five tonal steps of the host colour
+    // (index-cycled), so neighbours read as distinct shapes — the reference-map
+    // effect, kept role-locked to the host hue rather than a rainbow palette.
     let w = 0, h = 0
-    const provs = subs.map((s) => {
+    const provs = subs.map((s, i) => {
+      let best = null
       const d = s.rings
-        .map((ring) => 'M' + ring.map(([lng, lat]) => { const [x, y] = project(lng, lat); if (x > w) w = x; if (y > h) h = y; return `${x.toFixed(2)},${y.toFixed(2)}` }).join('L') + 'Z')
+        .map((ring) => {
+          const pts = ring.map(([lng, lat]) => { const [x, y] = project(lng, lat); if (x > w) w = x; if (y > h) h = y; return [x, y] })
+          const [cx, cy, area] = centroidOf(pts)
+          if (!best || area > best.area) best = { cx, cy, area }
+          return 'M' + pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join('L') + 'Z'
+        })
         .join(' ')
-      return { name: s.name, d }
+      return { name: s.name, d, tone: i % 5, abbr: subAbbr(code, s.name), cx: best.cx, cy: best.cy }
     })
     const caps = capitals.map((c) => { const [x, y] = project(c.lng, c.lat); return { ...c, x, y } })
 
-    // City labels — a greedy de-clutter so dense regions (US Northeast) don't turn
-    // into a smear of overlapping text. The national capital is placed first and
-    // always kept; every other label is dropped if its box would collide with one
-    // already placed. Labels offset up-right of the dot so they never sit on it.
-    const ordered = [...caps].sort((a, b) => (b.national ? 1 : 0) - (a.national ? 1 : 0))
-    const placed = []
-    const labels = ordered.map((c) => {
-      const fs = c.national ? 2.8 : 2.2
-      const tx = c.x + 1.2
-      const ty = c.y - 1.0
-      const box = { x1: tx, y1: ty - fs, x2: tx + c.name.length * fs * 0.52, y2: ty }
-      const hit = placed.some((p) => !(box.x2 < p.x1 || box.x1 > p.x2 || box.y2 < p.y1 || box.y1 > p.y2))
-      const show = c.national || !hit
-      if (show) placed.push(box)
-      return { ...c, fs, tx, ty, show }
-    })
-
-    return { subs, provs, caps, labels, w, h, vbW: w + 2, vbH: h + 2 }
+    return { subs, provs, caps, w, h, vbW: w + 2, vbH: h + 2 }
   }, [data, code])
 
   const svgRef = useRef(null)
@@ -155,28 +168,30 @@ export default function ProvinceStateSubMap({ code }) {
       >
         <g transform={`translate(${view.x.toFixed(3)} ${view.y.toFixed(3)}) scale(${view.z.toFixed(3)})`}>
           <g className="submap__provs">
-            {geo.provs?.map((p) => <path key={p.name} d={p.d} className="submap__prov" />)}
+            {geo.provs?.map((p) => (
+              <path key={p.name} d={p.d} className={`submap__prov submap__prov--t${p.tone}`} />
+            ))}
           </g>
           <g className="submap__caps">
             {geo.caps.map((c) => (
               <circle
                 key={`${c.name}-${c.region || 'nat'}`}
-                cx={c.x.toFixed(2)} cy={c.y.toFixed(2)} r={c.national ? 0.9 : 0.42}
+                cx={c.x.toFixed(2)} cy={c.y.toFixed(2)} r={c.national ? 1.2 : 0.5}
                 className={`submap__cap${c.national ? ' submap__cap--nat' : ''}`}
               >
                 <title>{c.name}{c.region ? ` · ${c.region}` : ''}{c.national ? ' (capital)' : ''}</title>
               </circle>
             ))}
           </g>
-          <g className="submap__labels">
-            {geo.labels.filter((c) => c.show).map((c) => (
+          <g className="submap__abbrs">
+            {geo.provs?.filter((p) => p.abbr).map((p) => (
               <text
-                key={`${c.name}-${c.region || 'nat'}`}
-                x={c.tx.toFixed(2)} y={c.ty.toFixed(2)}
-                fontSize={c.fs}
-                className={`submap__label${c.national ? ' submap__label--nat' : ''}`}
+                key={p.name}
+                x={p.cx.toFixed(2)} y={p.cy.toFixed(2)}
+                className="submap__abbr"
+                textAnchor="middle" dominantBaseline="middle"
               >
-                {c.name}
+                {p.abbr}
               </text>
             ))}
           </g>

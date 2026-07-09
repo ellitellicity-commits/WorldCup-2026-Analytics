@@ -31,13 +31,22 @@
 .submap__svg.is-zoomed { cursor: grab; }
 .submap__svg.is-zoomed:active { cursor: grabbing; }
 
+/* Each subdivision is a distinct filled shape. Rather than a rainbow palette,
+   the five tones are lightness steps of the single host hue (mixed toward the
+   card surface, not new hues), so neighbours separate cleanly while the map
+   stays role-locked to the host colour per DESIGN.md. */
 .submap__prov {
-  fill: color-mix(in srgb, var(--host) 35%, transparent);
-  stroke: color-mix(in srgb, var(--host) 90%, transparent);
-  stroke-width: 1.4;
+  stroke: color-mix(in srgb, var(--host) 70%, var(--studio-black));
+  stroke-width: 0.8;
+  stroke-opacity: 0.55;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
+.submap__prov--t0 { fill: color-mix(in srgb, var(--host) 52%, var(--surface-card)); }
+.submap__prov--t1 { fill: color-mix(in srgb, var(--host) 34%, var(--surface-card)); }
+.submap__prov--t2 { fill: color-mix(in srgb, var(--host) 66%, var(--surface-card)); }
+.submap__prov--t3 { fill: color-mix(in srgb, var(--host) 24%, var(--surface-elevated)); }
+.submap__prov--t4 { fill: color-mix(in srgb, var(--host) 44%, var(--surface-elevated)); }
 .submap__cap {
   fill: var(--ink-secondary);
   stroke: var(--studio-black);
@@ -51,23 +60,21 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* City labels — Barlow Condensed, drawn in SVG user units (font-size set per
-   node so the national capital reads a touch larger). They scale with the
-   viewport group on zoom, so they stay legible as you zoom in. */
-.submap__label {
+/* Province / state abbreviations — Barlow Condensed, centred in each shape, with
+   a dark ink halo so the two-letter code stays legible over any tone. Drawn in
+   SVG user units so they scale with the viewport group as you zoom in. */
+.submap__abbr {
   font-family: var(--font-display);
-  font-weight: 600;
-  fill: var(--ink-secondary);
+  font-weight: 700;
+  font-size: 2.1px;
+  letter-spacing: 0.04em;
+  fill: rgba(255, 255, 255, 0.92);
   paint-order: stroke;
-  stroke: color-mix(in srgb, var(--studio-black) 70%, transparent);
-  stroke-width: 0.5;
+  stroke: color-mix(in srgb, var(--studio-black) 78%, transparent);
+  stroke-width: 0.6;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
   user-select: none;
-}
-.submap__label--nat {
-  fill: var(--host);
-  font-weight: 700;
 }
 
 /* Reset control — quiet chip, top-right, only present while zoomed/panned. */

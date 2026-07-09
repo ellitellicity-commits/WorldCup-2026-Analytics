@@ -11,7 +11,7 @@
 
 **A match predictor, Monte Carlo bracket simulator, and player dashboard for the 2026 FIFA World Cup, built and deployed live during the real tournament.**
 
-[Open the live app](https://world-cup-2026-analytics-xi.vercel.app)
+[**LIVE APP**](https://world-cup-2026-analytics-xi.vercel.app)
 
 </div>
 
@@ -22,8 +22,6 @@ This is not a retrospective study written after the fact. It was built and shipp
 Honest framing: this is a portfolio project. The model is useful, not oracular (see [Model Transparency](#model-transparency)), and the interface is desktop-first.
 
 ## Demo
-
-[Open the live app](https://world-cup-2026-analytics-xi.vercel.app)
 
 <!-- Ellison: add demo video / walkthrough links here.
      - Full walkthrough:

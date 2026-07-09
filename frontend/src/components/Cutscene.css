@@ -1,29 +1,72 @@
 /* Pregame cutscene overlay (B4). Full-screen cinematic focal moment on the deep
-   studio-black ground. Neutral chrome — the accent colours stay role-locked; the
+   studio-black ground. Neutral chrome - the accent colours stay role-locked; the
    drama comes from motion and scale, not hue. */
 .cutscene {
   position: fixed;
   inset: 0;
-  z-index: 500; /* above the sticky nav (--z-sticky: 100) — full-screen takeover */
+  z-index: 500; /* above the sticky nav (--z-sticky: 100) - full-screen takeover */
   overflow: hidden;
   background: radial-gradient(circle at 50% 42%, #10151b, var(--studio-black) 70%);
   display: grid;
   place-items: center;
+
+  /* Vintage aeronautical-chart palette - a deliberate, self-contained cinematic
+     prop for the flight beat. NOT product chrome: the app's role-locked accents
+     are untouched, and this parchment never leaves the cutscene overlay. */
+  --cut-parchment: #e7d7b4;
+  --cut-parchment-deep: #d6c093;
+  --cut-ink: #3a2c17;
+  --cut-line: rgba(92, 68, 36, 0.30);
+  --cut-frame: rgba(74, 54, 28, 0.62);
+  --cut-route: #a23b1e;
+  --cut-vignette: rgba(58, 40, 16, 0.52);
 }
 
-.cut__stage {
+/* Beat 2 - the aged paper map. Parchment base + mottled aging + a slice-filled
+   SVG chart on top. Revealed at the flight beat, faded out after. */
+.cut__map {
   position: absolute;
   inset: 0;
-  opacity: 0; /* revealed at the plane-arrival beat */
+  opacity: 0;
+  background:
+    radial-gradient(120% 90% at 22% 18%, color-mix(in srgb, var(--cut-parchment) 92%, #fff), transparent 60%),
+    radial-gradient(140% 120% at 82% 88%, var(--cut-parchment-deep), transparent 55%),
+    var(--cut-parchment);
 }
-.cut__stage canvas { display: block; }
+.cut__chart {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.cut__compass-n {
+  font: 700 22px/1 var(--font-display);
+  fill: var(--cut-frame);
+  text-anchor: middle;
+}
 
-/* --- Beat 1: VS card --- */
+/* Host-nation coastlines - hand-drawn vintage look: thin sepia stroke over a
+   barely-there land tint, so the route and pin read clearly on top. */
+.cut__geo path {
+  fill: color-mix(in srgb, var(--cut-ink) 7%, transparent);
+  stroke: var(--cut-frame);
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* --- Beat 1: VS card, pinned in the TOP THIRD so the team names and flags sit
+   well clear of the referee and countdown below. Full-width flex centring (no
+   transform on the element itself) leaves the exit scale tween unconflicted. --- */
 .cut__vs {
-  position: relative;
+  position: absolute;
+  top: clamp(40px, 11vh, 128px);
+  left: 0;
+  right: 0;
   z-index: 2;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: clamp(16px, 5vw, 64px);
 }
 .cut__side {
@@ -32,6 +75,11 @@
   align-items: center;
   gap: 8px;
   width: min(38vw, 360px);
+  /* The flag + code stack sits ABOVE the team name. Matching that stack's height
+     as bottom padding vertically centres the NAME within each side, so the row's
+     align-items:center lands the VS badge exactly on the team-name line rather
+     than up at the flags. */
+  padding-bottom: 122px;
 }
 .cut__flag {
   border-radius: var(--radius-sm);
@@ -75,53 +123,72 @@
   color: var(--ink-secondary);
   white-space: nowrap;
 }
+/* Venue label - a solid parchment cartouche pinned to the top of the chart, so
+   the stadium name + city sit in their own titled band rather than floating over
+   the graticule, coastlines and flight arc. Sepia ink + a double sepia frame
+   echo the chart's own ornamental border; the opaque fill guarantees the text
+   never overlaps the map content beneath it. */
 .cut__caption--venue {
   bottom: auto;
-  top: clamp(48px, 12vh, 120px);
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(1.75rem, 5vw, 3rem);
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--ink);
-}
-
-/* --- Beat 4: hype text --- */
-.cut__hype {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  bottom: clamp(64px, 16vh, 160px);
-  transform: translateX(-50%);
-  width: min(90vw, 780px);
+  top: clamp(28px, 7vh, 72px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 4px;
+  max-width: min(86vw, 620px);
+  padding: 10px clamp(20px, 4vw, 40px) 12px;
+  background: color-mix(in srgb, var(--cut-parchment) 96%, #fff);
+  border: 2px solid var(--cut-frame);
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--cut-parchment) 96%, #fff),
+    0 0 0 4px color-mix(in srgb, var(--cut-frame) 55%, transparent),
+    0 10px 30px rgba(58, 40, 16, 0.35);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 4.4vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--cut-ink);
+  white-space: nowrap;
 }
-.cut__hype-line {
-  margin: 0;
-  opacity: 0; /* revealed per-line by the timeline */
-  font: 500 clamp(1.1rem, 2.6vw, 1.6rem) / 1.35 var(--font-body);
-  color: var(--ink);
-  text-align: center;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+.cut__caption-city {
+  font: 600 var(--text-label) / 1 var(--font-body);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--cut-ink) 78%, transparent);
 }
 
-/* --- Beat 5: countdown + hard cut --- */
+/* --- Beat 4: countdown + hard cut. The giant number sits in the lower third,
+   centred full-width (no transform, so the GSAP scale tween stays clean) and
+   BEHIND the referee (z-index 2 < referee's 6): a big, faint backdrop the
+   referee stands in front of, arm raised, rather than a number stamped over him.
+   The bubble is suppressed on this beat (he's blowing the whistle, not talking),
+   so the only foreground is the referee himself.
+   NB the ~15% background weight is carried by the colour's alpha, not the opacity
+   property: GSAP pulses this element's opacity 0 -> 1 -> 0 per digit, so a CSS
+   opacity would be overwritten at the peak; baking it into the ink alpha keeps
+   the number a faint ghost even at the tween's full opacity. --- */
 .cut__count {
   position: absolute;
-  z-index: 4;
+  left: 0;
+  right: 0;
+  bottom: clamp(24px, 7vh, 96px);
+  z-index: 2;
+  text-align: center;
   font-weight: 800;
-  font-size: clamp(6rem, 22vw, 16rem);
+  font-size: clamp(20vw, 28vw, 340px);
   line-height: 1;
-  color: var(--ink);
+  color: color-mix(in srgb, var(--ink) 15%, transparent);
   opacity: 0;
+  pointer-events: none;
   font-variant-numeric: tabular-nums;
 }
 .cut__flash {
   position: absolute;
   inset: 0;
-  z-index: 5;
+  z-index: 7; /* above the referee (6) so the hard cut fully covers the frame */
   background: var(--studio-black);
   opacity: 0;
   pointer-events: none;
@@ -129,7 +196,7 @@
 
 .cut__skip {
   position: absolute;
-  z-index: 6;
+  z-index: 8;
   bottom: 20px;
   right: 24px;
   padding: 8px 16px;
@@ -144,5 +211,5 @@
 .cut__skip:hover { color: var(--ink); background: var(--surface-elevated); }
 
 @media (prefers-reduced-motion: reduce) {
-  .cut__stage { opacity: 1; }
+  .cut__map { opacity: 0; }
 }

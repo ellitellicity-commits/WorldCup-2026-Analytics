@@ -1,6 +1,6 @@
 {
   "edition": "2026-06-11",
-  "source": "FIFA/Coca-Cola Men's World Ranking, edition of 11 June 2026 (fifa.com/fifa-world-ranking). Real published world-ranking positions — NOT qualification/seeding order. Cross-verified against Wikipedia (top 20) and Sofascore/whereig (full list). Values are non-contiguous by design: the 48 qualified nations sit at their true world positions (e.g. New Zealand 85, Curaçao 82, Haiti 83), so gaps are expected and correct.",
+  "source": "FIFA/Coca-Cola Men's World Ranking, edition of 11 June 2026 (fifa.com/fifa-world-ranking). Real published world-ranking positions - NOT qualification/seeding order. Cross-verified against Wikipedia (top 20) and Sofascore/whereig (full list). Values are non-contiguous by design: the 48 qualified nations sit at their true world positions (e.g. New Zealand 85, Curaçao 82, Haiti 83), so gaps are expected and correct.",
   "note": "Used as the final group + third-place tiebreaker in standings.js (criterion after conduct) and shown in the Atlas. It does NOT feed the XGBoost win-probability model, which is driven by Elo ratings, form, and host features. Teams absent here fall to last on the ranking criterion.",
   "ranks": {
     "Argentina": 1,

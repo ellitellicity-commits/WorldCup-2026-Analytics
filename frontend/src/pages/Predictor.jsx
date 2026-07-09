@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 import FixturesRail from '../components/FixturesRail'
 import MatchCard from '../components/MatchCard'
 import KnockoutCard from '../components/KnockoutCard'
+import TabHeader from '../components/TabHeader'
 import { buildViews, liveResults } from '../lib/bracket'
+import { teamMeta, flagUrl } from '../lib/teams'
 import { useTournamentData } from '../lib/tournamentData'
 import './Predictor.css'
 
@@ -43,11 +45,47 @@ function buildDemoItems({ completed, allFixtures, todaysMatches }) {
   const upset = completed.filter((f) => modelCalledIt(f) === false).sort((a, b) => probOfActual(a) - probOfActual(b))[0]
   const longName = [...allFixtures].sort((a, b) => b.home.name.length + b.away.name.length - (a.home.name.length + a.away.name.length))[0]
   return [
-    { label: 'Today — live indicator', fixture: todaysMatches[0], today: true },
-    { label: 'Completed — model called it', fixture: calledIt },
-    { label: 'Completed — upset', fixture: upset },
+    { label: 'Today - live indicator', fixture: todaysMatches[0], today: true },
+    { label: 'Completed - model called it', fixture: calledIt },
+    { label: 'Completed - upset', fixture: upset },
     { label: 'Long team names', fixture: longName },
   ].filter((i) => i.fixture)
+}
+
+// Adapt a finished group fixture into the view shape KnockoutCard consumes, so
+// finished group games render through the same compact card as finished KO ties
+// (flags, Full time, winner/dim, venue, stats panel). KnockoutCard's `group`
+// mode keeps the green group chip and the honest three-way model bar.
+function groupFinishedView(f) {
+  return {
+    id: `g-${f.home.code}-${f.away.code}`,
+    home: { name: f.home.name, code: f.home.code, flag: flagUrl(teamMeta(f.home.name).iso) },
+    away: { name: f.away.name, code: f.away.code, flag: flagUrl(teamMeta(f.away.name).iso) },
+    prediction: f.prediction,
+    score: { home_score: f.result.home_score, away_score: f.result.away_score, penalties: null },
+    venue: f.venue,
+    status: 'completed',
+    date: f.date,
+  }
+}
+
+// Finished group games, in the KO card's compact layout (reuses the shared .rail).
+function GroupFinishedRail({ title, fixtures }) {
+  return (
+    <section className="rail" aria-label={title}>
+      <div className="rail__head">
+        <h2 className="rail__title display">{title}</h2>
+        <span className="rail__eyebrow">{fixtures.length} played</span>
+      </div>
+      <ul className="rail__track">
+        {fixtures.map((f) => (
+          <li className="rail__item" key={`${f.home.code}-${f.away.code}-${f.date}`}>
+            <KnockoutCard view={groupFinishedView(f)} group={f.group} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
 }
 
 // Rail of upcoming knockout ties (reuses the shared .rail layout from FixturesRail).
@@ -98,29 +136,40 @@ function Predictor() {
     // In-play ties lead; the rest are the genuine upcoming knockout matches.
     const liveKO = openKO.filter((v) => v.status === 'live')
     const upcomingKO = openKO.filter((v) => v.status !== 'live')
+    // Finished knockout ties - decided ('completed' for R32, 'decided' for R16+),
+    // both teams known. Same match-status logic as the live/upcoming split above;
+    // these previously had no home on this page and now join Finished Matches.
+    // Most-advanced round first (a Final reads as more recent than an R32).
+    const finishedKO = Object.values(koViews)
+      .filter((v) => v.home?.kind === 'team' && v.away?.kind === 'team' && (v.winner != null || v.status === 'completed'))
+      .sort((a, b) => ROUND_RANK[b.round] - ROUND_RANK[a.round] || b.id - a.id)
 
-    return { TODAY, allFixtures, completed, todaysMatches, upcomingGroup, liveGroup, liveKO, upcomingKO, finished }
+    return { TODAY, allFixtures, completed, todaysMatches, upcomingGroup, liveGroup, liveKO, upcomingKO, finished, finishedKO }
   }, [data])
 
-  const { TODAY, upcomingGroup, liveGroup, liveKO, upcomingKO, finished } = view
+  const { TODAY, upcomingGroup, liveGroup, liveKO, upcomingKO, finished, finishedKO } = view
   const hasLive = liveKO.length > 0 || liveGroup.length > 0
   const nothingUpcoming = upcomingGroup.length === 0 && upcomingKO.length === 0 && !hasLive
+  // Live model accuracy over the finished group results shown below (each carries
+  // a CALLED IT / upset badge). Honest running tally, straight from the same
+  // model-called check the badges use.
+  const finishedCalls = finished.map(modelCalledIt).filter((v) => v !== null)
+  const calledCount = finishedCalls.filter(Boolean).length
+  const totalFinished = finishedCalls.length
 
   return (
     <div className="predictor">
-      <header className="predictor__head">
-        <h1 className="predictor__title display">Match Predictor</h1>
-        <p className="predictor__sub">
-          The model’s win probabilities for what’s next, up top. Completed matches — with the result against the
-          call — sit in Finished Matches below.
-        </p>
-      </header>
+      <TabHeader
+        titleId="predictor-title"
+        title="Match Predictor"
+        description="The model’s win probabilities for what’s next, up top. Completed matches - with the result against the call - sit in Finished Matches below."
+      />
 
       {liveKO.length > 0 && <KnockoutRail title="Live now" ties={liveKO} />}
 
       {liveGroup.length > 0 && (
         <FixturesRail
-          title={liveKO.length > 0 ? 'Live now — Group Stage' : 'Live now'}
+          title={liveKO.length > 0 ? 'Live now - Group Stage' : 'Live now'}
           eyebrow={`${liveGroup.length} in play`}
           fixtures={liveGroup}
           todayDate={TODAY}
@@ -147,20 +196,29 @@ function Predictor() {
         </section>
       )}
 
+      {finishedKO.length > 0 && (
+        <KnockoutRail title={finished.length > 0 ? 'Finished - Knockouts' : 'Finished Matches'} ties={finishedKO} />
+      )}
+
       {finished.length > 0 && (
-        <FixturesRail
-          title="Finished Matches"
-          eyebrow={`${finished.length} played`}
+        <GroupFinishedRail
+          title={finishedKO.length > 0 ? 'Finished - Group Stage' : 'Finished Matches'}
           fixtures={finished}
-          todayDate={TODAY}
         />
+      )}
+
+      {totalFinished > 0 && (
+        <p className="predictor__accuracy">
+          Every result above was predicted before kick-off. The model has called{' '}
+          <span className="tnum">{calledCount}</span> of <span className="tnum">{totalFinished}</span> right so far.
+        </p>
       )}
 
       {showDemo && (
         <section className="gallery" aria-label="Match card states">
           <div className="gallery__head">
             <h2 className="gallery__title display">Card States</h2>
-            <p className="gallery__sub">Component demo — every state driven by the same card and real model output.</p>
+            <p className="gallery__sub">Component demo - every state driven by the same card and real model output.</p>
           </div>
           <div className="gallery__grid">
             {buildDemoItems(view).map((item) => (

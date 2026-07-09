@@ -1,12 +1,16 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import hostSubs from '../data/hostSubdivisions.json'
+import { subAbbr } from '../data/subdivisionAbbr'
 import './ProvinceStateSubMap.css'
 
 // Host-nation sub-map (B3). For the three 2026 hosts only, an SVG inset of the
 // nation's real internal provinces/states (Natural Earth 10m admin-1) with its
-// state/provincial capitals plotted — a richer treatment than the plain
-// silhouette the other 45 nations get. Rendered in the Atlas panel when a host
-// is the active selection. Coloured in the host's national colour (US blue,
-// Canada red, Mexico green — the host-identity treatment, matched to the globe).
+// state/provincial capitals plotted and labelled - a richer treatment than the
+// plain silhouette the other 45 nations get. Rendered in the Atlas panel when a
+// host is the active selection. Coloured in the host's national colour (US blue,
+// Canada red, Mexico green - the host-identity treatment, matched to the globe).
+// Scroll/pinch to zoom (1×-6×) and drag to pan a viewport <g>; a reset returns
+// the default full-country view.
 
 const HOST_LABEL = { US: 'United States', CA: 'Canada', MX: 'Mexico' }
 const UNIT = { US: 'states', CA: 'provinces & territories', MX: 'states' }
@@ -16,53 +20,225 @@ const UNIT = { US: 'states', CA: 'provinces & territories', MX: 'states' }
 const EXCLUDE = { US: new Set(['Alaska', 'Hawaii']) }
 const LEGEND = { US: '48 contiguous states + DC', CA: 'provinces & territories', MX: 'states' }
 
+const MIN_ZOOM = 1
+const MAX_ZOOM = 6
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
+
 export default function ProvinceStateSubMap({ code }) {
   const data = hostSubs[code]
-  if (!data) return null
-  const ex = EXCLUDE[code]
-  const subs = ex ? data.subs.filter((s) => !ex.has(s.name)) : data.subs
-  const capitals = ex ? data.capitals.filter((c) => !ex.has(c.region)) : data.capitals
 
-  // Tight bounds from the rendered subdivisions (not data.bbox, which may include
-  // excluded outliers). Equirectangular with lng scaled by cos(midLat); y flipped.
-  let minLng = 180, minLat = 90, maxLng = -180, maxLat = -90
-  for (const s of subs) for (const ring of s.rings) for (const [lng, lat] of ring) {
-    if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng
-    if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat
+  // All geometry, labels and viewBox derive from the (static) subdivision data,
+  // so memoise on `code` - the pointer handlers below read it without recomputing.
+  const geo = useMemo(() => {
+    if (!data) return null
+    const ex = EXCLUDE[code]
+    const subs = ex ? data.subs.filter((s) => !ex.has(s.name)) : data.subs
+    const capitals = ex ? data.capitals.filter((c) => !ex.has(c.region)) : data.capitals
+
+    // Tight bounds from the rendered subdivisions (not data.bbox, which may include
+    // excluded outliers). Equirectangular with lng scaled by cos(midLat); y flipped.
+    let minLng = 180, minLat = 90, maxLng = -180, maxLat = -90
+    for (const s of subs) for (const ring of s.rings) for (const [lng, lat] of ring) {
+      if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng
+      if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat
+    }
+    const k = Math.cos(((minLat + maxLat) / 2) * Math.PI / 180)
+    const project = (lng, lat) => [(lng - minLng) * k, maxLat - lat]
+
+    // Signed-area centroid of a projected ring, so the abbreviation lands at the
+    // visual centre of each subdivision's largest landmass (returns area too, to
+    // pick that largest ring). Falls back to the bbox centre for degenerate rings.
+    const centroidOf = (ring) => {
+      let a = 0, cx = 0, cy = 0
+      for (let i = 0, n = ring.length; i < n; i++) {
+        const [x0, y0] = ring[i]
+        const [x1, y1] = ring[(i + 1) % n]
+        const cross = x0 * y1 - x1 * y0
+        a += cross; cx += (x0 + x1) * cross; cy += (y0 + y1) * cross
+      }
+      if (Math.abs(a) < 1e-6) {
+        let bx1 = Infinity, by1 = Infinity, bx2 = -Infinity, by2 = -Infinity
+        for (const [x, y] of ring) { if (x < bx1) bx1 = x; if (x > bx2) bx2 = x; if (y < by1) by1 = y; if (y > by2) by2 = y }
+        return [(bx1 + bx2) / 2, (by1 + by2) / 2, Math.abs((bx2 - bx1) * (by2 - by1))]
+      }
+      a /= 2
+      return [cx / (6 * a), cy / (6 * a), Math.abs(a)]
+    }
+
+    // Each subdivision is filled with one of five tonal steps of the host colour
+    // (index-cycled), so neighbours read as distinct shapes - the reference-map
+    // effect, kept role-locked to the host hue rather than a rainbow palette.
+    let w = 0, h = 0
+    const provs = subs.map((s, i) => {
+      let best = null
+      // Track the subdivision's own extent so tiny regions (NE US: CT, RI, NJ,
+      // DE, MD, DC) can suppress their label - too small to letter cleanly, the
+      // codes just clump. The capital dot still plots; only the text is dropped.
+      let pMinX = Infinity, pMinY = Infinity, pMaxX = -Infinity, pMaxY = -Infinity
+      const d = s.rings
+        .map((ring) => {
+          const pts = ring.map(([lng, lat]) => {
+            const [x, y] = project(lng, lat)
+            if (x > w) w = x; if (y > h) h = y
+            if (x < pMinX) pMinX = x; if (x > pMaxX) pMaxX = x
+            if (y < pMinY) pMinY = y; if (y > pMaxY) pMaxY = y
+            return [x, y]
+          })
+          const [cx, cy, area] = centroidOf(pts)
+          if (!best || area > best.area) best = { cx, cy, area }
+          return 'M' + pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join('L') + 'Z'
+        })
+        .join(' ')
+      const tooSmall = (pMaxX - pMinX) < 1.5 || (pMaxY - pMinY) < 1.5
+      return { name: s.name, d, tone: i % 5, abbr: subAbbr(code, s.name), cx: best.cx, cy: best.cy, tooSmall }
+    })
+    const caps = capitals.map((c) => { const [x, y] = project(c.lng, c.lat); return { ...c, x, y } })
+
+    return { subs, provs, caps, w, h, vbW: w + 2, vbH: h + 2 }
+  }, [data, code])
+
+  const svgRef = useRef(null)
+  const vpRef = useRef(null) // the panned/zoomed viewport <g>
+  // View lives in a ref, not state: a wheel tick or a pointer-move pixel updates
+  // the <g> transform directly via the DOM, so 48+ paths never trigger a React
+  // re-render mid-gesture (the old setState-per-pixel caused frame drops/crash).
+  const viewRef = useRef({ z: 1, x: 0, y: 0 })
+  const drag = useRef(null)
+  // The only reactive bit: a boolean that flips just once when zoom crosses the
+  // 1x threshold, to swap the grab cursor and mount the reset button.
+  const [zoomed, setZoomed] = useState(false)
+
+  // Keep the viewport clamped so the map can never be panned fully off-frame.
+  // Plain in/out - no setState - so it can run inside the imperative handlers.
+  const clampViewRaw = useCallback((v) => {
+    if (!geo) return v
+    const z = clamp(v.z, MIN_ZOOM, MAX_ZOOM)
+    return {
+      z,
+      x: clamp(v.x, geo.w * (1 - z), 0),
+      y: clamp(v.y, geo.h * (1 - z), 0),
+    }
+  }, [geo])
+
+  // Push the current view straight onto the <g> transform attribute, and flip the
+  // zoomed flag only when it actually changes (the functional updater bails out of
+  // a re-render when the boolean is unchanged), so this is cheap to call per frame.
+  const applyTransform = useCallback(() => {
+    const vp = vpRef.current
+    if (!vp) return
+    const { z, x, y } = viewRef.current
+    vp.setAttribute('transform', `translate(${x.toFixed(3)} ${y.toFixed(3)}) scale(${z.toFixed(3)})`)
+    const isZoomed = z > MIN_ZOOM
+    setZoomed((prev) => (prev === isZoomed ? prev : isZoomed))
+  }, [])
+
+  // Reset to the full-country view whenever the selected host changes.
+  useEffect(() => {
+    viewRef.current = { z: 1, x: 0, y: 0 }
+    applyTransform()
+  }, [code, applyTransform])
+
+  // Client point → SVG user units (viewBox origin is -1,-1).
+  const toUser = useCallback((clientX, clientY) => {
+    const svg = svgRef.current
+    if (!svg || !geo) return { x: 0, y: 0 }
+    const r = svg.getBoundingClientRect()
+    return {
+      x: -1 + ((clientX - r.left) / r.width) * geo.vbW,
+      y: -1 + ((clientY - r.top) / r.height) * geo.vbH,
+    }
+  }, [geo])
+
+  // Wheel zoom anchored on the cursor. Registered non-passive so it can stop the
+  // parent Atlas panel from scrolling while the pointer is over the sub-map.
+  useEffect(() => {
+    const svg = svgRef.current
+    if (!svg || !geo) return undefined
+    const onWheel = (e) => {
+      e.preventDefault()
+      const p = toUser(e.clientX, e.clientY)
+      const v = viewRef.current
+      const nz = clamp(v.z * (e.deltaY < 0 ? 1.18 : 1 / 1.18), MIN_ZOOM, MAX_ZOOM)
+      const ratio = nz / v.z
+      viewRef.current = clampViewRaw({ z: nz, x: p.x - (p.x - v.x) * ratio, y: p.y - (p.y - v.y) * ratio })
+      applyTransform()
+    }
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    return () => svg.removeEventListener('wheel', onWheel)
+  }, [geo, toUser, clampViewRaw, applyTransform])
+
+  if (!geo) return null
+
+  const onPointerDown = (e) => {
+    if (viewRef.current.z <= MIN_ZOOM) return // nothing to pan at the default full view
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+    const v = viewRef.current
+    drag.current = { px: e.clientX, py: e.clientY, ox: v.x, oy: v.y }
   }
-  const k = Math.cos(((minLat + maxLat) / 2) * Math.PI / 180)
-  const project = (lng, lat) => [(lng - minLng) * k, maxLat - lat]
-
-  let w = 0, h = 0
-  const provs = subs.map((s) => {
-    const d = s.rings
-      .map((ring) => 'M' + ring.map(([lng, lat]) => { const [x, y] = project(lng, lat); if (x > w) w = x; if (y > h) h = y; return `${x.toFixed(2)},${y.toFixed(2)}` }).join('L') + 'Z')
-      .join(' ')
-    return { name: s.name, d }
-  })
-  const caps = capitals.map((c) => { const [x, y] = project(c.lng, c.lat); return { ...c, x, y } })
-  const nCaps = caps.length
+  const onPointerMove = (e) => {
+    if (!drag.current) return
+    const svg = svgRef.current
+    const r = svg.getBoundingClientRect()
+    const dx = ((e.clientX - drag.current.px) / r.width) * geo.vbW
+    const dy = ((e.clientY - drag.current.py) / r.height) * geo.vbH
+    viewRef.current = clampViewRaw({ ...viewRef.current, x: drag.current.ox + dx, y: drag.current.oy + dy })
+    applyTransform()
+  }
+  const endDrag = () => { drag.current = null }
+  const reset = () => { viewRef.current = { z: 1, x: 0, y: 0 }; applyTransform() }
 
   return (
-    <figure className={`submap submap--${code}`} aria-label={`${HOST_LABEL[code]} — ${subs.length} ${UNIT[code]} and their capitals`}>
-      <svg viewBox={`-1 -1 ${(w + 2).toFixed(1)} ${(h + 2).toFixed(1)}`} role="img" preserveAspectRatio="xMidYMid meet">
-        <g className="submap__provs">
-          {provs.map((p) => <path key={p.name} d={p.d} className="submap__prov" />)}
-        </g>
-        <g className="submap__caps">
-          {caps.map((c) => (
-            <circle
-              key={`${c.name}-${c.region || 'nat'}`}
-              cx={c.x.toFixed(2)} cy={c.y.toFixed(2)} r={c.national ? 0.9 : 0.42}
-              className={`submap__cap${c.national ? ' submap__cap--nat' : ''}`}
-            >
-              <title>{c.name}{c.region ? ` · ${c.region}` : ''}{c.national ? ' (capital)' : ''}</title>
-            </circle>
-          ))}
+    <figure className={`submap submap--${code}`} aria-label={`${HOST_LABEL[code]} - ${geo.subs.length} ${UNIT[code]} and their capitals`}>
+      <svg
+        ref={svgRef}
+        viewBox={`-1 -1 ${geo.vbW.toFixed(1)} ${geo.vbH.toFixed(1)}`}
+        role="img"
+        preserveAspectRatio="xMidYMid meet"
+        className={`submap__svg${zoomed ? ' is-zoomed' : ''}`}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+      >
+        <g ref={vpRef} className="submap__viewport" transform="translate(0 0) scale(1)">
+          <g className="submap__provs">
+            {geo.provs?.map((p) => (
+              <path key={p.name} d={p.d} className={`submap__prov submap__prov--t${p.tone}`} />
+            ))}
+          </g>
+          <g className="submap__caps">
+            {geo.caps.map((c) => (
+              <circle
+                key={`${c.name}-${c.region || 'nat'}`}
+                cx={c.x.toFixed(2)} cy={c.y.toFixed(2)} r={c.national ? 1.2 : 0.5}
+                className={`submap__cap${c.national ? ' submap__cap--nat' : ''}`}
+              >
+                <title>{c.name}{c.region ? ` · ${c.region}` : ''}{c.national ? ' (capital)' : ''}</title>
+              </circle>
+            ))}
+          </g>
+          <g className="submap__abbrs">
+            {geo.provs?.filter((p) => p.abbr && !p.tooSmall).map((p) => (
+              <text
+                key={p.name}
+                x={p.cx.toFixed(2)} y={p.cy.toFixed(2)}
+                className="submap__abbr"
+                textAnchor="middle" dominantBaseline="middle"
+              >
+                {p.abbr}
+              </text>
+            ))}
+          </g>
         </g>
       </svg>
+      {zoomed && (
+        <button type="button" className="submap__reset" onClick={reset} aria-label="Reset sub-map view">
+          Reset
+        </button>
+      )}
       <figcaption className="submap__legend">
-        {code === 'US' ? LEGEND.US : <><span className="tnum">{subs.length}</span> {UNIT[code]}</>} · <span className="tnum">{nCaps}</span> capitals
+        {code === 'US' ? LEGEND.US : <><span className="tnum">{geo.subs.length}</span> {UNIT[code]}</>} · <span className="tnum">{geo.caps.length}</span> capitals · scroll to zoom
       </figcaption>
     </figure>
   )

@@ -2,7 +2,7 @@
 //
 // Pure geo logic (no Three.js, no DOM) so it runs in Node/tests. Given a
 // [lat,lng] sample from the globe surface under the cursor, decide which of the
-// 48 qualified nations owns that point — that country's landmass then fills with
+// 48 qualified nations owns that point - that country's landmass then fills with
 // its flag. Countries are pre-baked in data/countryShapes.json as { iso, bbox,
 // polys }, polys being [lng,lat] rings (see scripts/generate_country_shapes.mjs).
 //
@@ -28,7 +28,7 @@ const inBbox = (lng, lat, b) => lng >= b[0] && lng <= b[2] && lat >= b[1] && lat
 
 // Name of the country whose landmass contains [lat,lng], or null. `shapes` is
 // the countryShapes map (name → { iso, bbox, polys }). When polygons overlap at
-// a shared border the first match in iteration order wins — deterministic, and
+// a shared border the first match in iteration order wins - deterministic, and
 // the flag layer only ever shows one country, so there's no double render.
 export function countryAt(lat, lng, shapes) {
   for (const name in shapes) {

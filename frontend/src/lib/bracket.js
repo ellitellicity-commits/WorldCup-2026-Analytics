@@ -1,4 +1,4 @@
-// Bracket engine — turns the model's Monte Carlo title odds into head-to-head
+// Bracket engine - turns the model's Monte Carlo title odds into head-to-head
 // knockout probabilities, wires the fixed 2026 bracket tree, and runs a single
 // samplable simulation. No data is invented: team strength is derived from
 // odds.json (the same 10k-sim output the rest of the product shows).
@@ -26,13 +26,13 @@ const ODDS = Object.fromEntries(oddsData.teams.map((t) => [t.team, t.championshi
 const HOST_OF = { 'United States': 'US', Canada: 'CA', Mexico: 'MX' }
 const HOST_BONUS = 0.62 // log-odds rating units → ~+6-9pt swing at K below
 
-// Logistic on the rating gap. K tuned so clear favourites sit ~80–90% (a single
+// Logistic on the rating gap. K tuned so clear favourites sit ~80-90% (a single
 // knockout match is never a sure thing); clamped so nothing reads as a lock.
 const K = 0.46
 
 // Matchup probabilities are pure functions of (home, away, venue) and the same
 // pairings recur thousands of times across a Monte Carlo run. Memoise them into
-// a lookup table so a simulation loop is table reads, not repeated Math.exp —
+// a lookup table so a simulation loop is table reads, not repeated Math.exp -
 // the same precompute-the-matchups trick the offline notebook uses. Keyed by
 // venue too, because the host bonus is venue-specific.
 const PROB_CACHE = new Map()
@@ -62,7 +62,7 @@ export function isHostAtHome(name, venueCountry) {
 }
 
 // --- Group colours (rainbow data role, per the bracket brief) --------------
-// 12 distinct vivid hues, one per group — group identity is a legitimate data
+// 12 distinct vivid hues, one per group - group identity is a legitimate data
 // channel in a 48-team bracket. Always paired with the group LETTER (non-colour
 // signal) so it survives colour-vision deficiency.
 // Hue-matched to the 12 group borders in WorldCup2026_Bracket.webp (sampled),
@@ -109,7 +109,7 @@ export function team(name) {
   }
 }
 
-// Groups A–L with their four nations, favourite first.
+// Groups A-L with their four nations, favourite first.
 export function getGroups() {
   const byLetter = {}
   for (const t of oddsData.teams) {
@@ -210,7 +210,7 @@ function competitorFor(tok, results) {
 
 const pairKey = (a, b) => [a, b].sort().join('|')
 
-// The static knockout scaffold, used when no live data is threaded in — keeps
+// The static knockout scaffold, used when no live data is threaded in - keeps
 // callers that don't have the tournament context (e.g. currentStageLabel's
 // default) working against corrected bracket.json.
 const STATIC_KNOCKOUT = { r32: bracketData.r32, resultsByPair: new Map(), liveByPair: new Map() }
@@ -218,7 +218,7 @@ const STATIC_KNOCKOUT = { r32: bracketData.r32, resultsByPair: new Map(), liveBy
 // Real knockout results resolved onto the bracket. The R32 comes straight from
 // the (live-merged) r32 list. Later rounds are walked in order: once a match's
 // two teams are known from prior winners, a live result for that exact pairing
-// (knockout.resultsByPair, keyed by team pair) decides it — the same overlay
+// (knockout.resultsByPair, keyed by team pair) decides it - the same overlay
 // pattern the group stage uses, extended up the tree. Absent live data it
 // resolves to the static scaffold (only completed R32 in bracket.json).
 export function liveResults(knockout = STATIC_KNOCKOUT) {
@@ -228,7 +228,7 @@ export function liveResults(knockout = STATIC_KNOCKOUT) {
     if (m.status !== 'completed' || !m.result) continue
     const r = m.result
     // A knockout can be level after 90/120' and settled on penalties, so decide
-    // by the shootout when regulation was a draw — not by the (equal) score.
+    // by the shootout when regulation was a draw - not by the (equal) score.
     const homeWon =
       r.home_score !== r.away_score ? r.home_score > r.away_score : r.penalties ? r.penalties.home_score > r.penalties.away_score : true
     results[m.id] = {
@@ -270,7 +270,7 @@ function venueOf(id) {
   return R32_VENUE[id] || KO_VENUE[id] || null
 }
 
-// Knuth's Poisson sampler — a small goal count from a mean λ.
+// Knuth's Poisson sampler - a small goal count from a mean λ.
 function samplePoisson(lambda) {
   const L = Math.exp(-lambda)
   let k = 0
@@ -285,7 +285,7 @@ function samplePoisson(lambda) {
 // A plausible knockout scoreline consistent with the tie's decided winner. Goal
 // expectations widen with the model's edge (p), so a heavy favourite tends to
 // win by more. Knockouts are decided outright here (no draws), so we retry until
-// the regulation score is decisive AND matches `homeWins`; a 1–0 fallback keeps
+// the regulation score is decisive AND matches `homeWins`; a 1-0 fallback keeps
 // the loop finite. Returns { home_score, away_score } for the tie's home slot.
 function simulateScore(homeWins, p) {
   const edge = Math.abs(p - 0.5) * 2 // 0 (coin-flip) … 0.8 (clamped favourite)
@@ -335,7 +335,7 @@ export function buildViews(results, mode, r32 = bracketData.r32, liveByPair = ne
   const views = {}
   const today = bracketData.today
 
-  // R32 — competitors always known (locked draw in live mode, or the simulator's
+  // R32 - competitors always known (locked draw in live mode, or the simulator's
   // re-seeded qualifiers in simulate mode).
   for (const m of r32) {
     const home = team(m.home)
@@ -366,7 +366,7 @@ export function buildViews(results, mode, r32 = bracketData.r32, liveByPair = ne
     }
   }
 
-  // Knockout rounds — competitors resolved from results, else placeholders.
+  // Knockout rounds - competitors resolved from results, else placeholders.
   for (const id of [89, 90, 93, 94, 91, 92, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104]) {
     const [hf, af] = FEEDS[id]
     const home = competitorFor(hf, results)
@@ -386,7 +386,7 @@ export function buildViews(results, mode, r32 = bracketData.r32, liveByPair = ne
       home,
       away,
       // Host status depends only on THIS team being known and playing in its own
-      // country — not on the opponent being decided. A host that has advanced to
+      // country - not on the opponent being decided. A host that has advanced to
       // a home venue keeps its badge even while it awaits an opponent.
       homeHost: home.kind === 'team' && isHostAtHome(home.name, vc),
       awayHost: away.kind === 'team' && isHostAtHome(away.name, vc),
@@ -394,8 +394,8 @@ export function buildViews(results, mode, r32 = bracketData.r32, liveByPair = ne
       venue,
       status: r ? 'decided' : livePair ? 'live' : 'pending',
       // Real knockout ties (liveResults) and re-rolls (simulateKnockout) both
-      // carry a scoreline now, so every decided round renders goal digits — the
-      // same treatment R32 already got — instead of only a win-probability split.
+      // carry a scoreline now, so every decided round renders goal digits - the
+      // same treatment R32 already got - instead of only a win-probability split.
       // A live tie carries its running score + clock the same way R32 does.
       score: r?.score ?? (livePair ? { home_score: livePair.scores[home.name], away_score: livePair.scores[away.name] } : null),
       live: livePair ? { minute: livePair.minute, injuryTime: livePair.injuryTime, paused: livePair.paused } : null,
@@ -421,7 +421,7 @@ export function titleOdds(name) {
   return ODDS[name] ?? 0
 }
 
-// The earliest knockout round that isn't fully decided in the real results —
+// The earliest knockout round that isn't fully decided in the real results -
 // the tournament's live stage. Derived from the same data the bracket renders,
 // so the home hub and the bracket never disagree.
 const STAGE_LABELS = ['Round of 32', 'Round of 16', 'Quarter-finals', 'Semi-finals', 'Third place', 'Final']
@@ -433,10 +433,10 @@ export function currentStageLabel(knockout) {
   return 'Final'
 }
 
-// The tournament's current round, group stage included — the full picture the
+// The tournament's current round, group stage included - the full picture the
 // home hub needs. currentStageLabel only knows the knockout tree, so on its own
 // it reports "Round of 32" all through the group phase (no R32 is decided yet).
-// This walks the real order — Group Stage → R32 → … → Final — holding on the
+// This walks the real order - Group Stage → R32 → … → Final - holding on the
 // group phase until every group fixture is completed, then handing off to the
 // knockout walk. `groupFixtures` is the group-stage match list (the 72 fixtures);
 // `knockout` is the live-merged knockout model. Both come from the same

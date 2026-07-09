@@ -1,5 +1,6 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { teamMeta, flagUrl } from '../lib/teams'
+import TabHeader from './TabHeader'
 import './ChampionshipOdds.css'
 
 // Title odds round to nothing for the long tail; be honest about it rather than
@@ -8,10 +9,10 @@ function fmtPct(v) {
   const p = v * 100
   if (p >= 0.1) return `${p.toFixed(1)}%`
   if (p > 0) return '<0.1%'
-  return '—'
+  return '-'
 }
 
-// The descending path to the trophy — every stage already lives in odds.json.
+// The descending path to the trophy - every stage already lives in odds.json.
 const STAGES = [
   { key: 'round_of_32_odds', label: 'R32' },
   { key: 'round_of_16_odds', label: 'R16' },
@@ -23,7 +24,7 @@ const STAGES = [
 
 function survivalLabel(team) {
   const parts = STAGES.map((s) => `${s.label} ${fmtPct(team[s.key])}`).join(', ')
-  return `${team.team} run probability — ${parts}.`
+  return `${team.team} run probability - ${parts}.`
 }
 
 function SurvivalCurve({ team }) {
@@ -55,7 +56,7 @@ function SurvivalCurve({ team }) {
   )
 }
 
-function OddsRow({ team, meta, rank, barPct, isLeader, open, onToggle, index }) {
+function OddsRow({ team, meta, rank, dir = 0, barPct, isLeader, open, onToggle, index }) {
   const panelId = useId()
   const pct = fmtPct(team.championship_odds)
   const flag = flagUrl(meta.iso)
@@ -84,6 +85,19 @@ function OddsRow({ team, meta, rank, barPct, isLeader, open, onToggle, index }) 
             </svg>
           )}
           {rank}
+          {dir !== 0 && (
+            // Shape carries the signal (▲ rose / ▼ fell), never colour alone, so
+            // it stays colour-blind safe; muted ink keeps the role-locked hues
+            // (blue = prediction, red = live) reserved. Keyed on rank+dir so the
+            // one-shot fade replays whenever a nation actually moves.
+            <span
+              key={`${rank}-${dir}`}
+              className={`odds-row__move odds-row__move--${dir > 0 ? 'up' : 'down'}`}
+              aria-hidden="true"
+            >
+              {dir > 0 ? '▲' : '▼'}
+            </span>
+          )}
         </span>
 
         <span className="odds-row__team">
@@ -125,7 +139,7 @@ function OddsRow({ team, meta, rank, barPct, isLeader, open, onToggle, index }) 
 }
 
 /**
- * Championship Odds leaderboard — all 48 nations ranked by Monte Carlo title
+ * Championship Odds leaderboard - all 48 nations ranked by Monte Carlo title
  * probability. Bar length is relative to the favourite (legible across a long
  * tail); the percentage is the absolute title chance. Rows expand to the full
  * survival curve. American blue owns the bar (prediction channel); the single
@@ -138,6 +152,22 @@ function ChampionshipOdds({ odds }) {
   const teams = odds.teams // already sorted by championship_odds, descending
   const leaderOdds = teams[0]?.championship_odds || 1
 
+  // Rank-change indicator: compare each nation's current rank against the last
+  // render's, so a refresh that reshuffles the table shows a small up/down arrow
+  // on the movers (which fades after 2s in CSS). First render has no baseline, so
+  // nothing flashes on load.
+  const prevRankRef = useRef(null)
+  const rankDir = new Map()
+  teams.forEach((t, i) => {
+    const prev = prevRankRef.current?.get(t.team)
+    rankDir.set(t.team, prev == null ? 0 : Math.sign(prev - (i + 1)))
+  })
+  useEffect(() => {
+    const m = new Map()
+    teams.forEach((t, i) => m.set(t.team, i + 1))
+    prevRankRef.current = m
+  })
+
   const toggle = (name) =>
     setOpenSet((prev) => {
       const next = new Set(prev)
@@ -148,18 +178,12 @@ function ChampionshipOdds({ odds }) {
 
   return (
     <section className="odds" aria-labelledby="odds-title">
-      <header className="odds__head">
-        <div className="odds__heading">
-          <h2 id="odds-title" className="odds__title display">
-            Championship Odds
-          </h2>
-          <p className="odds__sub">
-            Every nation’s chance of lifting the trophy, from {odds.simulations.toLocaleString('en-GB')} Monte Carlo runs
-            of the full bracket. Bar length is relative to the favourite; the figure is the absolute title chance. Open a
-            row for its path to the final.
-          </p>
-        </div>
-      </header>
+      <TabHeader
+        as="h2"
+        titleId="odds-title"
+        title="Championship Odds"
+        description={`The model’s title odds after ${odds.simulations.toLocaleString('en-GB')} simulated tournaments, refreshed as results come in. Bar length is relative to the favourite; the figure is each nation’s outright chance of lifting the trophy. Open a row to trace its path to the final.`}
+      />
 
       <div className="odds__colhead" aria-hidden="true">
         <span className="odds__col odds__col--rank">#</span>
@@ -176,6 +200,7 @@ function ChampionshipOdds({ odds }) {
             team={team}
             meta={teamMeta(team.team)}
             rank={i + 1}
+            dir={rankDir.get(team.team)}
             index={i}
             isLeader={i === 0}
             barPct={Math.max((team.championship_odds / leaderOdds) * 100, 0.6)}

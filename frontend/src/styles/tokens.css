@@ -1,4 +1,4 @@
-/* WorldCup 2026 Analytics — design tokens
+/* WorldCup 2026 Analytics - design tokens
    FIFA World Cup 26 brand identity: neutral black ground + the official
    multicolour palette (sampled from the WC2026 art system), Barlow Condensed
    Ultra Bold display, Noto Sans supporting text. */
@@ -31,7 +31,7 @@
 
   /* --- Official FIFA 26 palette (sampled from WC2026_ArtStyle.png) ---
      The multicolour brand system. Used in the geometric "26" motif and brand
-     chrome — never as a data encoding. */
+     chrome - never as a data encoding. */
   --fifa-maroon: #751212;
   --fifa-purple: #6100eb;
   --fifa-navy: #1a247d;

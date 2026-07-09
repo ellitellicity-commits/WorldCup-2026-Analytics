@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom'
 import { loadMatchSummaryByTeams } from '../lib/espn'
 import './BracketMatchPreview.css'
 
-// Compact match preview for a bracket node. The bracket tree stays readable — it
-// never expands inline — so live/finished ties reveal a small popup on hover,
+// Compact match preview for a bracket node. The bracket tree stays readable - it
+// never expands inline - so live/finished ties reveal a small popup on hover,
 // focus or tap: state + minute/FT, the score, and a compact line-up (5 a side).
 // Rendered through a portal with fixed positioning so it escapes the bracket
 // scroller's clip (.bk__scroller is overflow-hidden vertically). ESPN data
@@ -29,7 +29,7 @@ function LineupColumn({ team, lineup }) {
       <ul className="bmp__lineup-list">
         {starters.map((p) => (
           <li key={`${p.jersey}-${p.name}`} className="bmp__lineup-player">
-            <span className="bmp__lineup-jersey tnum">{p.jersey || '–'}</span>
+            <span className="bmp__lineup-jersey tnum">{p.jersey || '-'}</span>
             <span className="bmp__lineup-name">{p.name}</span>
           </li>
         ))}
@@ -88,7 +88,7 @@ function BracketMatchPreview({ view, className, style, children }) {
         <div className="bmp__score">
           <span className="bmp__score-code">{view.home.code}</span>
           <span className="bmp__score-num display tnum">
-            {score.home_score}<span className="bmp__score-dash">–</span>{score.away_score}
+            {score.home_score}<span className="bmp__score-dash">-</span>{score.away_score}
           </span>
           <span className="bmp__score-code">{view.away.code}</span>
         </div>
@@ -116,7 +116,7 @@ function BracketMatchPreview({ view, className, style, children }) {
       onFocus={open}
       onBlur={close}
       onClick={() => (pos ? close() : open())}
-      aria-label={`${view.home.name} versus ${view.away.name} — match details`}
+      aria-label={`${view.home.name} versus ${view.away.name} - match details`}
     >
       {children}
       {popup && createPortal(popup, document.body)}

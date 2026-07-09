@@ -5,12 +5,12 @@
 // otherwise render as initials. This module fills the gap: for a player without
 // an ESPN headshot it asks a same-origin proxy (/photo-api) that runs a Google
 // Custom Search image query server-side, then caches the winning URL in
-// localStorage scoped to the tournament year. Everything degrades gracefully —
+// localStorage scoped to the tournament year. Everything degrades gracefully -
 // a missing key, an exhausted quota, a corrupt entry, or an image that fails to
 // load all resolve to `null`, which the caller renders as initials.
 //
 // KEY SAFETY: the Google key lives only in the serverless proxy (api/photo.js)
-// and the vite dev/preview proxy — never in a VITE_ var, so it never reaches the
+// and the vite dev/preview proxy - never in a VITE_ var, so it never reaches the
 // browser bundle. This mirrors the football-data proxy (see api/index.js).
 //
 // LOAD VALIDITY: the one reliable "does this URL actually display" signal is the
@@ -78,7 +78,7 @@ function getCacheKey(teamCode, playerName) {
   return `${KEY_PREFIX}-${YEAR}-${teamCode}-${slug}`
 }
 
-// Cheap, synchronous sanity check — is this a plausible absolute http(s) URL?
+// Cheap, synchronous sanity check - is this a plausible absolute http(s) URL?
 // Runtime load validity is enforced by the caller's <img onError>, not here.
 function validateImageUrl(url) {
   if (!url || typeof url !== 'string') return false
@@ -109,7 +109,7 @@ function getCachedPhoto(teamCode, playerName) {
   } catch {
     /* fall through to purge */
   }
-  // Corrupt or malformed entry — remove it so we can re-fetch cleanly.
+  // Corrupt or malformed entry - remove it so we can re-fetch cleanly.
   try {
     localStorage.removeItem(key)
   } catch {
@@ -200,7 +200,7 @@ function incrementGoogleApiUsage() {
 
 // Hits the same-origin proxy, which injects the key/cx server-side and returns
 // Google's native Custom Search JSON. Returns the first plausible image URL, or
-// null. Never throws — all failures resolve to null.
+// null. Never throws - all failures resolve to null.
 async function fetchGoogleImage(teamCode, playerName) {
   if (!HAS_PHOTO_SEARCH) {
     console.debug('[Photo] Photo search not configured; skipping Google lookup')
@@ -248,7 +248,7 @@ async function fetchGoogleImage(teamCode, playerName) {
  */
 async function getPlayerPhoto(teamCode, playerName, espnUrl) {
   try {
-    // 1. ESPN already has it — trust it, cache it, done.
+    // 1. ESPN already has it - trust it, cache it, done.
     if (espnUrl && validateImageUrl(espnUrl)) {
       setCachedPhoto(teamCode, playerName, espnUrl, 'espn')
       return espnUrl
@@ -261,7 +261,7 @@ async function getPlayerPhoto(teamCode, playerName, espnUrl) {
       return cached
     }
 
-    // 3. Already being fetched — ride the shared promise.
+    // 3. Already being fetched - ride the shared promise.
     const inflight = getInflightRequest(teamCode, playerName)
     if (inflight) return await inflight
 

@@ -5,7 +5,7 @@ import LoadingScreen from '../components/LoadingScreen'
 // App-wide tournament data. Fixtures may resolve live (football-data.org) or
 // static; odds are always static. The provider loads both once on mount and
 // gates the app on their arrival, so every downstream view reads ready,
-// synchronous data — no per-component fetching, one seam, one loading state.
+// synchronous data - no per-component fetching, one seam, one loading state.
 const TournamentDataContext = createContext(null)
 
 // Polling cadence (seconds). Fast while a match is in play so scores/minutes
@@ -16,10 +16,21 @@ const TournamentDataContext = createContext(null)
 const POLL_LIVE_S = 60
 const POLL_IDLE_S = 300
 
+// Minimum time the loading gate stays up, even if data resolves in one tick -
+// so the loader (rolling ball + a tournament fact) is actually seen rather than
+// flashing past. Data still gates beyond this if it takes longer.
+const MIN_LOADING_MS = 3000
+
 export function TournamentDataProvider({ children }) {
   const [state, setState] = useState({ status: 'loading' })
+  // Held false for MIN_LOADING_MS so the gate never flashes past on a fast load.
+  const [minElapsed, setMinElapsed] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setMinElapsed(true), MIN_LOADING_MS)
+    return () => clearTimeout(t)
+  }, [])
 
-  // Initial load — gates the app on first data arrival.
+  // Initial load - gates the app on first data arrival.
   useEffect(() => {
     let cancelled = false
     Promise.all([loadFixtures(), loadOdds()])
@@ -27,7 +38,7 @@ export function TournamentDataProvider({ children }) {
         if (cancelled) return
         // `pollable` is fixed at first load: if the live feed is configured and
         // working now, keep polling even if a later poll blips to the static
-        // fallback — otherwise one transient error would stop live updates for good.
+        // fallback - otherwise one transient error would stop live updates for good.
         setState({ status: 'ready', fixtures, odds, source: fixtures.source, pollable: fixtures.source === 'live' })
       })
       .catch(() => {
@@ -45,7 +56,7 @@ export function TournamentDataProvider({ children }) {
 
   // Live refresh loop. Re-fetches fixtures in place (no loading gate, no reload),
   // adapts cadence to whether anything is in play, and skips fetching while the
-  // tab is hidden — firing one immediate refresh when it becomes visible again.
+  // tab is hidden - firing one immediate refresh when it becomes visible again.
   useEffect(() => {
     if (!pollable) return
     let cancelled = false
@@ -82,7 +93,8 @@ export function TournamentDataProvider({ children }) {
     }
   }, [pollable, liveCount])
 
-  if (state.status !== 'ready') return <LoadingScreen failed={state.status === 'error'} />
+  if (state.status === 'error') return <LoadingScreen failed />
+  if (state.status !== 'ready' || !minElapsed) return <LoadingScreen />
 
   return <TournamentDataContext.Provider value={state}>{children}</TournamentDataContext.Provider>
 }

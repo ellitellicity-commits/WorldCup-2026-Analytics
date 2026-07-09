@@ -1,17 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { gsap } from 'gsap'
 import { BrandField } from '../components/BrandMarks'
 import { getCurrentRound, finalCountdown, META } from '../lib/bracket'
 import { teamMeta, flagUrl } from '../lib/teams'
 import { useTournamentData } from '../lib/tournamentData'
 import './Home.css'
 
+// The 3D shape field pulls in three.js - lazy-load it so it never weighs down the
+// home tab's first paint; the canvas fades in once the chunk arrives.
+const FloatingShapes = lazy(() => import('../components/FloatingShapes'))
+
 // Dates are stored as UTC instants; format in UTC (matches the rest of the app).
 const DATE_FMT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
 
 // The final's kickoff, mirroring finalCountdown()'s 20:00 UTC assumption. A real
 // countdown clock names its target time, so the snapshot shows it beneath the
-// figure ("Kick-off · 19 Jul, 20:00 UTC") — the detail that makes the number
+// figure ("Kick-off · 19 Jul, 20:00 UTC") - the detail that makes the number
 // read as a countdown rather than just another stat.
 const KICKOFF_ISO = `${META.final.date}T20:00:00Z`
 const KICKOFF_TEXT = `${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(KICKOFF_ISO))} · 20:00 UTC`
@@ -21,7 +26,7 @@ const KICKOFF_TEXT = `${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month
 const SNAPSHOT_DATE_FMT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })
 const snapshotDate = (isoDate) => SNAPSHOT_DATE_FMT.format(new Date(`${isoDate}T00:00:00Z`))
 
-// One broadcast-rundown row per destination — a meta figure that actually means
+// One broadcast-rundown row per destination - a meta figure that actually means
 // something, a condensed title, a one-line read. Not a card grid (a hub menu).
 // The Predictor figure is fixture-derived, so the list is built per render.
 function buildDestinations({ todaysCount, upcomingCount }) {
@@ -43,7 +48,7 @@ function buildDestinations({ todaysCount, upcomingCount }) {
     {
       to: '/bracket',
       title: 'Tournament Bracket',
-      blurb: 'The locked 32-team knockout — or simulate every tie to the final.',
+      blurb: 'The locked 32-team knockout - or simulate every tie to the final.',
       meta: '32',
       metaLabel: 'knockout',
     },
@@ -53,6 +58,20 @@ function buildDestinations({ todaysCount, upcomingCount }) {
       blurb: 'Standings and qualification probability for all twelve groups.',
       meta: '12',
       metaLabel: 'groups',
+    },
+    {
+      to: '/simulator',
+      title: 'Matchup Sandbox',
+      blurb: 'Pit any two nations at any round and watch the model call the tie - a standalone what-if.',
+      meta: '16',
+      metaLabel: 'venues',
+    },
+    {
+      to: '/encyclopedia',
+      title: 'The Atlas',
+      blurb: 'Every qualified nation on one globe - rank, Elo, squad and all-time record on tap.',
+      meta: '48',
+      metaLabel: 'profiles',
     },
   ]
 }
@@ -67,6 +86,27 @@ function useFinalCountdown() {
     return () => clearInterval(id)
   }, [])
   return cd
+}
+
+// A precise, per-second clock down to the final's kickoff. The headline figure
+// above stays days/hours (scannable); this is the live ticking detail that makes
+// the snapshot feel like a real countdown to the biggest night. Returns null once
+// the final is under way, so the days-figure display takes over.
+function useFinalClock(targetIso) {
+  const target = useMemo(() => new Date(targetIso).getTime(), [targetIso])
+  const compute = () => {
+    const ms = target - Date.now()
+    if (ms <= 0) return null
+    const s = Math.floor(ms / 1000)
+    return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 }
+  }
+  const [t, setT] = useState(compute)
+  useEffect(() => {
+    const id = setInterval(() => setT(compute()), 1000)
+    return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target])
+  return t
 }
 
 // A single status marker labelling the snapshot below it: red pulsing "LIVE"
@@ -95,6 +135,7 @@ function Snapshot() {
   const favMeta = teamMeta(favourite.team)
   const stage = getCurrentRound(fixtures.fixtures, fixtures.knockout)
   const countdown = useFinalCountdown()
+  const clock = useFinalClock(KICKOFF_ISO)
   const favPct = (favourite.championship_odds * 100).toFixed(1)
   const flag = flagUrl(favMeta.iso)
   return (
@@ -120,6 +161,11 @@ function Snapshot() {
           <span className="snapshot__big tnum">{countdown.big}</span>
           {countdown.unit && <span className="snapshot__unit">{countdown.unit}</span>}
         </dd>
+        {countdown.phase === 'countdown' && clock && (
+          <p className="snapshot__clock tnum" role="timer" aria-live="off">
+            {clock.d}d {String(clock.h).padStart(2, '0')}h {String(clock.m).padStart(2, '0')}m {String(clock.s).padStart(2, '0')}s
+          </p>
+        )}
         {countdown.phase === 'countdown' && (
           <p className="snapshot__kickoff">
             Kick-off <time dateTime={KICKOFF_ISO} className="tnum">{KICKOFF_TEXT}</time>
@@ -145,15 +191,37 @@ function Home() {
     }
   }, [fixturesData])
 
+  // One-time broadcast entrance: the intro line, then the data-state marker and
+  // each snapshot figure drift up and fade in, staggered. Guarded for reduced
+  // motion (holds the resting layout) and killed on unmount.
+  const heroRef = useRef(null)
+  useEffect(() => {
+    const root = heroRef.current
+    if (!root || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
+    // gsap.context + revert() (not tl.kill()) so React StrictMode's mount →
+    // cleanup → remount can't strand the from({opacity:0}) targets at 0 and leave
+    // the hero text invisible; revert() restores the pre-tween styles each time.
+    const ctx = gsap.context(() => {
+      const q = gsap.utils.selector(root)
+      gsap.timeline()
+        .from(q('.home-hero__intro'), { y: 30, opacity: 0, duration: 0.6, ease: 'power2.out' })
+        .from([q('.data-status'), q('.snapshot__item')], { y: 30, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.25')
+    }, root)
+    return () => ctx.revert()
+  }, [])
+
   return (
     <div className="home">
       <section className="home-hero">
         <BrandField className="home-hero__field" />
-        <div className="home-hero__inner">
+        <Suspense fallback={null}>
+          <FloatingShapes className="home-hero__shapes" />
+        </Suspense>
+        <div className="home-hero__inner" ref={heroRef}>
           <p className="home-hero__intro">
-            Broadcast-grade intelligence for the 2026 FIFA World Cup — a machine-learning model turns
-            historical results, Elo ratings and live tournament data into win probabilities, championship
-            odds and Monte Carlo bracket paths.
+            Broadcast-grade intelligence for the 2026 FIFA World Cup. The model turns historical results,
+            Elo ratings and live data into win probabilities, bracket paths and championship odds.
+            All in one place. All in real time.
           </p>
           <Snapshot />
         </div>
@@ -184,6 +252,19 @@ function Home() {
           <span className="tnum">{playedCount}</span> matches played · model updated {updated}
         </p>
       </nav>
+
+      <p className="home-credits">
+        World Cup 26 logo animation by{' '}
+        <a
+          className="home-credits__link"
+          href="https://iconscout.com/contributors/happy-monster/lottie-animations"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Happy Monster
+        </a>{' '}
+        on IconScout.
+      </p>
     </div>
   )
 }

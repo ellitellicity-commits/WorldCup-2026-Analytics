@@ -1,4 +1,4 @@
-// Pure geo/sphere math for the globe — no Three.js import, so it runs in Node
+// Pure geo/sphere math for the globe - no Three.js import, so it runs in Node
 // and unit tests. GlobeHero wraps the [x,y,z] outputs in THREE.Vector3.
 //
 // Convention: latitude in [-90,90], longitude in [-180,180]. The sphere maps
@@ -65,7 +65,7 @@ export function greatCircleArc(fromLL, toLL, r = 1, segments = 96) {
 }
 
 // Host-nation bounding circles for the emblem trigger (Part B). Centres are the
-// rough geographic middle of each host; radii are generous — the check only has
+// rough geographic middle of each host; radii are generous - the check only has
 // to feel intentional, not be exact. Overlaps at the borders are resolved by
 // hostAtPoint picking the single closest containing circle, so only one fires.
 export const HOST_CIRCLES = {

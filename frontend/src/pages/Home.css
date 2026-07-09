@@ -5,32 +5,60 @@
 }
 
 /* ============================================================================
-   Hero — intro + broadcast snapshot strip
+   Hero - intro + broadcast snapshot strip
    ========================================================================== */
 .home-hero {
   position: relative;
   overflow: hidden;
+  /* Contain the logo's screen blend to the hero, and anchor the negative-z
+     decorative layers (pattern + shapes) inside it. */
+  isolation: isolate;
   border-bottom: 1px solid var(--border-divider);
   padding-block: clamp(var(--space-xl), 6vw, var(--space-2xl));
 }
 .home-hero__field {
+  z-index: -1;
   -webkit-mask-image: radial-gradient(120% 130% at 100% 0%, #000 30%, transparent 72%);
   mask-image: radial-gradient(120% 130% at 100% 0%, #000 30%, transparent 72%);
 }
 .home-hero__inner {
+  /* Positioned but deliberately NOT a stacking context (no z-index): it must
+     paint above the negative-z decorative layers while still letting the logo
+     blend against them. */
   position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: clamp(var(--space-lg), 4vw, var(--space-2xl));
 }
+
 .home-hero__intro {
   max-width: 60ch;
+  margin-inline: auto;
   font-size: clamp(1.125rem, 2.4vw, 1.5rem);
   line-height: 1.45;
   color: var(--ink);
   font-weight: 400;
   text-wrap: pretty;
+}
+
+/* The hero snapshot strip inherits the centred layout - a balanced broadcast
+   row rather than a left-anchored data table. */
+.home-hero .snapshot-block {
+  align-items: center;
+}
+.home-hero .data-status {
+  align-self: center;
+}
+.home-hero .snapshot {
+  justify-content: center;
+}
+.home-hero .snapshot__item {
+  align-items: center;
+}
+.home-hero .snapshot__item dd {
+  justify-content: center;
 }
 
 /* --- Snapshot block: the data-state marker, then the strip it labels --- */
@@ -40,7 +68,7 @@
   gap: clamp(var(--space-md), 3vw, var(--space-lg));
 }
 
-/* Data-state marker — a quiet chip stating whether the figures below are live
+/* Data-state marker - a quiet chip stating whether the figures below are live
    or a bundled snapshot. Live is red's role-locked home (pulsing dot = the
    non-colour signal); the fallback is neutral, deliberately un-alarming. */
 .data-status {
@@ -122,10 +150,20 @@
 }
 
 /* --- Countdown item: a broadcast clock ticking toward the final ---
-   Set apart from its sibling snapshot fields by naming its target — a real
+   Set apart from its sibling snapshot fields by naming its target - a real
    countdown always shows the time it's counting to. Colour stays neutral through
    the days/hours phase (a countdown is neither group, prediction nor champion);
    red is held back for the live phase alone. */
+/* Live per-second clock to kickoff. Tabular so the digits never jitter as they
+   tick. Quiet, sits between the days headline and the kickoff time. */
+.snapshot__clock {
+  margin: var(--space-xs) 0 0;
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+}
 .snapshot__kickoff {
   margin: var(--space-xs) 0 0;
   font-size: var(--text-meta);
@@ -138,7 +176,7 @@
   color: var(--ink-secondary);
 }
 
-/* Live phase — the final is actually under way. This is red's role-locked home:
+/* Live phase - the final is actually under way. This is red's role-locked home:
    the pulsing dot is the non-colour signal, matching the LIVE chip elsewhere. */
 .snapshot__item--live .snapshot__big,
 .snapshot__item--live .snapshot__unit {
@@ -191,10 +229,23 @@
   font-size: clamp(1.25rem, 3vw, 1.75rem);
   font-weight: 700;
   color: var(--trophy-gold);
+  /* A one-shot gold shimmer on load draws the eye to the single championship
+     moment on the view - the favourite's title odds. Transient by design: it
+     resolves to no shadow, so nothing glows at rest (DESIGN.md forbids resting
+     glow), and gold stays confined to this one figure. */
+  animation: fav-shimmer 1.1s var(--ease-out-quint) 200ms both;
+}
+@keyframes fav-shimmer {
+  0% { text-shadow: 0 0 0 transparent; }
+  45% { text-shadow: 0 0 16px color-mix(in srgb, var(--trophy-gold) 55%, transparent); }
+  100% { text-shadow: 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snapshot__fav-odds { animation: none; }
 }
 
 /* ============================================================================
-   Section menu — a broadcast rundown, not a card grid
+   Section menu - a broadcast rundown, not a card grid
    ========================================================================== */
 .home-menu {
   display: flex;
@@ -280,6 +331,21 @@
 .home-menu__note {
   font-size: var(--text-label);
   color: var(--ink-muted);
+}
+
+/* Asset attribution for the animated logo - quiet, near the foot of the page. */
+.home-credits {
+  font-size: var(--text-meta);
+  color: var(--ink-muted);
+}
+.home-credits__link {
+  color: var(--ink-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--dur-ui) var(--ease-out-quint);
+}
+.home-credits__link:hover {
+  color: var(--ink);
 }
 
 @media (max-width: 520px) {

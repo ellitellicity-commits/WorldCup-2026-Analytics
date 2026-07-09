@@ -72,7 +72,7 @@ function PlayerRow({ player, team }) {
   return (
     <li className="lsp-player">
       <Avatar player={player} team={team} />
-      <span className="lsp-player__jersey tnum">{player.jersey || '–'}</span>
+      <span className="lsp-player__jersey tnum">{player.jersey || '-'}</span>
       <span className="lsp-player__name">{player.name}</span>
       {player.pos && <span className="lsp-player__pos">{player.pos}</span>}
     </li>
@@ -166,7 +166,7 @@ function EventRow({ ev, homeTeam, awayTeam }) {
         {ev.kind === 'goal' && <GoalBall />}
       </span>
       <span className="lsp-event__player">
-        <span className="visually-hidden">{EVENT_LABEL[ev.kind]} — </span>
+        <span className="visually-hidden">{EVENT_LABEL[ev.kind]} - </span>
         {ev.player}
       </span>
       {team && <span className="lsp-event__team">{team}</span>}
@@ -181,7 +181,7 @@ function EventRow({ ev, homeTeam, awayTeam }) {
  * @param {string} p.homeTeam  display name for the home team
  * @param {string} p.awayTeam  display name for the away team
  * @param {'scheduled'|'live'|'completed'} p.status  fixture state (drives the panel)
- * @param {string|null} [p.date]  fixture date (ISO) — lets a finished match resolve
+ * @param {string|null} [p.date]  fixture date (ISO) - lets a finished match resolve
  */
 function MatchStatsPanel({ homeName, awayName, homeTeam, awayTeam, status, date = null }) {
   const stateKey = stateOf(status)

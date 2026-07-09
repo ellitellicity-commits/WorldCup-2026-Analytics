@@ -1,4 +1,4 @@
-// ESPN's free, keyless, CORS-open hidden API — the match-detail source (lineups,
+// ESPN's free, keyless, CORS-open hidden API - the match-detail source (lineups,
 // team statistics, events, live minute) for the expandable stats panel across ALL
 // three match states: pre-match (confirmed line-ups), in-play (live stats + the
 // running minute), and finished (final stats + the full goal/card summary).
@@ -7,7 +7,7 @@
 // football-data.org. The browser calls ESPN directly (no key, no proxy).
 //
 // ESPN uses its own event ids, so a match is reconciled to an ESPN event by
-// team pair — its team names use the same long-forms we already alias in
+// team pair - its team names use the same long-forms we already alias in
 // lib/data.js, so resolveTeamName() maps both sides back to our canonical names.
 // A finished match drops off the live scoreboard, so when a fixture date is known
 // we query that day's board first (which still lists it), then fall back to the
@@ -107,7 +107,7 @@ const num = (v) => {
 function statsForTeam(teamNode) {
   const byName = new Map((teamNode?.statistics || []).map((s) => [s.name, s.displayValue]))
   const out = {}
-  for (const row of STAT_ROWS) out[row.key] = { display: byName.get(row.key) ?? '—', value: num(byName.get(row.key)) }
+  for (const row of STAT_ROWS) out[row.key] = { display: byName.get(row.key) ?? '-', value: num(byName.get(row.key)) }
   return out
 }
 
@@ -156,8 +156,8 @@ function eventsFor(summary, sideById) {
 
 /**
  * Full normalised view for an ESPN event across every match state. Returns an
- * object whenever the summary is fetchable — even pre-kickoff with no line-ups
- * yet (so the panel can show its "line-ups to be confirmed" state) — and null
+ * object whenever the summary is fetchable - even pre-kickoff with no line-ups
+ * yet (so the panel can show its "line-ups to be confirmed" state) - and null
  * only when the event summary itself can't be fetched.
  * @returns {Promise<null | {
  *   state: 'pre'|'live'|'final', minute: string|null,

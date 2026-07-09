@@ -11,7 +11,7 @@ const reducedMotion = () =>
  * cadence (~1.5s for the whole line, clamped so short lines still read as typed
  * and long ones never drag).
  *
- * Zero layout shift: the FULL text is always in the DOM — the not-yet-typed tail
+ * Zero layout shift: the FULL text is always in the DOM - the not-yet-typed tail
  * is rendered transparent as a "ghost" that reserves the final box, so nothing
  * reflows as characters appear. The visible layer is aria-hidden; a visually
  * hidden copy carries the full sentence to assistive tech (no per-keystroke
@@ -35,6 +35,17 @@ export default function Typewriter({ text = '', className = '', startDelay = 160
     }
 
     const perChar = Math.max(9, Math.min(22, 1500 / full.length))
+    // Precompute each character's reveal time, adding an 80ms beat after sentence
+    // punctuation (! or ?) so emphasis lands instead of racing past.
+    const times = new Array(full.length)
+    let acc = 0
+    for (let idx = 0; idx < full.length; idx++) {
+      acc += perChar
+      times[idx] = acc
+      const ch = full[idx]
+      if (ch === '!' || ch === '?') acc += 80
+    }
+
     let startAt = 0
     let cancelled = false
 
@@ -46,7 +57,8 @@ export default function Typewriter({ text = '', className = '', startDelay = 160
         rafRef.current = requestAnimationFrame(tick)
         return
       }
-      const n = Math.min(full.length, Math.floor(elapsed / perChar))
+      let n = 0
+      while (n < full.length && times[n] <= elapsed) n++
       setCount(n)
       if (n < full.length) {
         rafRef.current = requestAnimationFrame(tick)

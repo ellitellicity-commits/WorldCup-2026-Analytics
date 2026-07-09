@@ -1,5 +1,5 @@
 /* ============================================================================
-   Persistent chrome — sticky masthead (all viewports) + bottom tab bar (mobile)
+   Persistent chrome - sticky masthead (all viewports) + bottom tab bar (mobile)
    ========================================================================== */
 
 .nav {
@@ -33,6 +33,13 @@
   width: 40px;
   height: 40px;
   flex-shrink: 0;
+  /* The WC26 mark GIF is black line-art on an opaque white ground. invert(1)
+     flips the white to near-black (it melts into the studio-black nav - no box,
+     no seam) and the black line-art to white, so the emblem reads as a crisp
+     white logo floating on the bar. contain keeps the whole mark in the 40px
+     slot so the wordmark never shifts. */
+  object-fit: contain;
+  filter: invert(1);
 }
 .nav__wordmark {
   display: flex;
@@ -66,7 +73,7 @@
      the row fits, it sits centred as before; if the track is ever shorter than
      the row (a wider-rendered wordmark under fullscreen scaling/font fallback ate
      the slim margin), it falls back to start-alignment instead of overflowing
-     LEFT across the brand — which was the title/Home overlap. min-width:0 lets the
+     LEFT across the brand - which was the title/Home overlap. min-width:0 lets the
      track actually shrink so the fallback engages rather than forcing an overflow. */
   justify-self: stretch;
   min-width: 0;
@@ -84,7 +91,7 @@
   letter-spacing: 0.02em;
   color: var(--ink-secondary);
   text-decoration: none;
-  transition: color var(--dur-ui) var(--ease-out-quint);
+  transition: color var(--dur-ui) var(--ease-out-quint), transform var(--dur-ui) var(--ease-out-quint);
 }
 .nav__tab::after {
   content: '';
@@ -95,17 +102,43 @@
   height: 2px;
   background: var(--american-blue);
   transform: scaleX(0);
-  transform-origin: center;
+  transform-origin: left center;
   transition: transform var(--dur-ui) var(--ease-out-quint);
 }
+/* Hover lifts the label a hair and slides the wayfinding-blue rule in from the
+   left. Blue (not gold) is the app's wayfinding channel; trophy gold stays
+   reserved for championship moments (DESIGN.md). */
 .nav__tab:hover {
   color: var(--ink);
+  transform: translateY(-2px);
+}
+.nav__tab:hover::after {
+  transform: scaleX(1);
 }
 .nav__tab.is-active {
   color: var(--ink);
 }
 .nav__tab.is-active::after {
   transform: scaleX(1);
+}
+/* Active-route pin: a small dot centred under the label, a second read on top of
+   the underline. Wayfinding blue (not gold) to match the rule above; trophy gold
+   stays reserved for the championship moment (DESIGN.md). Scales in on activation
+   and is stilled under reduced motion below. */
+.nav__tab::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--american-blue);
+  transform: translateX(-50%) scale(0);
+  transition: transform var(--dur-ui) var(--ease-out-quint);
+}
+.nav__tab.is-active::before {
+  transform: translateX(-50%) scale(1);
 }
 
 /* --- Model badge (persistent on every route) --- */
@@ -162,33 +195,8 @@
   }
 }
 
-.nav__badge {
-  justify-self: end;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.4ch;
-  padding: 5px 10px;
-  border: 1px solid var(--border-divider);
-  border-radius: var(--radius-full);
-  font-size: var(--text-label);
-  color: var(--ink-secondary);
-  white-space: nowrap;
-}
-.nav__badge-engine {
-  color: var(--ink);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-.nav__badge-dot {
-  color: var(--ink-muted);
-}
-.nav__badge-sims {
-  color: var(--ink);
-  font-weight: 600;
-}
-
 /* ============================================================================
-   Bottom tab bar — fixed, mobile only
+   Bottom tab bar - fixed, mobile only
    ========================================================================== */
 .tabbar {
   position: fixed;
@@ -271,13 +279,6 @@
   .nav__title {
     font-size: 1.2rem;
   }
-  .nav__badge {
-    padding: 4px 8px;
-    gap: 0.3ch;
-  }
-  .nav__badge-unit {
-    display: none; /* keep "Model · 10,000" — drop the trailing word only */
-  }
 }
 
 /* Below tablet the masthead can't hold two full chips beside the wordmark, so the
@@ -292,19 +293,10 @@
   }
 }
 
-/* On phones the model badge can't sit beside the wordmark without colliding with
-   it, and the bottom tab bar (not the masthead) is the primary nav here — so drop
-   the badge below the phablet width. The live/source chip stays as the state cue,
-   and the model story still leads the home hero. */
-@media (max-width: 560px) {
-  .nav__badge {
-    display: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .nav__tab,
   .nav__tab::after,
+  .nav__tab::before,
   .tabbar__tab,
   .tabbar__tab::before {
     transition: none;

@@ -1,6 +1,6 @@
 /* Expandable match-detail panel (pre-match / live / final). Lives in the footer
    of a match card. Sits on a dark surface with a faint green "under-lights pitch"
-   wash — green stays atmospheric here, never a data channel (home stats are blue,
+   wash - green stays atmospheric here, never a data channel (home stats are blue,
    away neutral; red stays the live signal; gold marks goals). The .lsp- prefix is
    the panel's own stable token (legacy of its live-only origin). */
 .lsp {
@@ -32,7 +32,7 @@
   flex: 1;
 }
 
-/* State badge — neutral for pre/final, role-locked red for live (the one place
+/* State badge - neutral for pre/final, role-locked red for live (the one place
    the panel's chrome carries colour). Each badge reads as text, not just a hue. */
 .lsp__badge {
   display: inline-flex;
@@ -112,7 +112,7 @@
   font-size: var(--text-label);
 }
 
-/* Line-ups | Stats tabs — neutral chrome (colour belongs to data). Active tab
+/* Line-ups | Stats tabs - neutral chrome (colour belongs to data). Active tab
    carries a 2px ink underline, no hue. */
 .lsp__tabs {
   display: flex;
@@ -145,7 +145,7 @@
 }
 
 /* Tab content fades in on switch (keyed remount replays it). Subtle, working-UI
-   tier — opacity only, no layout shift. */
+   tier - opacity only, no layout shift. */
 .lsp__tabpanel {
   animation: lsp-fade var(--dur-ui) var(--ease-out-quint);
 }

@@ -2,19 +2,21 @@ import { useMemo, useRef, useState } from 'react'
 import GlobeHero from '../components/GlobeHero'
 import StadiumPanel from '../components/StadiumPanel'
 import Cutscene from '../components/Cutscene'
+import { RefereeVerdict } from '../components/RefereeMascot'
 import { TEAM_COORDINATES, STADIUMS, STADIUM_LIST } from '../lib/stadiumData'
 import { STADIUM_INFO } from '../lib/stadiumInfo'
 import { sampleMatchStats } from '../lib/matchStats'
 import { pickHype } from '../lib/hypeLines'
 import { winProb } from '../lib/bracket'
 import TEAM_META, { teamMeta, flagUrl } from '../lib/teams'
+import TabHeader from '../components/TabHeader'
 import './Simulator.css'
 
-// Matchup Sandbox — a standalone "what if these two met?" tool. Distinct from the
+// Matchup Sandbox - a standalone "what if these two met?" tool. Distinct from the
 // tournament-level Monte Carlo simulator that feeds Bracket/Odds/Predictor: this
 // never touches the bracket, it just plays one hypothetical tie. (The old
 // bracket-altering "Run Your Own Simulation" mode was removed in dba5ced; this is
-// not that — no bracket impact.)
+// not that - no bracket impact.)
 
 const TEAMS = Object.keys(TEAM_META).sort()
 
@@ -30,7 +32,7 @@ const ROUNDS = [
 ]
 
 // A plausible scoreline consistent with the sampled winner. Group ties may draw;
-// knockouts are forced decisive. Not model output — a broadcast-flavoured result
+// knockouts are forced decisive. Not model output - a broadcast-flavoured result
 // around the model's real win probability (winProb).
 function sampleResult(pHome, roundId) {
   const decisive = roundId !== 'group'
@@ -67,18 +69,33 @@ function ResultCard({ result }) {
   const homePct = Math.round(pHome * 100)
   const awayPct = 100 - homePct
   const winName = score.outcome === 'home' ? home : score.outcome === 'away' ? away : null
+  // The model's pick vs. what actually happened (Part 4, beat 6). A draw is no
+  // win for the favoured side, so it reads as an upset of the prediction.
+  const predictedSide = pHome >= 0.5 ? 'home' : 'away'
+  const called = score.outcome === predictedSide
+  // Verdict copy tuned to the story of the match: a coin-flip edged, a call the
+  // model nailed, a rout, or a genuine upset. The gap is the probability spread
+  // between the two sides; an upset needs a real gap (a near-even game is just
+  // "edged", not an upset regardless of who wins).
+  const gap = Math.abs(homePct - awayPct)
+  let verdictTail
+  if (gap < 10) verdictTail = 'edge it. What a match!'
+  else if (!called) verdictTail = 'cause the upset! Nobody saw that coming!'
+  else if (gap <= 30) verdictTail = 'advance. The model saw this coming.'
+  else verdictTail = 'cruise through. Dominant.'
   return (
     <section className="sim-result" aria-live="polite">
       <p className="sim-result__round">{round.label} · {venue.city}</p>
+      <RefereeVerdict called={called} />
       <div className="sim-result__score">
         <Side name={home} meta={hm} goals={score.home} win={score.outcome === 'home'} dim={score.outcome === 'away'} />
-        <span className="sim-result__dash" aria-hidden="true">–</span>
+        <span className="sim-result__dash" aria-hidden="true">-</span>
         <Side name={away} meta={am} goals={score.away} win={score.outcome === 'away'} dim={score.outcome === 'home'} align="right" />
       </div>
       <p className="sim-result__verdict">
-        {winName ? <><span className="display">{winName}</span> advance</> : 'Level — honours even'}
+        {winName ? <><span className="display">{winName}</span> {verdictTail}</> : 'Level, honours even.'}
       </p>
-      <div className="sim-result__prob" role="img" aria-label={`Win probability — ${hm.code} ${homePct}%, ${am.code} ${awayPct}%.`}>
+      <div className="sim-result__prob" role="img" aria-label={`Win probability - ${hm.code} ${homePct}%, ${am.code} ${awayPct}%.`}>
         <span className="sim-result__prob-label">Model win probability</span>
         <div className="sim-result__bar">
           <span className="sim-result__seg sim-result__seg--home" style={{ flexGrow: Math.max(homePct, 1) }}>
@@ -95,7 +112,7 @@ function ResultCard({ result }) {
 }
 
 // Full match stats after the cutscene (B4): formations, Man of the Match, and a
-// two-sided comparison of every stat. Neutral bars (ink ramp) — never host
+// two-sided comparison of every stat. Neutral bars (ink ramp) - never host
 // accents, which stay role-locked.
 function StatRow({ row }) {
   const { label, home, away, unit = '' } = row
@@ -115,7 +132,7 @@ function StatRow({ row }) {
 }
 
 function MatchStats({ stats, homeCode, awayCode }) {
-  const { formations, motm, rows } = stats
+  const { formations, rows } = stats
   return (
     <div className="sim-stats">
       <div className="sim-stats__formations">
@@ -123,13 +140,6 @@ function MatchStats({ stats, homeCode, awayCode }) {
         <span className="sim-stats__form-label">Formations</span>
         <span className="sim-stats__form tnum">{formations.away}</span>
       </div>
-      {motm && (
-        <div className="sim-stats__motm">
-          <span className="sim-stats__motm-label">Man of the Match</span>
-          <span className="sim-stats__motm-name display">{motm.name}</span>
-          <span className="sim-stats__motm-meta">{motm.position} · {motm.club} · {motm.team}</span>
-        </div>
-      )}
       <div className="sim-stats__head" aria-hidden="true">
         <span>{homeCode}</span><span>Match stats</span><span>{awayCode}</span>
       </div>
@@ -195,7 +205,7 @@ export default function Simulator() {
 
   // Simulate: compute everything up front (fast, as before), then play the
   // pregame cutscene (B4) as a flourish on top. The cutscene's onComplete reveals
-  // the full result + stats — the sim itself never waits on the animation.
+  // the full result + stats - the sim itself never waits on the animation.
   const simulate = () => {
     if (!canSim) return
     const stad = STADIUMS[venueName]
@@ -210,7 +220,7 @@ export default function Simulator() {
       home, away,
       homeFlag: flagUrl(teamMeta(home).iso), awayFlag: flagUrl(teamMeta(away).iso),
       homeCode: teamMeta(home).code, awayCode: teamMeta(away).code,
-      venue: { name: venueName, city: stad.hostCity, country: stad.country, spec: STADIUM_INFO[venueName] },
+      venue: { name: venueName, city: stad.hostCity, country: stad.country, lat: stad.lat, lng: stad.lng, spec: STADIUM_INFO[venueName] },
       hype: lines,
     })
     setPhase('cutscene')
@@ -224,13 +234,11 @@ export default function Simulator() {
 
   return (
     <div className="sim">
-      <header className="sim__intro">
-        <h1 className="sim__title display">Matchup Sandbox</h1>
-        <p className="sim__sub">
-          Pick any two of the 48 nations and a round, then watch them fly in and the model call the tie. A standalone
-          what-if — it never changes the real bracket.
-        </p>
-      </header>
+      <TabHeader
+        titleId="sim-title"
+        title="Matchup Sandbox"
+        description="Pick any two nations. Run the sim. See who the model fancies. No pressure, just the beautiful game, powered by data. A standalone what-if that never touches the real bracket."
+      />
 
       <form
         className="sim__panel"
@@ -264,7 +272,7 @@ export default function Simulator() {
         />
         {!panelVenue && (
           <p className="sim__venue-hint" aria-hidden="true">
-            Destination · <strong>{venueName}</strong> — tap any venue to change
+            Destination · <strong>{venueName}</strong> - tap any venue to change
           </p>
         )}
         {panelData && <StadiumPanel venue={panelData} onClose={() => setPanelVenue(null)} />}

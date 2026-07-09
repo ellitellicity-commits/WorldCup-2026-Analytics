@@ -7,16 +7,16 @@
   --bk-box-h: 58px;
   --bk-rail-w: 150px;
   --bk-center-w: 158px;
-  /* Connector system (Fix 3): one uniform thickness everywhere; paths read by
-     brightness, not weight. Three tiers — faint structural skeleton (undecided),
-     muted for a knocked-out team's path, bright + soft glow for a still-alive /
-     champion path. Gold stays reserved for the champion card + trophy (DESIGN.md),
-     so the winning line is neutral ink, not gold. */
+  /* Connector system: uniform neutral. Every connector - undecided, eliminated
+     trail, and champion path alike - is the single divider colour, no highlight.
+     The is-out-win / is-out-elim / is-vert-* classes stay applied by the JSX but
+     all resolve to the same neutral token, so the tree reads clean and quiet;
+     the champion is told by the gold name + trophy, not by a lit wire. */
   --bk-line-w: 3px;
   --bk-line: var(--border-divider);
-  --bk-line-elim: color-mix(in oklab, var(--ink-muted) 80%, var(--studio-black));
-  --bk-line-win: var(--ink);
-  --bk-line-glow: 0 0 5px color-mix(in oklab, var(--ink) 42%, transparent);
+  --bk-line-elim: var(--border-divider);
+  --bk-line-win: var(--border-divider);
+  --bk-line-glow: none;
   --bk-canvas-h: calc(var(--bk-head-h) + 16 * var(--bk-row-h));
 
   display: flex;
@@ -276,7 +276,7 @@
   align-items: center;
   justify-content: center;
 }
-/* A live/finished tie carries a compact hover/tap preview — signal it. */
+/* A live/finished tie carries a compact hover/tap preview - signal it. */
 .bk-match.is-previewable {
   cursor: help;
   outline: none;
@@ -512,7 +512,13 @@
   content: '';
   position: absolute;
   top: 50%;
-  width: calc(var(--bk-gut) - var(--bk-stub));
+  /* Stop at the NEAR face of the next round's vertical join, not its far edge:
+     the gutter is out-stub + join-bar + in-stub. Without subtracting the bar's
+     own width the horizontal ran the full width across the join and met the
+     in-stub on the far side, so both feeders read as passing straight through
+     the vertical - the overlapping "U". Ending one line-width short lands the
+     horizontal cleanly on the join's near face (a proper L corner). */
+  width: calc(var(--bk-gut) - var(--bk-stub) - var(--bk-line-w));
   height: var(--bk-line-w);
   background: var(--bk-line);
   transform: translateY(-50%);
@@ -526,19 +532,25 @@
 .bk-grid--right .bk-match::after {
   right: 100%;
 }
-/* Outgoing line: muted once the advancing team is eliminated (its trail stays but
-   fades), bright + glowing while that team is still alive / is the champion. */
+/* The semi-final's outgoing horizontal is the exception: the Final box has no
+   vertical join (the two finalists converge straight into its side stubs), so
+   this one must span the full gutter to the final's 10px stub, or a gap opens
+   on the SF -> Final leg. Restore the full out-stub length for SF only. */
+.bk-grid .bk-match--sf::after {
+  width: calc(var(--bk-gut) - var(--bk-stub));
+}
+/* Outgoing line: neutral in every state (the win/elim classes resolve to the
+   same divider token now). No shimmer, no glow. */
 .bk-grid .bk-match.is-out-elim::after {
   background: var(--bk-line-elim);
 }
 .bk-grid .bk-match.is-out-win::after {
   background: var(--bk-line-win);
-  box-shadow: var(--bk-line-glow);
 }
 
 /* A match's vertical merge. One state for the whole bar (+ its stub), owned by
    the match's winner: default faint skeleton while undecided, glowing the moment
-   the match is won, dimmed once that winner is knocked out. The bar spans 25%–75%
+   the match is won, dimmed once that winner is knocked out. The bar spans 25%-75%
    of the box; its ::after stub bridges the midpoint into the box. */
 .bk-match__join {
   position: absolute;
@@ -551,14 +563,14 @@
     box-shadow var(--dur-ui) var(--ease-out-quint);
 }
 .bk-match__join.is-vert-elim,
-.bk-match__join.is-vert-elim::after {
-  background: var(--bk-line-elim);
-}
+.bk-match__join.is-vert-elim::after,
 .bk-match__join.is-vert-win,
 .bk-match__join.is-vert-win::after {
   background: var(--bk-line-win);
-  box-shadow: var(--bk-line-glow);
 }
+
+/* Depth thickening removed with the colour tiers: every segment now holds the
+   3px base weight, so no path reads bolder than another (uniform connectors). */
 /* Vertical bar, offset from the box by the stub; the ::after is the stub that
    bridges the bar's midpoint into the box. */
 .bk-match__join--left {
@@ -585,10 +597,10 @@
 .bk-match__join--right::after {
   right: 100%;
 }
-/* R32 has no feeder matches — its two group-stage teams share one box — so its
+/* R32 has no feeder matches - its two group-stage teams share one box - so its
    merge bar hugs the box's OUTGOING edge (mirroring later rounds, whose merge
    sits on the feeder side) and feeds straight into the winner's outgoing
-   horizontal. It brackets the two team rows, not the 25–75% feeder span, and
+   horizontal. It brackets the two team rows, not the 25-75% feeder span, and
    needs no stub into the box. */
 .bk-match__join--r32 {
   top: 30%;
@@ -621,7 +633,7 @@
 /* Anchor the final box to the semi-final feeder line, not the center column's
    own 50%. The grid's fixed rows overflow the canvas's padded content box, so
    the SF match centre (grid centre) sits ~20px below where the flexible
-   center-body would centre this box — leaving the two SF connectors arriving
+   center-body would centre this box - leaving the two SF connectors arriving
    below the box's side stubs. 8 * row-h is the centre of the 16-row match area,
    measured from the match-area top (which the final header aligns to), so the
    box lands exactly on the incoming SF horizontals regardless of padding. */
@@ -658,9 +670,10 @@
 .bk-final-wrap .bk-match__box::after {
   left: 100%;
 }
-/* Each finalist's incoming stub (left SF = M101, right SF = M102) is a
-   winner-carries-forward horizontal earned only by winning the final, so only the
-   champion's side lights; the runner-up's stays default (it was never earned). */
+/* The finalist stubs read the same neutral token as every other connector now
+   (win/glow both resolve to divider / none), so neither side lights - the
+   champion is told by the gold name + trophy, not a lit wire. Kept as no-ops so
+   the JSX win classes still have a home. */
 .bk-final-wrap.is-left-win .bk-match__box::before {
   background: var(--bk-line-win);
   box-shadow: var(--bk-line-glow);
@@ -856,7 +869,7 @@
   max-width: 90ch;
 }
 
-/* Horizontal-pan affordance — desktop shows the whole tree, so hide it there. */
+/* Horizontal-pan affordance - desktop shows the whole tree, so hide it there. */
 .bk__swipe {
   display: none;
 }

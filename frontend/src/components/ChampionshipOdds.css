@@ -1,4 +1,4 @@
-/* Championship Odds leaderboard — a broadcast standings ladder on Studio Black.
+/* Championship Odds leaderboard - a broadcast standings ladder on Studio Black.
    Rows are dividers, not cards (no nested boxes). Blue owns the title-odds bar
    (prediction channel); the favourite's figure is the one trophy-gold moment. */
 
@@ -113,6 +113,20 @@
 .odds-row__crown {
   color: var(--trophy-gold);
 }
+/* Rank-move marker: appears when a nation shifts places on refresh, then fades
+   out so the table settles. Muted ink; the triangle direction is the signal. */
+.odds-row__move {
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--ink-muted);
+  opacity: 0.75;
+  animation: odds-move-out 2s var(--ease-out-quint) forwards;
+}
+@keyframes odds-move-out {
+  0% { opacity: 0.75; }
+  70% { opacity: 0.75; }
+  100% { opacity: 0; }
+}
 
 /* --- Team identity (flag · code · name · group) --- */
 .odds-row__team {
@@ -129,7 +143,7 @@
   border-radius: 2px;
   object-fit: cover;
   /* Subtle 1px definition so light flags (and the white in many) don't bleed
-     into the black ground — the bracket reference treatment. */
+     into the black ground - the bracket reference treatment. */
   box-shadow: 0 0 0 1px rgba(243, 245, 248, 0.18);
 }
 .odds-row__flag--none {
@@ -158,7 +172,7 @@
   color: var(--ink);
 }
 
-/* Green group badge — reuses the group-data role from the Match Card. */
+/* Green group badge - reuses the group-data role from the Match Card. */
 .odds-row__group {
   flex-shrink: 0;
   margin-left: auto;
@@ -285,7 +299,7 @@
   justify-items: center;
 }
 
-/* Arrow connectors in the gaps — R32 → R16 → … → TITLE reads as a journey. */
+/* Arrow connectors in the gaps - R32 → R16 → … → TITLE reads as a journey. */
 .surv__step:not(:last-child)::after {
   content: '';
   position: absolute;
@@ -321,7 +335,7 @@
   transform-origin: bottom center;
   animation: surv-rise 520ms var(--ease-out-quint) both;
 }
-/* The final stage IS the championship — trophy gold marks the title bar, tying
+/* The final stage IS the championship - trophy gold marks the title bar, tying
    it to the favourite's crown and odds figure. */
 .surv__fill--title {
   background: #c9a84c;
@@ -339,7 +353,7 @@
   text-transform: uppercase;
   color: var(--ink-muted);
 }
-/* The journey ends on the trophy — gold label to match the title bar. */
+/* The journey ends on the trophy - gold label to match the title bar. */
 .surv__step--title .surv__label {
   color: #c9a84c;
 }
@@ -372,7 +386,7 @@
   }
 }
 
-/* On the narrowest screens the code column eats into the name — drop it. */
+/* On the narrowest screens the code column eats into the name - drop it. */
 @media (max-width: 380px) {
   .odds-row__code {
     display: none;
@@ -389,5 +403,10 @@
   }
   .odds-row__chev {
     transition: none;
+  }
+  /* The marker still shows its direction, just without the fade choreography. */
+  .odds-row__move {
+    animation: none;
+    opacity: 0.75;
   }
 }

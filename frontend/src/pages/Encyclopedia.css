@@ -106,7 +106,7 @@
   animation: enc-panel-in 300ms var(--ease-out-quint) both;
 }
 /* The panel is a scrolling flex column; without this, an overflowing panel lets
-   flex shrink crush its sections — the CSS-grid stats block has no intrinsic
+   flex shrink crush its sections - the CSS-grid stats block has no intrinsic
    min-height and collapses to just its gap lines. Keep every section at natural
    height and let the panel scroll instead. (.enc-panel__close is absolute, so
    it's out of flow and unaffected.) */
@@ -146,6 +146,12 @@
 .enc-panel__flag {
   border-radius: var(--radius-sm);
   flex-shrink: 0;
+  /* Part 3c - the flag spins-scales in as the panel opens. */
+  animation: enc-flag-in 450ms var(--ease-out-quint) both;
+}
+@keyframes enc-flag-in {
+  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
 }
 .enc-panel__code {
   margin: 0 0 2px;
@@ -210,7 +216,7 @@
   color: var(--ink);
 }
 
-/* All-time record — a neutral lightness ramp (W brightest → L dimmest), never
+/* All-time record - a neutral lightness ramp (W brightest → L dimmest), never
    green/red, which stay role-locked to group data / live state. */
 .enc-panel__record {
   display: flex;
@@ -270,7 +276,7 @@
   color: var(--ink-secondary);
   text-wrap: pretty;
 }
-/* The World Cup record — subordinate to the intro: quieter and a touch smaller,
+/* The World Cup record - subordinate to the intro: quieter and a touch smaller,
    so the pair reads as headline + footnote rather than two equal lines. */
 .enc-panel__history {
   font-family: var(--font-body);
@@ -280,7 +286,53 @@
   text-wrap: pretty;
 }
 
-/* Head coach — sourced identity data, set in the display face like the other
+/* Fun facts - real, sourced "Did you know" lines that type in after the brief.
+   Neutral treatment (no confederation colour-coding: a 6-colour palette + gradient
+   wash would break DESIGN.md's palette + rarity rules). The lightning glyph is
+   the only flourish; text stays in the ink ramp. */
+.enc-panel__facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.enc-panel__facts-label {
+  margin: 0;
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.enc-facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.enc-facts__item {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: baseline;
+}
+.enc-facts__bullet {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  margin-top: 7px;
+  border-radius: var(--radius-full);
+  background: var(--ink-muted);
+}
+.enc-facts__text {
+  margin: 0;
+  font-size: var(--text-label);
+  line-height: 1.45;
+  color: var(--ink-secondary);
+  text-wrap: pretty;
+}
+
+/* Head coach - sourced identity data, set in the display face like the other
    headline figures. Falls back to an honest, muted "pending" when unsourced. */
 .enc-panel__coach {
   display: flex;
@@ -301,7 +353,7 @@
   font-style: italic;
 }
 
-/* Notable players — real, sourced squad data. */
+/* Notable players - real, sourced squad data. */
 .enc-panel__squad {
   display: flex;
   flex-direction: column;
@@ -379,6 +431,11 @@
     width: auto;
     max-height: 62%;
   }
+  /* Panel (bottom sheet) and the idle mascot (bottom strip) share the lower edge
+     on phones - hide the strip once the panel is open so they never collide. */
+  .enc__stage--panel .mascot--tour {
+    display: none;
+  }
   @keyframes enc-panel-in {
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
@@ -386,7 +443,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .enc-panel {
+  .enc-panel,
+  .enc-panel__flag {
     animation: none;
   }
 }

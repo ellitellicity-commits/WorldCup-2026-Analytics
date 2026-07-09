@@ -7,12 +7,13 @@ import {
 } from '../lib/standings'
 import { useTournamentData } from '../lib/tournamentData'
 import { teamMeta } from '../lib/teams'
+import TabHeader from '../components/TabHeader'
 import './Groups.css'
 
 const fmtGD = (gd) => (gd > 0 ? `+${gd}` : String(gd))
 
 // Maps a derived qualification status to its position-chip class. Status comes
-// from the live data, never hardcoded — see lib/standings.js.
+// from the live data, never hardcoded - see lib/standings.js.
 const POS_CLASS = { q: 'is-q', q3in: 'is-q3', q3out: 'is-out', out: 'is-out' }
 
 function StandingsTable({ rows, caption }) {
@@ -43,9 +44,9 @@ function StandingsTable({ rows, caption }) {
                   r.status === 'q'
                     ? 'Qualified'
                     : r.status === 'q3in'
-                      ? `3rd — provisionally through (${r.thirdRank} of 12 in the third-place race)`
+                      ? `3rd - provisionally through (${r.thirdRank} of 12 in the third-place race)`
                       : r.status === 'q3out'
-                        ? `3rd — provisionally out (${r.thirdRank} of 12 in the third-place race)`
+                        ? `3rd - provisionally out (${r.thirdRank} of 12 in the third-place race)`
                         : 'Eliminated'
                 }
               >
@@ -114,7 +115,7 @@ function ThirdPlaceRace({ thirdRace, open, onToggle }) {
         <span className="third__heading">
           <span className="third__title">Third-place race</span>
           <span className="third__note">
-            Best {slots} of the 12 third-placed teams advance{complete ? '' : ' — provisional'}
+            Best {slots} of the 12 third-placed teams advance{complete ? '' : ' - provisional'}
           </span>
         </span>
         <svg className="grow__chev" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
@@ -143,7 +144,7 @@ function ThirdPlaceRace({ thirdRace, open, onToggle }) {
                   <Fragment key={r.name}>
                     {i === slots && (
                       <tr className="third__cut" aria-hidden="true">
-                        <td colSpan={7}>Qualification cut — top {slots} advance</td>
+                        <td colSpan={7}>Qualification cut - top {slots} advance</td>
                       </tr>
                     )}
                     <tr className={r.qualified ? 'is-q3in' : 'is-out'}>
@@ -193,26 +194,20 @@ function Groups() {
 
   return (
     <section className="groups" aria-labelledby="groups-title">
-      <header className="groups__head">
-        <div className="groups__heading">
-          <h1 id="groups-title" className="groups__title display">Group Tables</h1>
-          <p className="groups__sub">
-            Live standings across the twelve groups, with FIFA tiebreakers applied. The top {QUALIFY_SLOTS} of
-            each group qualify automatically; the best {THIRD_PLACE_QUALIFIERS} of the twelve third-placed teams
-            join them.
-          </p>
-        </div>
-        <div className="groups__actions">
-          <button type="button" className="btn btn--ghost" onClick={toggleAll} aria-pressed={allOpen}>
-            {allOpen ? 'Collapse all' : 'Expand all'}
-          </button>
-        </div>
-      </header>
+      <TabHeader
+        titleId="groups-title"
+        title="Group Tables"
+        description={`Live standings across all twelve groups, FIFA tiebreakers applied. The top ${QUALIFY_SLOTS} of every group go through automatically, and the ${THIRD_PLACE_QUALIFIERS} best third-placed teams grab the last spots in the Round of 32. Every point counts.`}
+      >
+        <button type="button" className="btn btn--ghost" onClick={toggleAll} aria-pressed={allOpen}>
+          {allOpen ? 'Collapse all' : 'Expand all'}
+        </button>
+      </TabHeader>
 
       <ul className="legend" aria-label="Key">
-        <li><span className="gpos gpos--key is-q" aria-hidden="true" /> Qualified — top {QUALIFY_SLOTS} in group</li>
-        <li><span className="gpos gpos--key is-q3" aria-hidden="true" /> 3rd, in the top {THIRD_PLACE_QUALIFIERS} — provisionally through</li>
-        <li><span className="gpos gpos--key is-out" aria-hidden="true" /> 3rd, below the cut — provisionally out</li>
+        <li><span className="gpos gpos--key is-q" aria-hidden="true" /> Qualified - top {QUALIFY_SLOTS} in group</li>
+        <li><span className="gpos gpos--key is-q3" aria-hidden="true" /> 3rd, in the top {THIRD_PLACE_QUALIFIERS} - provisionally through</li>
+        <li><span className="gpos gpos--key is-out" aria-hidden="true" /> 3rd, below the cut - provisionally out</li>
       </ul>
 
       <ul className="groups__list">

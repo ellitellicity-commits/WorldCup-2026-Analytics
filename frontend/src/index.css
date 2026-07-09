@@ -16,7 +16,7 @@ html {
 
 /* Trackpad two-finger horizontal swipe maps to browser back/forward, which in a
    single-page app reads as accidental tab switching. Disable that gesture for
-   pointer devices only — touch screens keep their native edge-swipe-back. */
+   pointer devices only - touch screens keep their native edge-swipe-back. */
 @media (hover: hover) and (pointer: fine) {
   html {
     overscroll-behavior-x: none;
@@ -47,7 +47,7 @@ p {
   text-wrap: pretty;
 }
 
-/* All numeric output aligns — The Tabular Precision Rule */
+/* All numeric output aligns - The Tabular Precision Rule */
 .tnum {
   font-variant-numeric: tabular-nums;
 }
@@ -65,7 +65,7 @@ p {
   border: 0;
 }
 
-/* Display tier — Barlow Condensed, the cinematic focal type */
+/* Display tier - Barlow Condensed, the cinematic focal type */
 .display {
   font-family: var(--font-display);
   font-weight: 800;

@@ -2,16 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import './CountryEmblem.css'
 
-// Original animated host-nation emblems — NOT mascots. Each is an extruded 2D
+// Original animated host-nation emblems - NOT mascots. Each is an extruded 2D
 // shape (ExtrudeGeometry) with its own signature motion, shown in a shared fixed
 // container so the three read as one broadcast-graphic system. Triggered when a
 // flight crosses into a host's airspace; plays ~2.8s, then dismisses via onDone.
 //
-//   Canada  — a faceted maple leaf scales/unfolds open while slowly rotating,
+//   Canada  - a faceted maple leaf scales/unfolds open while slowly rotating,
 //             beveled edges catching the key light. Canadian red, light bevel.
-//   Mexico  — a sunburst medallion: a gold disc scales in, then green rays sweep
+//   Mexico  - a sunburst medallion: a gold disc scales in, then green rays sweep
 //             outward in staggered sequence like a shutter opening.
-//   USA     — a faceted star flies in from off-screen, throws a brief spark burst
+//   USA     - a faceted star flies in from off-screen, throws a brief spark burst
 //             on arrival, then settles into a slow rotation. American blue.
 
 const DURATION_MS = 2800
@@ -28,8 +28,8 @@ const easeOutQuint = (x) => 1 - Math.pow(1 - clamp01(x), 5)
 
 function mapleShape() {
   // Right-half profile (stem at bottom centre, apex at top); mirrored for
-  // symmetry. A deliberately angular, faceted reading of a maple leaf — lower
-  // lobe, a wide lateral lobe, upper points, apex — not the literal flag leaf.
+  // symmetry. A deliberately angular, faceted reading of a maple leaf - lower
+  // lobe, a wide lateral lobe, upper points, apex - not the literal flag leaf.
   const R = [
     [0.0, -0.95], [0.09, -0.4], [0.3, -0.48], [0.2, -0.22], [0.58, -0.22], [0.34, 0.0],
     [0.3, 0.12], [0.52, 0.2], [0.28, 0.3], [0.22, 0.42], [0.36, 0.54], [0.12, 0.52], [0.13, 0.8], [0.0, 1.0],
@@ -129,7 +129,7 @@ function buildUSA() {
   )
   star.geometry.center()
   group.add(star)
-  // Spark burst — small points scattered on unit-ish directions, expanded and
+  // Spark burst - small points scattered on unit-ish directions, expanded and
   // faded on arrival.
   const n = 44
   const pos = new Float32Array(n * 3)

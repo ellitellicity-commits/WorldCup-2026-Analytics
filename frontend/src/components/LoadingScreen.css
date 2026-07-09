@@ -8,6 +8,8 @@
 }
 
 .loading__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,10 +17,127 @@
   padding: var(--space-xl, 40px);
 }
 
-.loading__mark {
+/* Faint host-city skylines anchored to the bottom edge, behind the content.
+   A tonal surface step over studio-black - depth from lightness, not glow. */
+.loading__skyline {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 0;
+  height: clamp(120px, 22vh, 220px);
+  fill: var(--surface-overlay);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.loading__skyline svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Rolling match ball - the loader's motion. Rolls across a short track and back
+   (alternate), the spin matched to the travel so it reads as a real roll. Three
+   faint ghosts share the roll on a slight lag for a trailing streak. */
+.loading__ball-track {
+  position: relative;
+  display: block;
   width: 64px;
   height: 64px;
-  animation: loading-mark-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.loading__ball {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 64px;
+  height: 64px;
+  animation: loading-roll 2.4s ease-in-out infinite alternate;
+}
+.loading__ball-ghost {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--ink);
+  animation: loading-roll 2.4s ease-in-out infinite alternate;
+}
+.loading__ball-ghost--1 { opacity: 0.16; animation-delay: -0.09s; }
+.loading__ball-ghost--2 { opacity: 0.1; animation-delay: -0.18s; }
+.loading__ball-ghost--3 { opacity: 0.06; animation-delay: -0.27s; }
+.loading__ball-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+@keyframes loading-roll {
+  from {
+    transform: translateX(-84px) rotate(0deg);
+  }
+  to {
+    transform: translateX(84px) rotate(300deg);
+  }
+}
+
+/* Caption beneath the rolling ball. Warm, quiet body register: the flavour line,
+   not the functional status (that sits at the foot of the gate). */
+.loading__ball-label {
+  margin: 0;
+  font-family: var(--font-body, Inter, system-ui, sans-serif);
+  font-size: var(--text-meta, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+}
+
+/* Rotating reel of real tournament facts, typed in. Each fact rides its own
+   block that slides up + fades in on arrival and fades up + out on the way out. */
+.loading__facts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm, 8px);
+  min-height: 5.5em;
+  max-width: min(90vw, 34rem);
+  text-align: center;
+}
+.loading__fact-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  animation: fact-enter 0.42s ease both;
+}
+.loading__fact-block.is-leaving {
+  animation: fact-leave 0.26s ease forwards;
+}
+@keyframes fact-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fact-leave {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+.loading__facts-label {
+  margin: 0;
+  font-family: var(--font-body, Inter, system-ui, sans-serif);
+  font-size: var(--text-meta, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.loading__fact {
+  margin: 0;
+  font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--ink);
 }
 
 .loading__label {
@@ -31,54 +150,18 @@
   color: var(--ink-muted);
 }
 
-/* A single thin rule with a gold segment sweeping across — the "on air" cue. */
-.loading__sweep {
-  position: relative;
-  width: 180px;
-  max-width: 60vw;
-  height: 2px;
-  overflow: hidden;
-  background: var(--border-divider);
-  border-radius: 9999px;
-}
-
-.loading__sweep-bar {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 40%;
-  border-radius: 9999px;
-  background: var(--trophy-gold);
-  animation: loading-sweep 1100ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-
-@keyframes loading-sweep {
-  0% {
-    transform: translateX(-110%);
-  }
-  100% {
-    transform: translateX(360%);
-  }
-}
-
-@keyframes loading-mark-in {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .loading__mark {
+  /* No roll: the ball rests centred (the typing facts still signal progress),
+     and the motion-streak ghosts are dropped entirely. */
+  .loading__ball {
     animation: none;
   }
-  /* No sweep: a steady gold rule stands in for the moving segment. */
-  .loading__sweep-bar {
-    position: static;
-    width: 100%;
+  .loading__ball-ghost {
+    display: none;
+  }
+  /* Facts swap without the slide/fade choreography. */
+  .loading__fact-block,
+  .loading__fact-block.is-leaving {
     animation: none;
   }
 }

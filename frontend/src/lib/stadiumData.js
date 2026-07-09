@@ -5,7 +5,7 @@
 //   - TEAM_COORDINATES: an origin city for each of the 48 qualified teams.
 //
 // These are consumed by the globe's plane-flight animation (a great-circle arc
-// needs a real origin and destination). This module is pure data — it renders
+// needs a real origin and destination). This module is pure data - it renders
 // nothing on its own, and is safe to import from any runtime (no Vite globals,
 // no DOM). Country codes match the rest of the app: 'US' / 'CA' / 'MX', the same
 // venue-country convention bracket.js keys the host bonus off (HOST_OF).
@@ -14,7 +14,7 @@
 //   Host list cross-checked against FIFA's official stadiums page and the app's
 //   own fixtures.json (which already schedules matches at all 16). 11 venues in
 //   the USA, 3 in Mexico, 2 in Canada = 16. Coordinates are stadium centroids to
-//   ~4dp (≈11 m) — precise enough for a globe arc, not a survey. `image` is a
+//   ~4dp (≈11 m) - precise enough for a globe arc, not a survey. `image` is a
 //   placeholder path under public/stadiums/; the art is not part of this session.
 //   `city` is the physical locale (matching fixtures.json's venue.city style);
 //   `hostCity` is FIFA's marketing host-city label.
@@ -91,7 +91,7 @@ export const STADIUMS = {
   },
 }
 
-// Iterable form, each entry carrying its own name — convenient for markers.
+// Iterable form, each entry carrying its own name - convenient for markers.
 export const STADIUM_LIST = Object.entries(STADIUMS).map(([name, s]) => ({ name, ...s }))
 
 // Lookup by stadium name; null when we don't carry it. Mirrors the accessor
@@ -104,7 +104,7 @@ export function getStadium(name) {
 // One [lat, lng] origin per qualified team, keyed by the exact canonical name in
 // lib/teams.js so a fixture's team name resolves directly. Default rule: the
 // national capital. Three exceptions use the primary football metro where the
-// administrative capital is a minor or purpose-built city — noted inline — since
+// administrative capital is a minor or purpose-built city - noted inline - since
 // the plane should launch from where the team actually plays, not a formality.
 export const TEAM_COORDINATES = {
   Argentina: [-34.6037, -58.3816], // Buenos Aires

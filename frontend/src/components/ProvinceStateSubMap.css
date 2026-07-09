@@ -1,9 +1,10 @@
 /* Host-nation province/state sub-map (B3). Coloured in the host's national
-   colour — the deliberate host-identity treatment (see commit), scoped to the
+   colour - the deliberate host-identity treatment (see commit), scoped to the
    three hosts only. Strokes use non-scaling-stroke so they stay crisp under the
    degree-scale viewBox. */
 .submap {
   --host: var(--american-blue);
+  position: relative;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -12,25 +13,47 @@
   background: var(--surface-elevated);
   border: 1px solid var(--border-divider);
   border-radius: var(--radius-md);
+  max-width: 100%;
+  overflow: hidden;
 }
 .submap--US { --host: var(--american-blue); }
 .submap--CA { --host: var(--canadian-red); }
 .submap--MX { --host: var(--mexican-green); }
 
-.submap svg {
+.submap__svg {
   width: 100%;
   height: auto;
   max-height: 220px;
-  overflow: visible;
+  overflow: hidden;
+  touch-action: none; /* let the component own pinch/drag gestures */
+  cursor: default;
+}
+.submap__svg.is-zoomed { cursor: grab; }
+.submap__svg.is-zoomed:active { cursor: grabbing; }
+
+/* Composite the panned/zoomed group on its own layer so wheel/drag transforms
+   (set imperatively on this <g>) don't repaint all 48+ paths every frame. */
+.submap__viewport {
+  will-change: transform;
 }
 
+/* Each subdivision is a distinct filled shape. Rather than a rainbow palette,
+   the five tones are lightness steps of the single host hue - mixed toward WHITE
+   (not the near-black card surface, which rendered them invisible against the
+   dark panel), so the fills read clearly as lit regions while the map stays
+   role-locked to the host colour per DESIGN.md. */
 .submap__prov {
-  fill: color-mix(in srgb, var(--host) 24%, transparent);
-  stroke: color-mix(in srgb, var(--host) 85%, transparent);
-  stroke-width: 1.1;
+  stroke: color-mix(in srgb, var(--host) 90%, #000000);
+  stroke-width: 0.9;
+  stroke-opacity: 0.7;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
+.submap__prov--t0 { fill: color-mix(in srgb, var(--host) 80%, #ffffff); }
+.submap__prov--t1 { fill: color-mix(in srgb, var(--host) 55%, #ffffff); }
+.submap__prov--t2 { fill: color-mix(in srgb, var(--host) 65%, #ffffff); }
+.submap__prov--t3 { fill: color-mix(in srgb, var(--host) 45%, #ffffff); }
+.submap__prov--t4 { fill: color-mix(in srgb, var(--host) 70%, #ffffff); }
 .submap__cap {
   fill: var(--ink-secondary);
   stroke: var(--studio-black);
@@ -43,6 +66,42 @@
   stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
 }
+
+/* Province / state abbreviations - Barlow Condensed, centred in each shape. Now
+   that the fills read light, the code is dark ink with a light halo (paint-order
+   puts the stroke behind), so it stays legible over any tone. Drawn in SVG user
+   units so they scale with the viewport group as you zoom in. */
+.submap__abbr {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.1px;
+  letter-spacing: 0.04em;
+  fill: var(--studio-black);
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Reset control - quiet chip, top-right, only present while zoomed/panned. */
+.submap__reset {
+  position: absolute;
+  top: calc(var(--space-md) + 4px);
+  right: calc(var(--space-md) + 4px);
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--surface-card) 90%, transparent);
+  border: 1px solid var(--border-divider);
+  border-radius: var(--radius-sm);
+  color: var(--ink-secondary);
+  font: 600 var(--text-meta) / 1 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.submap__reset:hover { color: var(--ink); background: var(--surface-elevated); }
+.submap__reset:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
 .submap__legend {
   color: var(--ink-muted);

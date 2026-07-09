@@ -1,0 +1,197 @@
+{
+  "_source": "Real, verifiable football facts per nation (Wikipedia-grounded). Two per country, used by the Atlas 'Did you know' block. No fabricated content.",
+  "funFacts": {
+    "Argentina": [
+      "Argentina have won the World Cup three times — 1978, 1986 and 2022.",
+      "Lionel Messi captained Argentina to the 2022 World Cup title in Qatar."
+    ],
+    "Spain": [
+      "Spain won their first World Cup in 2010, beating the Netherlands in the final.",
+      "They won three straight majors: Euro 2008, the 2010 World Cup and Euro 2012."
+    ],
+    "France": [
+      "France have won two World Cups — 1998 on home soil and 2018 in Russia.",
+      "Kylian Mbappé scored a hat-trick in the 2022 World Cup final, a rare feat."
+    ],
+    "England": [
+      "England won their only World Cup in 1966, as hosts at Wembley.",
+      "Geoff Hurst is the only man to score a hat-trick in a World Cup final."
+    ],
+    "Portugal": [
+      "Cristiano Ronaldo is Portugal's all-time leading scorer and most-capped player.",
+      "Portugal finished third at the 1966 World Cup, led by Eusébio's nine goals."
+    ],
+    "Brazil": [
+      "Brazil are the only nation to have played in every FIFA World Cup.",
+      "They have won the World Cup a record five times."
+    ],
+    "Morocco": [
+      "Morocco became the first African nation to reach a World Cup semi-final, in 2022.",
+      "In 1986 they were the first African side to top a World Cup group."
+    ],
+    "Netherlands": [
+      "The Dutch reached three World Cup finals — 1974, 1978 and 2010 — without winning.",
+      "They pioneered 'Total Football' at the 1974 World Cup."
+    ],
+    "Belgium": [
+      "Belgium finished third at the 2018 World Cup, their best-ever result.",
+      "Belgium's 'golden generation' topped the FIFA World Ranking from 2018."
+    ],
+    "Germany": [
+      "Germany have won the World Cup four times, most recently in 2014.",
+      "Miroslav Klose is the World Cup's all-time top scorer with 16 goals."
+    ],
+    "Croatia": [
+      "Croatia reached the World Cup final in 2018, losing to France.",
+      "Luka Modrić won the Golden Ball as the best player of the 2018 tournament."
+    ],
+    "Colombia": [
+      "Colombia's James Rodríguez won the Golden Boot at the 2014 World Cup.",
+      "Goalkeeper René Higuita was famous for his audacious 'scorpion kick'."
+    ],
+    "Mexico": [
+      "Mexico has hosted the World Cup twice, in 1970 and 1986.",
+      "Estadio Azteca staged both the 1970 and 1986 finals."
+    ],
+    "Senegal": [
+      "Senegal beat holders France on their World Cup debut in 2002.",
+      "They won their first Africa Cup of Nations in 2021."
+    ],
+    "Uruguay": [
+      "Uruguay won the very first World Cup, as hosts in 1930.",
+      "They have lifted the trophy twice — in 1930 and 1950."
+    ],
+    "United States": [
+      "The USA reached the semi-finals of the first World Cup in 1930.",
+      "The USA co-hosts the 2026 World Cup with Canada and Mexico."
+    ],
+    "Japan": [
+      "Japan co-hosted the 2002 World Cup with South Korea.",
+      "They have reached the World Cup knockout stage several times since 2002."
+    ],
+    "Switzerland": [
+      "Switzerland hosted the 1954 World Cup.",
+      "They have reached the knockout stage at several recent World Cups."
+    ],
+    "Iran": [
+      "Iran have qualified for the World Cup six times.",
+      "Iran beat the United States 2-1 at the 1998 World Cup in France."
+    ],
+    "Turkey": [
+      "Turkey finished third at the 2002 World Cup, their best result.",
+      "Hakan Şükür scored the fastest goal in World Cup history there — after 11 seconds."
+    ],
+    "Ecuador": [
+      "Ecuador reached the Round of 16 at the 2006 World Cup.",
+      "They play home qualifiers in Quito, over 2,800m above sea level."
+    ],
+    "Austria": [
+      "Austria finished third at the 1954 World Cup.",
+      "The 'Wunderteam' of the 1930s was one of Europe's strongest sides."
+    ],
+    "South Korea": [
+      "South Korea reached the semi-finals as co-hosts in 2002 — the best by an Asian side.",
+      "They co-hosted the 2002 World Cup with Japan."
+    ],
+    "Australia": [
+      "Australia switched from the Oceania confederation to Asia in 2006.",
+      "The Socceroos reached the Round of 16 in both 2006 and 2022."
+    ],
+    "Algeria": [
+      "Algeria famously beat West Germany 2-1 at the 1982 World Cup.",
+      "They won the Africa Cup of Nations in 1990 and again in 2019."
+    ],
+    "Egypt": [
+      "Egypt were the first African nation to enter the World Cup, in 1934.",
+      "They are record seven-time Africa Cup of Nations champions."
+    ],
+    "Canada": [
+      "Canada's only previous men's World Cup appearance was in 1986.",
+      "Canada co-hosts the 2026 World Cup with the USA and Mexico."
+    ],
+    "Norway": [
+      "Norway went unbeaten against Brazil in the 20th century, beating them at the 1998 World Cup.",
+      "Striker Erling Haaland is one of the most prolific goalscorers in the game."
+    ],
+    "Ivory Coast": [
+      "Ivory Coast won the Africa Cup of Nations on home soil in 2024.",
+      "Didier Drogba is the nation's all-time leading scorer."
+    ],
+    "Panama": [
+      "Panama made their World Cup debut in 2018.",
+      "Their 2017 qualification was declared a national holiday."
+    ],
+    "Sweden": [
+      "Sweden finished runners-up at the 1958 World Cup, which they hosted.",
+      "They took third place at the 1994 World Cup in the United States."
+    ],
+    "Czechia": [
+      "As Czechoslovakia they reached two World Cup finals, in 1934 and 1962.",
+      "Czechoslovakia won the 1976 European Championship on penalties."
+    ],
+    "Paraguay": [
+      "Paraguay reached the World Cup quarter-finals in 2010.",
+      "Goalkeeper José Luis Chilavert scored dozens of goals from free-kicks and penalties."
+    ],
+    "Scotland": [
+      "Scotland played in the first-ever international football match, against England in 1872.",
+      "Hampden Park in Glasgow is one of the world's oldest international stadiums."
+    ],
+    "Tunisia": [
+      "Tunisia were the first African team to win a World Cup match, in 1978.",
+      "They won the Africa Cup of Nations in 2004 as hosts."
+    ],
+    "DR Congo": [
+      "As Zaire, they were the first Black African nation to reach a World Cup, in 1974.",
+      "The nation has won the Africa Cup of Nations twice, in 1968 and 1974."
+    ],
+    "Uzbekistan": [
+      "Uzbekistan won the football gold medal at the 1994 Asian Games.",
+      "The 'White Wolves' joined FIFA after independence in the early 1990s."
+    ],
+    "Qatar": [
+      "Qatar hosted the 2022 World Cup, the first in the Middle East.",
+      "They won the AFC Asian Cup in both 2019 and 2023."
+    ],
+    "Iraq": [
+      "Iraq won the AFC Asian Cup in 2007, uniting the country in celebration.",
+      "Their only previous World Cup appearance was in 1986."
+    ],
+    "South Africa": [
+      "South Africa hosted the 2010 World Cup, the first held in Africa.",
+      "They won the Africa Cup of Nations as hosts in 1996."
+    ],
+    "Saudi Arabia": [
+      "Saudi Arabia stunned Argentina 2-1 at the 2022 World Cup.",
+      "They reached the Round of 16 on their World Cup debut in 1994."
+    ],
+    "Jordan": [
+      "Jordan reached their first-ever Asian Cup final in 2024.",
+      "That run was the nation's best result at a major tournament."
+    ],
+    "Bosnia and Herzegovina": [
+      "Bosnia and Herzegovina made their World Cup debut in 2014.",
+      "Edin Džeko is the country's all-time leading scorer."
+    ],
+    "Cape Verde": [
+      "Cape Verde, the 'Blue Sharks', are an Atlantic island nation of around half a million people.",
+      "They reached the Africa Cup of Nations quarter-finals in 2013 and again in 2023."
+    ],
+    "Ghana": [
+      "Ghana reached the World Cup quarter-finals in 2010, agonisingly close to the semis.",
+      "The Black Stars are four-time Africa Cup of Nations champions."
+    ],
+    "Curaçao": [
+      "Curaçao is a Caribbean island and constituent country of the Kingdom of the Netherlands.",
+      "They won the Caribbean Cup in 2017."
+    ],
+    "Haiti": [
+      "Haiti's only previous World Cup appearance was in 1974.",
+      "There, Emmanuel Sanon ended Italy goalkeeper Dino Zoff's long unbeaten record."
+    ],
+    "New Zealand": [
+      "New Zealand went unbeaten at the 2010 World Cup, drawing all three games.",
+      "The men's national team is nicknamed the 'All Whites'."
+    ]
+  }
+}

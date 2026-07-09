@@ -66,6 +66,14 @@ function Panel({ country, onClose }) {
   const rec = c.record
   const winPct = rec && rec.played ? Math.round((rec.w / rec.played) * 100) : null
   const historyDelay = c.intro ? Math.round(typeMs(c.intro) + 140) : 160
+  // Fun facts type in after the intro + history have finished, one after another,
+  // so the whole brief reads as a single broadcast sequence rather than a race.
+  let factAcc = historyDelay + (c.history ? typeMs(c.history) : 0) + 160
+  const factDelays = (c.funFacts || []).map((f) => {
+    const d = Math.round(factAcc)
+    factAcc += typeMs(f) + 120
+    return d
+  })
   return (
     <aside className="enc-panel" aria-label={`${c.name} profile`}>
       <button className="enc-panel__close" onClick={onClose} type="button" aria-label="Close profile">×</button>
@@ -83,6 +91,20 @@ function Panel({ country, onClose }) {
           {c.history && (
             <Typewriter key={`${c.name}-history`} text={c.history} className="enc-panel__history" startDelay={historyDelay} />
           )}
+        </div>
+      )}
+
+      {c.funFacts && c.funFacts.length > 0 && (
+        <div className="enc-panel__facts">
+          <p className="enc-panel__facts-label">⚡ Did you know</p>
+          <ul className="enc-facts">
+            {c.funFacts.map((f, i) => (
+              <li className="enc-facts__item" key={i}>
+                <span className="enc-facts__bullet" aria-hidden="true" />
+                <Typewriter key={`${c.name}-fact-${i}`} text={f} className="enc-facts__text" startDelay={factDelays[i]} />
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

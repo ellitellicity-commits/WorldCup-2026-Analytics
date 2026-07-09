@@ -30,6 +30,7 @@ import squads from '../data/countrySquads.json'
 import intros from '../data/countryIntros.json'
 import histories from '../data/countryHistory.json'
 import coaches from '../data/countryCoaches.json'
+import funFacts from '../data/countryFunFacts.json'
 import { teamMeta, flagUrl } from './teams'
 
 const RANKS = fifaRankings.ranks
@@ -37,6 +38,7 @@ const SQUADS = squads.teams
 const INTROS = intros.intros
 const HISTORY = histories.history
 const COACHES = coaches.coaches
+const FUN_FACTS = funFacts.funFacts
 const ODDS = Object.fromEntries(getOdds().teams.map((t) => [t.team, t]))
 
 // The 48 qualified nations, in ascending real FIFA-rank order (the globe plots
@@ -76,5 +78,7 @@ export function getCountry(name) {
     // null when the source had none for this team → panel shows "pending".
     history: HISTORY[name] ?? null,
     coach: COACHES[name] ?? null,
+    // Real, verifiable "Did you know" facts (data/countryFunFacts.json).
+    funFacts: FUN_FACTS[name] ?? null,
   }
 }

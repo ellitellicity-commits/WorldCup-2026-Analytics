@@ -146,6 +146,12 @@
 .enc-panel__flag {
   border-radius: var(--radius-sm);
   flex-shrink: 0;
+  /* Part 3c — the flag spins-scales in as the panel opens. */
+  animation: enc-flag-in 450ms var(--ease-out-quint) both;
+}
+@keyframes enc-flag-in {
+  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
 }
 .enc-panel__code {
   margin: 0 0 2px;
@@ -280,6 +286,52 @@
   text-wrap: pretty;
 }
 
+/* Fun facts — real, sourced "Did you know" lines that type in after the brief.
+   Neutral treatment (no confederation colour-coding: a 6-colour palette + gradient
+   wash would break DESIGN.md's palette + rarity rules). The lightning glyph is
+   the only flourish; text stays in the ink ramp. */
+.enc-panel__facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.enc-panel__facts-label {
+  margin: 0;
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.enc-facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.enc-facts__item {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: baseline;
+}
+.enc-facts__bullet {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  margin-top: 7px;
+  border-radius: var(--radius-full);
+  background: var(--ink-muted);
+}
+.enc-facts__text {
+  margin: 0;
+  font-size: var(--text-label);
+  line-height: 1.45;
+  color: var(--ink-secondary);
+  text-wrap: pretty;
+}
+
 /* Head coach — sourced identity data, set in the display face like the other
    headline figures. Falls back to an honest, muted "pending" when unsourced. */
 .enc-panel__coach {
@@ -391,7 +443,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .enc-panel {
+  .enc-panel,
+  .enc-panel__flag {
     animation: none;
   }
 }

@@ -201,24 +201,21 @@ Earlier ideas still on the list: player-availability and injury signals for the 
 
 ### Deploy your own
 
-1. Fork the repo and create a Vercel project pointing at your fork.
-2. Set `FOOTBALL_DATA_API_KEY` (free key from football-data.org) in the Vercel project's environment variables. Optionally add `GOOGLE_CUSTOM_SEARCH_KEY` and `GOOGLE_CUSTOM_SEARCH_ENGINE_ID` for player headshots.
-3. Vercel builds with `cd frontend && npm install && npm run build` (see `vercel.json`) and auto-deploys on push to `main`.
+| Step | Action |
+|---|---|
+| 1 | Fork the repo and create a Vercel project pointing at your fork |
+| 2 | Set `FOOTBALL_DATA_API_KEY` (free key from football-data.org) in the Vercel project's environment variables. Optionally add `GOOGLE_CUSTOM_SEARCH_KEY` and `GOOGLE_CUSTOM_SEARCH_ENGINE_ID` for player headshots |
+| 3 | Vercel builds with `cd frontend && npm install && npm run build` (see `vercel.json`) and auto-deploys on push to `main` |
 
-### Deployment config, three things that must not regress
+### Deployment config — three things that must not regress
 
-The repo root is the Vercel **Root Directory**; the root `vercel.json`, root `api/`, and root `.vercelignore` are authoritative. Three earlier failure modes are each fixed at the source, so do not undo them:
+The repo root is the Vercel **Root Directory**; the root `vercel.json`, root `api/`, and root `.vercelignore` are authoritative.
 
-1. **Python misdetection.** `scripts/generate_fixtures.py` plus `requirements.txt` at the repo root made Vercel's zero-config detection read the project as Python and skip the Vite build. Fixed by (a) `"framework": "vite"` explicit in `vercel.json`, and (b) `.vercelignore` excluding every Python and ML artifact from the upload (`/scripts/`, `/requirements.txt`, `/*.ipynb`, `/models/`, plus an unanchored `*.py` and manifest catch-all for any future stray file). Keeping the `.py` files in the repo is fine; keeping them out of the upload is the fix.
-2. **The proxy must exist in production.** The football-data.org token cannot reach the browser and the API sends no CORS headers, so the request is proxied server-side. In dev that is the Vite proxy (`frontend/vite.config.js`); in production it is the serverless function `api/index.js`, reached via the `vercel.json` rewrite `/football-api/:path* -> /api?path=:path*`. `frontend/src/lib/data.js` calls the same `/football-api/*` path in both.
-3. **The API key env var.** `FOOTBALL_DATA_API_KEY` (unprefixed, since a `VITE_` var would inline into the client bundle) is set in the Vercel project, Production scope. `api/index.js` 500s without it, and the build-time `__HAS_LIVE_DATA__` flag reads it too, so it must be present at both build and runtime.
-
-The live proxy is verifiable without the Vercel CLI:
-
-```bash
-curl -s https://world-cup-2026-analytics-xi.vercel.app/football-api/v4/competitions/WC/matches | head -c 200
-# a matches array means the proxy and env var are working; an error or HTML means one of the three above regressed
-```
+| # | Failure mode | Root cause | Fix (do not undo) |
+|---|---|---|---|
+| 1 | **Python misdetection** | `scripts/generate_fixtures.py` + `requirements.txt` at repo root made Vercel's zero-config detection read the project as Python and skip the Vite build | (a) `"framework": "vite"` explicit in `vercel.json`; (b) `.vercelignore` excludes all Python/ML artifacts from upload (`/scripts/`, `/requirements.txt`, `/*.ipynb`, `/models/`, plus an unanchored `*.py` catch-all). Keeping `.py` files in the repo is fine — keeping them out of the upload is the fix. |
+| 2 | **Proxy must exist in production** | The football-data.org token can't reach the browser and the API sends no CORS headers | Server-side proxy: Vite proxy (`frontend/vite.config.js`) in dev, serverless function `api/index.js` in production, reached via the `vercel.json` rewrite `/football-api/:path* → /api?path=:path*`. `frontend/src/lib/data.js` calls the same `/football-api/*` path in both environments. |
+| 3 | **API key env var** | A `VITE_`-prefixed var would inline into the client bundle, exposing the key | `FOOTBALL_DATA_API_KEY` (unprefixed) set in Vercel, Production scope. `api/index.js` 500s without it; the build-time `__HAS_LIVE_DATA__` flag also reads it — must be present at both build and runtime. |
 
 ## Development Workflow
 

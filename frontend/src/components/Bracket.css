@@ -517,7 +517,13 @@
   content: '';
   position: absolute;
   top: 50%;
-  width: calc(var(--bk-gut) - var(--bk-stub));
+  /* Stop at the NEAR face of the next round's vertical join, not its far edge:
+     the gutter is out-stub + join-bar + in-stub. Without subtracting the bar's
+     own width the horizontal ran the full width across the join and met the
+     in-stub on the far side, so both feeders read as passing straight through
+     the vertical - the overlapping "U". Ending one line-width short lands the
+     horizontal cleanly on the join's near face (a proper L corner). */
+  width: calc(var(--bk-gut) - var(--bk-stub) - var(--bk-line-w));
   height: var(--bk-line-w);
   background: var(--bk-line);
   transform: translateY(-50%);
@@ -530,6 +536,13 @@
 }
 .bk-grid--right .bk-match::after {
   right: 100%;
+}
+/* The semi-final's outgoing horizontal is the exception: the Final box has no
+   vertical join (the two finalists converge straight into its side stubs), so
+   this one must span the full gutter to the final's 10px stub, or a gap opens
+   on the SF -> Final leg. Restore the full out-stub length for SF only. */
+.bk-grid .bk-match--sf::after {
+  width: calc(var(--bk-gut) - var(--bk-stub));
 }
 /* Outgoing line: muted once the advancing team is eliminated (its trail stays but
    fades), bright + glowing while that team is still alive / is the champion. */

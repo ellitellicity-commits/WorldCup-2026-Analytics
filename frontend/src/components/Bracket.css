@@ -7,21 +7,16 @@
   --bk-box-h: 58px;
   --bk-rail-w: 150px;
   --bk-center-w: 158px;
-  /* Connector system (Part D): three tiers tell each team's story on the tree.
-     • Faint skeleton (--bk-line): undecided ties, and the leg where a team was
-       knocked out - the dimmed default, unchanged.
-     • Red (--bk-line-elim): the segments a team EARNED by winning before going
-       out - its "how far it got" trail. Deeper rounds thicken (see below), so a
-       semi-final run reads bolder than an early exit. NB this red and the green
-       below are path-depth encodings on the tree, distinct from the app's
-       role-locked live-red / group-green; the champion card + trophy keep gold.
-     • Green + glow (--bk-line-win): the champion's full path only - the one team
-       that never loses, so the only path still lit in a finished bracket. */
+  /* Connector system: uniform neutral. Every connector - undecided, eliminated
+     trail, and champion path alike - is the single divider colour, no highlight.
+     The is-out-win / is-out-elim / is-vert-* classes stay applied by the JSX but
+     all resolve to the same neutral token, so the tree reads clean and quiet;
+     the champion is told by the gold name + trophy, not by a lit wire. */
   --bk-line-w: 3px;
   --bk-line: var(--border-divider);
-  --bk-line-elim: color-mix(in oklab, var(--canadian-red) 82%, var(--studio-black));
-  --bk-line-win: var(--mexican-green);
-  --bk-line-glow: 0 0 6px color-mix(in oklab, var(--mexican-green) 55%, transparent);
+  --bk-line-elim: var(--border-divider);
+  --bk-line-win: var(--border-divider);
+  --bk-line-glow: none;
   --bk-canvas-h: calc(var(--bk-head-h) + 16 * var(--bk-row-h));
 
   display: flex;
@@ -544,20 +539,13 @@
 .bk-grid .bk-match--sf::after {
   width: calc(var(--bk-gut) - var(--bk-stub));
 }
-/* Outgoing line: muted once the advancing team is eliminated (its trail stays but
-   fades), bright + glowing while that team is still alive / is the champion. */
+/* Outgoing line: neutral in every state (the win/elim classes resolve to the
+   same divider token now). No shimmer, no glow. */
 .bk-grid .bk-match.is-out-elim::after {
   background: var(--bk-line-elim);
 }
 .bk-grid .bk-match.is-out-win::after {
-  background-color: var(--bk-line-win);
-  /* A brighter band travels along the champion's wire, like a charge running
-     through it. Pure lightness lift of the role-locked green (no new hue). */
-  background-image: linear-gradient(90deg, transparent 0%, color-mix(in oklab, #fff 60%, var(--bk-line-win)) 50%, transparent 100%);
-  background-size: 45% 100%;
-  background-repeat: no-repeat;
-  box-shadow: var(--bk-line-glow);
-  animation: bk-champ-flow-x 3s linear infinite;
+  background: var(--bk-line-win);
 }
 
 /* A match's vertical merge. One state for the whole bar (+ its stub), owned by
@@ -575,48 +563,14 @@
     box-shadow var(--dur-ui) var(--ease-out-quint);
 }
 .bk-match__join.is-vert-elim,
-.bk-match__join.is-vert-elim::after {
-  background: var(--bk-line-elim);
-}
+.bk-match__join.is-vert-elim::after,
 .bk-match__join.is-vert-win,
 .bk-match__join.is-vert-win::after {
-  background-color: var(--bk-line-win);
-  box-shadow: var(--bk-line-glow);
-}
-.bk-match__join.is-vert-win {
-  background-image: linear-gradient(180deg, transparent 0%, color-mix(in oklab, #fff 60%, var(--bk-line-win)) 50%, transparent 100%);
-  background-size: 100% 45%;
-  background-repeat: no-repeat;
-  animation: bk-champ-flow-y 3s linear infinite;
-}
-@keyframes bk-champ-flow-x {
-  from { background-position: -45% 50%; }
-  to { background-position: 145% 50%; }
-}
-@keyframes bk-champ-flow-y {
-  from { background-position: 50% -45%; }
-  to { background-position: 50% 145%; }
+  background: var(--bk-line-win);
 }
 
-/* Depth cue on the red "progressed" trail: the further a team got, the thicker
-   its earned segments - a quarter- or semi-final run reads bolder than an early
-   exit. Thickness is `height` on the horizontals (out ::after and the join stub)
-   and `width` on the vertical join bar. Champion green stays a uniform weight;
-   its glow carries the prominence. R32/R16 keep the 3px base. */
-.bk-grid .bk-match--qf.is-out-elim::after,
-.bk-match__join--qf.is-vert-elim::after {
-  height: 4px;
-}
-.bk-match__join--qf.is-vert-elim {
-  width: 4px;
-}
-.bk-grid .bk-match--sf.is-out-elim::after,
-.bk-match__join--sf.is-vert-elim::after {
-  height: 5px;
-}
-.bk-match__join--sf.is-vert-elim {
-  width: 5px;
-}
+/* Depth thickening removed with the colour tiers: every segment now holds the
+   3px base weight, so no path reads bolder than another (uniform connectors). */
 /* Vertical bar, offset from the box by the stub; the ::after is the stub that
    bridges the bar's midpoint into the box. */
 .bk-match__join--left {
@@ -716,9 +670,10 @@
 .bk-final-wrap .bk-match__box::after {
   left: 100%;
 }
-/* Each finalist's incoming stub (left SF = M101, right SF = M102) is a
-   winner-carries-forward horizontal earned only by winning the final, so only the
-   champion's side lights; the runner-up's stays default (it was never earned). */
+/* The finalist stubs read the same neutral token as every other connector now
+   (win/glow both resolve to divider / none), so neither side lights - the
+   champion is told by the gold name + trophy, not a lit wire. Kept as no-ops so
+   the JSX win classes still have a home. */
 .bk-final-wrap.is-left-win .bk-match__box::before {
   background: var(--bk-line-win);
   box-shadow: var(--bk-line-glow);
@@ -973,11 +928,5 @@
   .bk-match__live-dot,
   .bk__swipe-arrow {
     animation: none;
-  }
-  /* Champion wire holds its solid green, no travelling charge. */
-  .bk-grid .bk-match.is-out-win::after,
-  .bk-match__join.is-vert-win {
-    animation: none;
-    background-image: none;
   }
 }

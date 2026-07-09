@@ -18,8 +18,11 @@
 }
 .referee__bubble {
   position: relative;
-  max-width: 320px;
-  padding: 9px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: min(90vw, 460px);
+  padding: 12px 18px;
   background: color-mix(in srgb, var(--surface-card) 96%, transparent);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);

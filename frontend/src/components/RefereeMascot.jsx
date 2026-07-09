@@ -109,7 +109,7 @@ const reduced = () =>
 // Reacts to the Cutscene's published beat: mount → walk in from the right; 'vs'
 // → point at the two teams; 'count' → raise the whistle to his mouth; 'whistle'
 // → mouth snaps to an "O". Speech bubble carries a short narration line.
-export function RefereeNarrator({ beat, line }) {
+export function RefereeNarrator({ beat, line, lines }) {
   const rootRef = useRef(null)
 
   // Entrance + idle, scoped so StrictMode remount reverts cleanly.
@@ -123,6 +123,23 @@ export function RefereeNarrator({ beat, line }) {
     }, root)
     return () => ctx.revert()
   }, [])
+
+  // Speech-bubble copy staggers in whenever the narration changes. fromTo ends on
+  // the natural (visible) state, so it is StrictMode-safe without a revert.
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root || reduced()) return undefined
+    const q = gsap.utils.selector(root)
+    const items = q('.referee__line')
+    if (items.length) {
+      gsap.fromTo(
+        items,
+        { opacity: 0, y: 8 },
+        { opacity: 1, y: 0, duration: 0.4, stagger: 0.42, ease: 'power2.out' },
+      )
+    }
+    return undefined
+  }, [line, lines])
 
   // Per-beat reactions.
   useEffect(() => {
@@ -147,9 +164,11 @@ export function RefereeNarrator({ beat, line }) {
 
   return (
     <div className="referee referee--cutscene" ref={rootRef} data-beat={beat}>
-      {line && (
+      {(line || (lines && lines.length > 0)) && (
         <div className="referee__bubble" aria-live="polite">
-          <p className="referee__line">{line}</p>
+          {lines && lines.length > 0
+            ? lines.map((l, i) => <p className="referee__line" key={i}>{l}</p>)
+            : <p className="referee__line">{line}</p>}
         </div>
       )}
       <svg className="referee__svg" viewBox="0 0 200 250" width="150" height="188" role="img" aria-label="Match referee">

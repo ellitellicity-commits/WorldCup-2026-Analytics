@@ -153,11 +153,10 @@ export default function Cutscene({ match, onComplete }) {
     tl.to(q('.cut__caption--venue'), { opacity: 0, duration: 0.3 }, '+=0.5')
     tl.to(q('.cut__map'), { autoAlpha: 0, duration: 0.35 }, '<')
 
-    // --- Beat 3 — hype text ---
+    // --- Beat 3 — hype (spoken by the referee, inside his bubble) ---
     tl.add(() => setBeat('hype'))
-    tl.fromTo(q('.cut__hype-line'), { opacity: 0, x: -48, skewX: -10 }, { opacity: 1, x: 0, skewX: 0, duration: 0.42, stagger: 0.5, ease: 'power3.out' }, '<0.1')
-    tl.to({}, { duration: 0.7 })
-    tl.to(q('.cut__hype'), { autoAlpha: 0, duration: 0.3 }, '+=0')
+    tl.to({}, { duration: 0.5 }) // bubble + lines stagger in
+    tl.to({}, { duration: 0.6 + 0.5 * hype.length }) // dwell long enough to read
 
     // --- Beat 4 — whistle countdown + hard cut ---
     tl.add(() => setBeat('count'))
@@ -182,13 +181,15 @@ export default function Cutscene({ match, onComplete }) {
     finish()
   }
 
-  // The referee's short narration line for the current beat (he speaks; the
-  // floating hype text still runs its own beat above the map).
+  // The referee narrates every beat from centre-bottom. During the hype beat his
+  // bubble carries the hype lines themselves, so all pregame copy lives in one
+  // place above his head rather than floating loose across the screen.
   const refLine =
     beat === 'vs' ? `${homeCode} versus ${awayCode}. Let's have a clean game.`
-      : beat === 'hype' ? 'The model has made its call — now they settle it on the pitch.'
+      : beat === 'flight' ? `Next stop: ${venue.city}.`
         : beat === 'count' ? 'Kick-off!'
           : null
+  const refLines = beat === 'hype' ? hype : null
 
   return (
     <div className="cutscene" ref={rootRef} data-beat={beat} role="dialog" aria-label="Pregame sequence">
@@ -277,19 +278,13 @@ export default function Cutscene({ match, onComplete }) {
         </div>
       </div>
 
-      {/* Beat 3 — hype */}
-      <div className="cut__hype">
-        {hype.map((line, i) => (
-          <p className="cut__hype-line" key={i}>{line}</p>
-        ))}
-      </div>
-
-      {/* Beat 4 — countdown + hard cut */}
+      {/* Beat 4 — countdown, framed BEHIND the referee as giant background text. */}
       <div className="cut__count display" aria-hidden="true" />
       <div className="cut__flash" aria-hidden="true" />
 
-      {/* The referee narrates from centre-bottom, reacting to each beat. */}
-      <RefereeNarrator beat={beat} line={refLine} />
+      {/* The referee narrates from centre-bottom, reacting to each beat. The hype
+          lines ride inside his bubble during the hype beat. */}
+      <RefereeNarrator beat={beat} line={refLine} lines={refLines} />
 
       <button className="cut__skip" type="button" onClick={skip}>Skip ›</button>
     </div>

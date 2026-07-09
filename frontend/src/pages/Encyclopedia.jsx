@@ -24,6 +24,14 @@ const COUNTRY_SHAPES = Object.fromEntries(
 const HOST_TINTS = { Canada: 0xed4a49, 'United States': 0x439bf7, Mexico: 0x35c26d }
 const HOST_ISO = new Set(['us', 'ca', 'mx']) // the three 2026 hosts, by ISO alpha-2
 
+// Camera fly-to targets for the three hosts (Part 1c) — each nation's centroid
+// and a zoom framing that fills the globe with the host without clipping it.
+const HOST_COORDS = {
+  ca: { lat: 56.1, lng: -106.3, zoom: 1.9 },
+  us: { lat: 39.5, lng: -98.3, zoom: 1.9 },
+  mx: { lat: 23.6, lng: -102.5, zoom: 2.0 },
+}
+
 // The Atlas — an interactive globe of the 48 qualified nations. Click a marker to
 // open that nation's profile: real sourced data (FIFA rank, Elo, group,
 // confederation, championship odds, all-time record, squad). An editorial intro
@@ -143,6 +151,14 @@ export default function Encyclopedia() {
   const [selected, setSelected] = useState(null)
   const country = useMemo(() => (selected ? getCountry(selected) : null), [selected])
 
+  // A host nation flies the camera in (Part 1c); the 45 others just open the
+  // panel over the still-rotating globe. `focus` identity changes per host so the
+  // GlobeHero effect re-fires; null settles the camera home.
+  const focus = useMemo(() => {
+    const iso = country?.iso
+    return iso && HOST_COORDS[iso] ? { id: iso, ...HOST_COORDS[iso] } : null
+  }, [country])
+
   return (
     <div className="enc">
       <TabHeader
@@ -166,7 +182,7 @@ export default function Encyclopedia() {
         </label>
       </TabHeader>
       <div className="enc__stage">
-        <GlobeHero mode="interactive" markers={MARKERS} countryShapes={COUNTRY_SHAPES} hostTints={HOST_TINTS} onCountryClick={(m) => setSelected(m.name)} ariaLabel="Country atlas globe" />
+        <GlobeHero mode="interactive" markers={MARKERS} countryShapes={COUNTRY_SHAPES} hostTints={HOST_TINTS} focus={focus} onCountryClick={(m) => setSelected(m.name)} ariaLabel="Country atlas globe" />
         {!country && <p className="enc__hint" aria-hidden="true">Tap a marker</p>}
         {country && <Panel country={country} onClose={() => setSelected(null)} />}
       </div>

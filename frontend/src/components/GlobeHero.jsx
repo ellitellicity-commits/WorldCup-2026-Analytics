@@ -68,6 +68,9 @@ const FLAG_LIFT = R * 1.006
 // card hover-lift. Scaling the flag mesh about the globe centre lifts it outward
 // and grows the silhouette ~4%; subtle, not dramatic.
 const HOVER_LIFT_SCALE = 1.04
+// The three 2026 hosts rise higher and more slowly on hover — a monumental,
+// weighted lift versus the quick page-turn pop the other 45 nations get.
+const HOST_LIFT_SCALE = 1.09
 // Chords of a flat triangle sink toward the sphere centre; subdividing every
 // edge below this angular length keeps the filled mesh hugging the sphere, so
 // wide countries (Argentina, Australia) don't sink through the surface.
@@ -204,6 +207,35 @@ export function buildPlane() {
   return g
 }
 
+// --- Atlas camera choreography (Part 1) --------------------------------------
+// flyTo swings the camera so a given lat/lng faces the viewer, at `zoom` world
+// units from the globe centre. It resolves the country's CURRENT world position
+// (globe.localToWorld, so the live auto-rotation is accounted for) then eases the
+// camera along a power3 curve, holding the look at the origin each frame so
+// OrbitControls stays consistent and the user can still drag afterward. Callers
+// freeze auto-rotate for the duration (E.flyFreeze) so the target doesn't drift
+// out from under the camera. No glow, no dolly tricks — a weighted broadcast push.
+function flyTo(E, lat, lng, zoom = 1.9, duration = 1.4) {
+  const [lx, ly, lz] = llToXYZ(lat, lng, 1)
+  const world = E.globe.localToWorld(new THREE.Vector3(lx, ly, lz)).normalize().multiplyScalar(zoom)
+  gsap.killTweensOf(E.camera.position)
+  gsap.to(E.camera.position, {
+    x: world.x, y: world.y, z: world.z,
+    duration, ease: 'power3.inOut',
+    onUpdate: () => { E.camera.lookAt(0, 0, 0); E.controls.update() },
+  })
+}
+
+// Settle back to the default framing when a nation is deselected.
+function flyHome(E, duration = 1.15) {
+  gsap.killTweensOf(E.camera.position)
+  gsap.to(E.camera.position, {
+    x: 0, y: 0.6, z: 3.2,
+    duration, ease: 'power3.inOut',
+    onUpdate: () => { E.camera.lookAt(0, 0, 0); E.controls.update() },
+  })
+}
+
 function GlobeHero({
   mode = 'interactive',
   markers = [],
@@ -211,6 +243,7 @@ function GlobeHero({
   autoRotate = true,
   countryShapes = null,
   hostTints = null,
+  focus = null,
   onFlightProgress,
   onFlightComplete,
   onCountryClick,
@@ -226,6 +259,10 @@ function GlobeHero({
   // Latest country boundary data, read live by the pointermove hit test.
   const shapesRef = useRef(null)
   shapesRef.current = countryShapes
+  // The three host nation names (keys of hostTints), read live so the hover
+  // path can give hosts the heavier "monumental rise" treatment (Part 1b).
+  const hostNamesRef = useRef(null)
+  hostNamesRef.current = hostTints ? Object.keys(hostTints) : null
 
   // --- One-time scene setup ---
   useEffect(() => {
@@ -292,6 +329,8 @@ function GlobeHero({
       // Atlas flag-fill state: caches + the currently shown country.
       flagGeo: new Map(), flagTex: new Map(), hoverName: null, hoverMesh: null, hoverPaused: false,
       testFreeze: false,
+      // Part 1: camera focus + host-rise state.
+      flyFreeze: false, hostMeshByName: new Map(), raisedHost: null,
     }
 
     // --- Interaction: click a marker ---
@@ -316,11 +355,26 @@ function GlobeHero({
     // Swap the shown flag to `name` (or none). Fades the outgoing mesh out and
     // the incoming one in over 0.3s power2.out; no-ops when already showing it,
     // so sweeping within one country never re-triggers or flickers.
+    // Restore a raised host tint mesh back to its resting opacity (0.5). Called
+    // whenever the hover leaves a host, so the national colour settles with weight.
+    const settleHostTint = () => {
+      const E = eng.current
+      if (!E || !E.raisedHost) return
+      const m = E.hostMeshByName.get(E.raisedHost)
+      E.raisedHost = null
+      if (!m) return
+      gsap.killTweensOf(m.material)
+      gsap.to(m.material, { opacity: 0.5, duration: reduceMotion ? 0 : 0.55, ease: 'power2.inOut' })
+    }
+
     const showFlag = (name) => {
       const E = eng.current
       if (!E || name === E.hoverName) return
       const shapes = shapesRef.current
       E.hoverName = name
+      const isHost = !!(name && hostNamesRef.current && hostNamesRef.current.includes(name))
+      // Any host tint raised by a previous hover settles back down first.
+      settleHostTint()
       // Fade out + dispose whatever's currently shown.
       if (E.hoverMesh) {
         const prev = E.hoverMesh
@@ -349,11 +403,25 @@ function GlobeHero({
       if (cached) apply(cached)
       else if (shapes[name].flag) loadFlagTexture(shapes[name].flag, (tex) => { if (tex) { E.flagTex.set(name, tex); apply(tex) } })
       gsap.to(mat, { opacity: 1, duration: reduceMotion ? 0 : 0.3, ease: 'power2.out' })
-      // G2: pop the silhouette radially off the surface as it appears.
+      // Part 1b — the rise. Hosts rise higher and slower (monumental, weighted);
+      // the 45 others get the quick page-turn pop. No emissive glow (DESIGN.md):
+      // the host's national colour instead *builds* via its persistent tint layer,
+      // whose opacity swells 0.5 → 0.9 as the silhouette lifts.
+      const lift = isHost ? HOST_LIFT_SCALE : HOVER_LIFT_SCALE
       if (reduceMotion) {
-        mesh.scale.setScalar(HOVER_LIFT_SCALE)
+        mesh.scale.setScalar(lift)
+      } else if (isHost) {
+        gsap.to(mesh.scale, { x: lift, y: lift, z: lift, duration: 0.65, ease: 'power3.out' })
       } else {
-        gsap.to(mesh.scale, { x: HOVER_LIFT_SCALE, y: HOVER_LIFT_SCALE, z: HOVER_LIFT_SCALE, duration: 0.2, ease: 'back.out(1.7)' })
+        gsap.to(mesh.scale, { x: lift, y: lift, z: lift, duration: 0.2, ease: 'back.out(1.7)' })
+      }
+      if (isHost) {
+        const tintMesh = E.hostMeshByName.get(name)
+        if (tintMesh) {
+          E.raisedHost = name
+          gsap.killTweensOf(tintMesh.material)
+          gsap.to(tintMesh.material, { opacity: 0.9, duration: reduceMotion ? 0 : 0.65, ease: 'power3.out' })
+        }
       }
     }
 
@@ -439,7 +507,7 @@ function GlobeHero({
       const E = eng.current
       if (!E || E.disposed) return
       E.raf = requestAnimationFrame(tick)
-      controls.autoRotate = E.mode === 'interactive' ? autoRotate && !E.hoverPaused && !E.testFreeze : false
+      controls.autoRotate = E.mode === 'interactive' ? autoRotate && !E.hoverPaused && !E.testFreeze && !E.flyFreeze : false
       controls.autoRotateSpeed = 0.35
       controls.update()
 
@@ -539,6 +607,8 @@ function GlobeHero({
       c.geometry?.dispose()
       c.material?.dispose?.()
     }
+    E.hostMeshByName = new Map()
+    E.raisedHost = null
     if (!hostTints || !countryShapes) return
     for (const [name, color] of Object.entries(hostTints)) {
       const shape = countryShapes[name]
@@ -546,9 +616,27 @@ function GlobeHero({
       // Slightly under the hover flag layer so hovering a host still shows its flag.
       const geo = buildFlagGeometry(shape, R * 1.0045)
       const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })
-      E.hostGroup.add(new THREE.Mesh(geo, mat))
+      const mesh = new THREE.Mesh(geo, mat)
+      E.hostGroup.add(mesh)
+      // Keyed so the hover path can swell this host's national colour on rise.
+      E.hostMeshByName.set(name, mesh)
     }
   }, [hostTints, countryShapes])
+
+  // --- Part 1: fly the camera to a selected host (or home when cleared) ---
+  // `focus` is { lat, lng, zoom } while a host nation is open, else null. Freezing
+  // auto-rotate holds the target still under the camera for the whole push.
+  useEffect(() => {
+    const E = eng.current
+    if (!E) return
+    if (focus) {
+      E.flyFreeze = true
+      flyTo(E, focus.lat, focus.lng, focus.zoom ?? 1.9)
+    } else {
+      E.flyFreeze = false
+      flyHome(E)
+    }
+  }, [focus])
 
   // --- Start a flight when `flight.id` changes ---
   useEffect(() => {

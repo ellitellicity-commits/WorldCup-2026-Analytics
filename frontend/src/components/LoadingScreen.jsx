@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Typewriter from './Typewriter'
 import './LoadingScreen.css'
 
@@ -72,21 +72,37 @@ function SoccerBall() {
   )
 }
 
-// Real, checkable World Cup 2026 facts — no fabrication.
+// Real, checkable World Cup 2026 facts, written like a hype friend talking you
+// into the match. Every one is verifiable, no fabrication. Emphasis words stay
+// in caps so the typewriter renders them exactly as written.
 const FACTS = [
-  'The 2026 World Cup is the first to feature 48 teams',
-  'MetLife Stadium in New Jersey hosts the Final on 19 July',
-  'Three nations host for the first time: USA, Canada & Mexico',
-  '48 teams · 16 groups · 104 matches',
-  'Argentina are the defending champions',
-  'The tournament spans 3 countries and 16 cities',
+  '48 teams. 16 groups. 104 matches. The biggest World Cup EVER!',
+  'Argentina are the defending champions. Can anyone stop the Albiceleste?',
+  'MetLife Stadium hosts the Final on July 19th. The biggest stage on Earth!',
+  'Three nations, one dream. USA, Canada AND Mexico hosting together for the first time!',
+  'Morocco made history in 2022 as the first African nation to reach a World Cup semi-final!',
+  'Estadio Azteca has hosted TWO World Cup finals. 1970 AND 1986. Legendary!',
+  "BC Place in Vancouver has one of the world's largest retractable roofs. Wild!",
+  "This is the USA's first men's World Cup since 1994. The whole country is buzzing!",
+  "Canada scored their first ever men's World Cup goal in 2022, through Alphonso Davies!",
+  "Mexico is the FIRST nation to host or co-host THREE men's World Cups!",
+  '104 matches across 3 countries and 16 cities. Buckle up!',
+  'The model ran 10,000 simulations to predict this bracket. Science meets football!',
+  'Mbappé, Haaland, Vinícius Jr. Who takes the Golden Boot?',
+  'From Toronto to Mexico City: 3 time zones, 1 tournament, infinite drama!',
+  'The World Cup only comes around every 4 years. Soak. Every. Moment. In!',
 ]
 
-// Time to type a fact (mirrors Typewriter's own cadence) plus a 2s read hold,
-// so the next fact begins only once this one has landed and been read.
+// Rotating eyebrow labels — a new one per fact, matched to the excited register.
+const LABELS = ['DID YOU KNOW', 'FUN FACT', 'HEADS UP', 'QUICK STAT', 'HOLD ON', 'WAIT FOR IT']
+
+// Time to type a fact (mirrors Typewriter's own cadence, including its 80ms
+// punctuation beats) plus a 2s read hold, so the next fact begins only once this
+// one has landed and been read.
 function factDuration(text) {
   const perChar = Math.max(9, Math.min(22, 1500 / text.length))
-  return 160 + text.length * perChar + 2000
+  const pauses = (text.match(/[!?]/g) || []).length * 80
+  return 160 + text.length * perChar + pauses + 2000
 }
 
 // Fisher-Yates — a fresh, unbiased order each time the loader mounts.
@@ -104,15 +120,29 @@ function FunFacts() {
   // advance sequentially through the whole shuffled set before looping.
   const [facts] = useState(() => shuffle(FACTS))
   const [i, setI] = useState(0)
+  const [leaving, setLeaving] = useState(false)
+  // A fresh random eyebrow label each time the fact changes.
+  const label = useMemo(() => LABELS[Math.floor(Math.random() * LABELS.length)], [i])
+
   useEffect(() => {
-    const t = setTimeout(() => setI((n) => (n + 1) % facts.length), factDuration(facts[i]))
-    return () => clearTimeout(t)
+    setLeaving(false)
+    const hold = factDuration(facts[i])
+    // Fade the current fact out just before it swaps, so the next one slides up
+    // into a clear space rather than hard-cutting over it.
+    const outAt = Math.max(400, hold - 280)
+    const t1 = setTimeout(() => setLeaving(true), outAt)
+    const t2 = setTimeout(() => setI((n) => (n + 1) % facts.length), hold)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [i, facts])
+
   return (
     <div className="loading__facts">
-      <p className="loading__facts-label">Did you know</p>
-      {/* key remounts the typewriter so each fact types in from empty. */}
-      <Typewriter key={`${i}-${facts[i]}`} text={facts[i]} className="loading__fact" />
+      {/* key remounts the block per fact, re-triggering the slide-up entrance;
+          the typewriter within types each fact in from empty. */}
+      <div className={`loading__fact-block${leaving ? ' is-leaving' : ''}`} key={i}>
+        <p className="loading__facts-label">{label}</p>
+        <Typewriter key={facts[i]} text={facts[i]} className="loading__fact" />
+      </div>
     </div>
   )
 }

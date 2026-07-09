@@ -57,15 +57,35 @@
   }
 }
 
-/* Rotating reel of real tournament facts, typed in. */
+/* Rotating reel of real tournament facts, typed in. Each fact rides its own
+   block that slides up + fades in on arrival and fades up + out on the way out. */
 .loading__facts {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space-sm, 8px);
-  min-height: 4.5em;
+  min-height: 5.5em;
   max-width: min(90vw, 34rem);
   text-align: center;
+}
+.loading__fact-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  animation: fact-enter 0.42s ease both;
+}
+.loading__fact-block.is-leaving {
+  animation: fact-leave 0.26s ease forwards;
+}
+@keyframes fact-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fact-leave {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
 }
 .loading__facts-label {
   margin: 0;
@@ -99,6 +119,11 @@
 @media (prefers-reduced-motion: reduce) {
   /* No roll: the ball rests centred (the typing facts still signal progress). */
   .loading__ball {
+    animation: none;
+  }
+  /* Facts swap without the slide/fade choreography. */
+  .loading__fact-block,
+  .loading__fact-block.is-leaving {
     animation: none;
   }
 }

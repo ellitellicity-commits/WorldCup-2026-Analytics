@@ -325,7 +325,7 @@ function GlobeHero({
 
     eng.current = {
       scene, camera, renderer, globe, sphere, markerGroup, arcGroup, hostGroup, flagGroup, controls, raycaster, pointer,
-      markerMeshes: [], flight: null, raf: 0, disposed: false, lastHost: undefined, mode,
+      markerMeshes: [], flight: null, raf: 0, disposed: false, running: false, lastHost: undefined, mode,
       // Atlas flag-fill state: caches + the currently shown country.
       flagGeo: new Map(), flagTex: new Map(), hoverName: null, hoverMesh: null, hoverPaused: false,
       testFreeze: false,
@@ -545,7 +545,33 @@ function GlobeHero({
       }
       renderer.render(scene, camera)
     }
-    tick()
+    // `running` guards against double-scheduling when the viewport observer
+    // re-enters; tick() itself keeps the frame chain alive via E.raf.
+    const start = () => {
+      const E = eng.current
+      if (!E || E.disposed || E.running) return
+      E.running = true
+      tick()
+    }
+    const stop = () => {
+      const E = eng.current
+      if (!E || !E.running) return
+      E.running = false
+      cancelAnimationFrame(E.raf)
+    }
+    start()
+
+    // Pause the render loop while the globe is scrolled out of view. A raw rAF
+    // loop keeps firing full-speed off-screen otherwise - the browser only
+    // throttles it when the whole tab is hidden, not when the canvas is simply
+    // below the fold. This mirrors FloatingShapes' IntersectionObserver gate and
+    // is the biggest mobile win: the Atlas/Simulator globes stop burning GPU the
+    // moment they leave the viewport.
+    const io = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) start(); else stop() },
+      { threshold: 0 },
+    )
+    io.observe(mount)
 
     // --- Resize ---
     const ro = new ResizeObserver(() => {
@@ -560,7 +586,9 @@ function GlobeHero({
     return () => {
       const E = eng.current
       E.disposed = true
+      E.running = false
       cancelAnimationFrame(E.raf)
+      io.disconnect()
       ro.disconnect()
       renderer.domElement.removeEventListener('click', onClick)
       renderer.domElement.removeEventListener('pointermove', onPointerMove)

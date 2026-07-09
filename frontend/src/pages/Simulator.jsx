@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import GlobeHero from '../components/GlobeHero'
 import StadiumPanel from '../components/StadiumPanel'
 import Cutscene from '../components/Cutscene'
+import { RefereeVerdict } from '../components/RefereeMascot'
 import { TEAM_COORDINATES, STADIUMS, STADIUM_LIST } from '../lib/stadiumData'
 import { STADIUM_INFO } from '../lib/stadiumInfo'
 import { sampleMatchStats } from '../lib/matchStats'
@@ -68,9 +69,14 @@ function ResultCard({ result }) {
   const homePct = Math.round(pHome * 100)
   const awayPct = 100 - homePct
   const winName = score.outcome === 'home' ? home : score.outcome === 'away' ? away : null
+  // The model's pick vs. what actually happened (Part 4, beat 6). A draw is no
+  // win for the favoured side, so it reads as an upset of the prediction.
+  const predictedSide = pHome >= 0.5 ? 'home' : 'away'
+  const called = score.outcome === predictedSide
   return (
     <section className="sim-result" aria-live="polite">
       <p className="sim-result__round">{round.label} · {venue.city}</p>
+      <RefereeVerdict called={called} />
       <div className="sim-result__score">
         <Side name={home} meta={hm} goals={score.home} win={score.outcome === 'home'} dim={score.outcome === 'away'} />
         <span className="sim-result__dash" aria-hidden="true">–</span>

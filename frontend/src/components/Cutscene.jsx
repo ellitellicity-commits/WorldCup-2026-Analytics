@@ -1,7 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { GEO, MAP_VIEWBOX, project } from '../lib/cutsceneMap'
+import { RefereeNarrator } from './RefereeMascot'
 import './Cutscene.css'
+
+// Short, generated 880Hz whistle blow via the Web Audio API — no external file.
+// Triggered on the hard cut, inside the user-initiated simulate gesture so the
+// AudioContext is allowed to start. Silently no-ops if audio is unavailable or
+// the user prefers reduced motion.
+function playWhistle() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext
+    if (!Ctx) return
+    const ctx = new Ctx()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'sine'
+    osc.frequency.value = 880
+    gain.gain.setValueAtTime(0.22, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
+    osc.start()
+    osc.stop(ctx.currentTime + 0.42)
+    osc.onended = () => ctx.close?.()
+  } catch {
+    /* audio blocked — the visual flash carries the cut */
+  }
+}
 
 // Pregame broadcast cutscene (B4, reworked in Part F) — an EA-Sports-FC-style
 // intro, not a travel montage. One gsap.timeline() runs four sequenced beats so
@@ -143,6 +169,8 @@ export default function Cutscene({ match, onComplete }) {
       tl.fromTo(q('.cut__count'), { scale: 1.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.2, ease: 'power2.out' })
       tl.to(q('.cut__count'), { opacity: 0, duration: 0.18, ease: 'power2.in' }, '+=0.22')
     }
+    // The whistle blow: referee reacts (beat → 'whistle'), audio fires, screen flash.
+    tl.add(() => { setBeat('whistle'); playWhistle() })
     tl.to(q('.cut__flash'), { opacity: 1, duration: 0.14, ease: 'power2.in' })
 
     return () => tl.kill()
@@ -153,6 +181,14 @@ export default function Cutscene({ match, onComplete }) {
     tlRef.current?.kill()
     finish()
   }
+
+  // The referee's short narration line for the current beat (he speaks; the
+  // floating hype text still runs its own beat above the map).
+  const refLine =
+    beat === 'vs' ? `${homeCode} versus ${awayCode}. Let's have a clean game.`
+      : beat === 'hype' ? 'The model has made its call — now they settle it on the pitch.'
+        : beat === 'count' ? 'Kick-off!'
+          : null
 
   return (
     <div className="cutscene" ref={rootRef} data-beat={beat} role="dialog" aria-label="Pregame sequence">
@@ -251,6 +287,10 @@ export default function Cutscene({ match, onComplete }) {
       {/* Beat 4 — countdown + hard cut */}
       <div className="cut__count display" aria-hidden="true" />
       <div className="cut__flash" aria-hidden="true" />
+
+      {/* The referee narrates from centre-bottom, reacting to each beat. */}
+      <RefereeNarrator beat={beat} line={refLine} />
+
       <button className="cut__skip" type="button" onClick={skip}>Skip ›</button>
     </div>
   )

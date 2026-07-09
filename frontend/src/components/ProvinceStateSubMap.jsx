@@ -71,15 +71,26 @@ export default function ProvinceStateSubMap({ code }) {
     let w = 0, h = 0
     const provs = subs.map((s, i) => {
       let best = null
+      // Track the subdivision's own extent so tiny regions (NE US: CT, RI, NJ,
+      // DE, MD, DC) can suppress their label - too small to letter cleanly, the
+      // codes just clump. The capital dot still plots; only the text is dropped.
+      let pMinX = Infinity, pMinY = Infinity, pMaxX = -Infinity, pMaxY = -Infinity
       const d = s.rings
         .map((ring) => {
-          const pts = ring.map(([lng, lat]) => { const [x, y] = project(lng, lat); if (x > w) w = x; if (y > h) h = y; return [x, y] })
+          const pts = ring.map(([lng, lat]) => {
+            const [x, y] = project(lng, lat)
+            if (x > w) w = x; if (y > h) h = y
+            if (x < pMinX) pMinX = x; if (x > pMaxX) pMaxX = x
+            if (y < pMinY) pMinY = y; if (y > pMaxY) pMaxY = y
+            return [x, y]
+          })
           const [cx, cy, area] = centroidOf(pts)
           if (!best || area > best.area) best = { cx, cy, area }
           return 'M' + pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join('L') + 'Z'
         })
         .join(' ')
-      return { name: s.name, d, tone: i % 5, abbr: subAbbr(code, s.name), cx: best.cx, cy: best.cy }
+      const tooSmall = (pMaxX - pMinX) < 1.5 || (pMaxY - pMinY) < 1.5
+      return { name: s.name, d, tone: i % 5, abbr: subAbbr(code, s.name), cx: best.cx, cy: best.cy, tooSmall }
     })
     const caps = capitals.map((c) => { const [x, y] = project(c.lng, c.lat); return { ...c, x, y } })
 
@@ -87,11 +98,19 @@ export default function ProvinceStateSubMap({ code }) {
   }, [data, code])
 
   const svgRef = useRef(null)
-  const [view, setView] = useState({ z: 1, x: 0, y: 0 })
+  const vpRef = useRef(null) // the panned/zoomed viewport <g>
+  // View lives in a ref, not state: a wheel tick or a pointer-move pixel updates
+  // the <g> transform directly via the DOM, so 48+ paths never trigger a React
+  // re-render mid-gesture (the old setState-per-pixel caused frame drops/crash).
+  const viewRef = useRef({ z: 1, x: 0, y: 0 })
   const drag = useRef(null)
+  // The only reactive bit: a boolean that flips just once when zoom crosses the
+  // 1x threshold, to swap the grab cursor and mount the reset button.
+  const [zoomed, setZoomed] = useState(false)
 
   // Keep the viewport clamped so the map can never be panned fully off-frame.
-  const clampView = useCallback((v) => {
+  // Plain in/out - no setState - so it can run inside the imperative handlers.
+  const clampViewRaw = useCallback((v) => {
     if (!geo) return v
     const z = clamp(v.z, MIN_ZOOM, MAX_ZOOM)
     return {
@@ -101,7 +120,23 @@ export default function ProvinceStateSubMap({ code }) {
     }
   }, [geo])
 
-  useEffect(() => { setView({ z: 1, x: 0, y: 0 }) }, [code])
+  // Push the current view straight onto the <g> transform attribute, and flip the
+  // zoomed flag only when it actually changes (the functional updater bails out of
+  // a re-render when the boolean is unchanged), so this is cheap to call per frame.
+  const applyTransform = useCallback(() => {
+    const vp = vpRef.current
+    if (!vp) return
+    const { z, x, y } = viewRef.current
+    vp.setAttribute('transform', `translate(${x.toFixed(3)} ${y.toFixed(3)}) scale(${z.toFixed(3)})`)
+    const isZoomed = z > MIN_ZOOM
+    setZoomed((prev) => (prev === isZoomed ? prev : isZoomed))
+  }, [])
+
+  // Reset to the full-country view whenever the selected host changes.
+  useEffect(() => {
+    viewRef.current = { z: 1, x: 0, y: 0 }
+    applyTransform()
+  }, [code, applyTransform])
 
   // Client point → SVG user units (viewBox origin is -1,-1).
   const toUser = useCallback((clientX, clientY) => {
@@ -122,22 +157,23 @@ export default function ProvinceStateSubMap({ code }) {
     const onWheel = (e) => {
       e.preventDefault()
       const p = toUser(e.clientX, e.clientY)
-      setView((v) => {
-        const nz = clamp(v.z * (e.deltaY < 0 ? 1.18 : 1 / 1.18), MIN_ZOOM, MAX_ZOOM)
-        const ratio = nz / v.z
-        return clampView({ z: nz, x: p.x - (p.x - v.x) * ratio, y: p.y - (p.y - v.y) * ratio })
-      })
+      const v = viewRef.current
+      const nz = clamp(v.z * (e.deltaY < 0 ? 1.18 : 1 / 1.18), MIN_ZOOM, MAX_ZOOM)
+      const ratio = nz / v.z
+      viewRef.current = clampViewRaw({ z: nz, x: p.x - (p.x - v.x) * ratio, y: p.y - (p.y - v.y) * ratio })
+      applyTransform()
     }
     svg.addEventListener('wheel', onWheel, { passive: false })
     return () => svg.removeEventListener('wheel', onWheel)
-  }, [geo, toUser, clampView])
+  }, [geo, toUser, clampViewRaw, applyTransform])
 
   if (!geo) return null
 
   const onPointerDown = (e) => {
-    if (view.z <= MIN_ZOOM) return // nothing to pan at the default full view
+    if (viewRef.current.z <= MIN_ZOOM) return // nothing to pan at the default full view
     e.currentTarget.setPointerCapture?.(e.pointerId)
-    drag.current = { px: e.clientX, py: e.clientY, ox: view.x, oy: view.y }
+    const v = viewRef.current
+    drag.current = { px: e.clientX, py: e.clientY, ox: v.x, oy: v.y }
   }
   const onPointerMove = (e) => {
     if (!drag.current) return
@@ -145,12 +181,11 @@ export default function ProvinceStateSubMap({ code }) {
     const r = svg.getBoundingClientRect()
     const dx = ((e.clientX - drag.current.px) / r.width) * geo.vbW
     const dy = ((e.clientY - drag.current.py) / r.height) * geo.vbH
-    setView((v) => clampView({ ...v, x: drag.current.ox + dx, y: drag.current.oy + dy }))
+    viewRef.current = clampViewRaw({ ...viewRef.current, x: drag.current.ox + dx, y: drag.current.oy + dy })
+    applyTransform()
   }
   const endDrag = () => { drag.current = null }
-  const reset = () => setView({ z: 1, x: 0, y: 0 })
-
-  const zoomed = view.z > MIN_ZOOM
+  const reset = () => { viewRef.current = { z: 1, x: 0, y: 0 }; applyTransform() }
 
   return (
     <figure className={`submap submap--${code}`} aria-label={`${HOST_LABEL[code]} - ${geo.subs.length} ${UNIT[code]} and their capitals`}>
@@ -166,7 +201,7 @@ export default function ProvinceStateSubMap({ code }) {
         onPointerLeave={endDrag}
         onPointerCancel={endDrag}
       >
-        <g transform={`translate(${view.x.toFixed(3)} ${view.y.toFixed(3)}) scale(${view.z.toFixed(3)})`}>
+        <g ref={vpRef} className="submap__viewport" transform="translate(0 0) scale(1)">
           <g className="submap__provs">
             {geo.provs?.map((p) => (
               <path key={p.name} d={p.d} className={`submap__prov submap__prov--t${p.tone}`} />
@@ -184,7 +219,7 @@ export default function ProvinceStateSubMap({ code }) {
             ))}
           </g>
           <g className="submap__abbrs">
-            {geo.provs?.filter((p) => p.abbr).map((p) => (
+            {geo.provs?.filter((p) => p.abbr && !p.tooSmall).map((p) => (
               <text
                 key={p.name}
                 x={p.cx.toFixed(2)} y={p.cy.toFixed(2)}

@@ -1,11 +1,11 @@
-/* Shared tab header — centred title + description, one balloon-inflate entrance.
+/* Shared tab header - centred title + description, one balloon-inflate entrance.
    See TabHeader.jsx for the motion rationale. */
 
 .tabhead {
   display: flex;
   justify-content: center;
   text-align: center;
-  /* Fill the parent whatever its layout — some tabs drop TabHeader into a flex
+  /* Fill the parent whatever its layout - some tabs drop TabHeader into a flex
      row (Bracket's toolbar), where a content-width header would left-align
      instead of centring in the viewport. */
   width: 100%;
@@ -21,7 +21,7 @@
   transform-origin: 50% 55%;
 }
 
-/* Larger than the in-page section titles — this is the page hero. Ceiling stays
+/* Larger than the in-page section titles - this is the page hero. Ceiling stays
    under the 6rem shout line. Barlow Condensed comes from .display. */
 .tabhead__title {
   font-size: clamp(2.75rem, 6vw, 5rem);

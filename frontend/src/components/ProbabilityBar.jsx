@@ -4,7 +4,7 @@ import './ProbabilityBar.css'
  * Three-segment win/draw/win probability bar.
  * Home win = American Blue (the model's prediction channel); draw + away are
  * neutrals. Every segment is labelled with its tabular percentage (inline when
- * wide enough, always in the legend) so the bar is never color-only — the
+ * wide enough, always in the legend) so the bar is never color-only - the
  * Color-Blind Contract from DESIGN.md.
  *
  * @param {{homeWin:number, draw:number, awayWin:number}} prediction  probabilities 0..1
@@ -25,7 +25,7 @@ function ProbabilityBar({ prediction, homeCode, awayCode, actual = null }) {
       <div
         className="prob__track"
         role="img"
-        aria-label={`Model prediction — ${homeCode} win ${pct(prediction.homeWin)}, draw ${pct(
+        aria-label={`Model prediction - ${homeCode} win ${pct(prediction.homeWin)}, draw ${pct(
           prediction.draw,
         )}, ${awayCode} win ${pct(prediction.awayWin)}.${
           actual ? ` Result: ${actual === 'draw' ? 'draw' : (actual === 'home' ? homeCode : awayCode) + ' won'}.` : ''

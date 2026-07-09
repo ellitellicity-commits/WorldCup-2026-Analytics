@@ -1,9 +1,9 @@
-// Team metadata — joins odds.json (keyed by full team name) to the FIFA code,
+// Team metadata - joins odds.json (keyed by full team name) to the FIFA code,
 // group letter (from fixtures.json), and ISO-3166 alpha-2 code that flag-icons
 // uses to name its flag SVG. England / Scotland use GB subdivisions.
 //
 // We import only the 48 flags actually in the tournament (as Vite-hashed URLs)
-// rather than the whole flag-icons stylesheet — that ships ~250 flags and a
+// rather than the whole flag-icons stylesheet - that ships ~250 flags and a
 // 437 KB CSS file for a 48-team table.
 import f_ar from 'flag-icons/flags/4x3/ar.svg'
 import f_fr from 'flag-icons/flags/4x3/fr.svg'
@@ -156,7 +156,7 @@ const TEAM_META = {
   Tunisia: { code: 'TUN', group: 'F', iso: 'tn' },
 }
 
-const UNKNOWN = { code: '—', group: '?', iso: null }
+const UNKNOWN = { code: '-', group: '?', iso: null }
 
 export function teamMeta(name) {
   return TEAM_META[name] || UNKNOWN

@@ -3,9 +3,9 @@ import Typewriter from './Typewriter'
 import { stadiumImage } from '../lib/stadiumImages'
 import './StadiumPanel.css'
 
-// Stadium encyclopedia panel (B2) — the Matchup-tab analogue of the Atlas
+// Stadium encyclopedia panel (B2) - the Matchup-tab analogue of the Atlas
 // country profile. Opens when a venue marker is clicked; shows a real photograph
-// of the stadium (Wikimedia Commons, CC — Part F), a grounded blurb (Typewriter
+// of the stadium (Wikimedia Commons, CC - Part F), a grounded blurb (Typewriter
 // reveal, as in the Atlas), and sourced facts (capacity, city, opened). Mirrors
 // the enc-panel layout/tokens so the two encyclopedias read as one system. Falls
 // back to the procedural 3D model if a venue has no sourced photo.
@@ -63,8 +63,8 @@ export default function StadiumPanel({ venue, onClose }) {
       {blurb && <Typewriter key={name} text={blurb} className="stad-panel__blurb" />}
 
       <dl className="stad-panel__stats">
-        <Stat label="Capacity" value={capacity ? capacity.toLocaleString() : '—'} />
-        <Stat label="Opened" value={opened || '—'} />
+        <Stat label="Capacity" value={capacity ? capacity.toLocaleString() : '-'} />
+        <Stat label="Opened" value={opened || '-'} />
         <Stat label="City" value={hostCity} />
         <Stat label="Nation" value={country} />
       </dl>

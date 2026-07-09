@@ -7,7 +7,7 @@ import './GoalBurst.css'
 
 /**
  * Watch a live scoreline and surface a one-shot burst descriptor when a goal is
- * scored. Returns [burst, clear] — burst is { side, key } or null. The score at
+ * scored. Returns [burst, clear] - burst is { side, key } or null. The score at
  * mount is the baseline, so an already-in-progress match never false-fires; only
  * a subsequent increment (from live polling) triggers.
  */

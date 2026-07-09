@@ -7,7 +7,7 @@ import { teamMeta, flagUrl } from '../lib/teams'
 import { useTournamentData } from '../lib/tournamentData'
 import './Home.css'
 
-// The 3D shape field pulls in three.js — lazy-load it so it never weighs down the
+// The 3D shape field pulls in three.js - lazy-load it so it never weighs down the
 // home tab's first paint; the canvas fades in once the chunk arrives.
 const FloatingShapes = lazy(() => import('../components/FloatingShapes'))
 
@@ -16,7 +16,7 @@ const DATE_FMT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long
 
 // The final's kickoff, mirroring finalCountdown()'s 20:00 UTC assumption. A real
 // countdown clock names its target time, so the snapshot shows it beneath the
-// figure ("Kick-off · 19 Jul, 20:00 UTC") — the detail that makes the number
+// figure ("Kick-off · 19 Jul, 20:00 UTC") - the detail that makes the number
 // read as a countdown rather than just another stat.
 const KICKOFF_ISO = `${META.final.date}T20:00:00Z`
 const KICKOFF_TEXT = `${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(KICKOFF_ISO))} · 20:00 UTC`
@@ -26,7 +26,7 @@ const KICKOFF_TEXT = `${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month
 const SNAPSHOT_DATE_FMT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })
 const snapshotDate = (isoDate) => SNAPSHOT_DATE_FMT.format(new Date(`${isoDate}T00:00:00Z`))
 
-// One broadcast-rundown row per destination — a meta figure that actually means
+// One broadcast-rundown row per destination - a meta figure that actually means
 // something, a condensed title, a one-line read. Not a card grid (a hub menu).
 // The Predictor figure is fixture-derived, so the list is built per render.
 function buildDestinations({ todaysCount, upcomingCount }) {
@@ -48,7 +48,7 @@ function buildDestinations({ todaysCount, upcomingCount }) {
     {
       to: '/bracket',
       title: 'Tournament Bracket',
-      blurb: 'The locked 32-team knockout — or simulate every tie to the final.',
+      blurb: 'The locked 32-team knockout - or simulate every tie to the final.',
       meta: '32',
       metaLabel: 'knockout',
     },
@@ -62,14 +62,14 @@ function buildDestinations({ todaysCount, upcomingCount }) {
     {
       to: '/simulator',
       title: 'Matchup Sandbox',
-      blurb: 'Pit any two nations at any round and watch the model call the tie — a standalone what-if.',
+      blurb: 'Pit any two nations at any round and watch the model call the tie - a standalone what-if.',
       meta: '16',
       metaLabel: 'venues',
     },
     {
       to: '/encyclopedia',
       title: 'The Atlas',
-      blurb: 'Every qualified nation on one globe — rank, Elo, squad and all-time record on tap.',
+      blurb: 'Every qualified nation on one globe - rank, Elo, squad and all-time record on tap.',
       meta: '48',
       metaLabel: 'profiles',
     },
@@ -192,7 +192,7 @@ function Home() {
         </Suspense>
         <div className="home-hero__inner" ref={heroRef}>
           <p className="home-hero__intro">
-            Broadcast-grade intelligence for the 2026 FIFA World Cup — a machine-learning model turns
+            Broadcast-grade intelligence for the 2026 FIFA World Cup - a machine-learning model turns
             historical results, Elo ratings and live tournament data into win probabilities, championship
             odds and Monte Carlo bracket paths.
           </p>

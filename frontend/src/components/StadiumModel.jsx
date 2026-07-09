@@ -2,14 +2,14 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
 // Procedural 3D stadium (B2). One parameterized builder drives all 16 host
-// venues from their spec in lib/stadiumInfo.js — plan (footprint), tiers (bowl
-// height), roof variant, and neutral tone — so each reads as a distinct
+// venues from their spec in lib/stadiumInfo.js - plan (footprint), tiers (bowl
+// height), roof variant, and neutral tone - so each reads as a distinct
 // silhouette rather than one model reused with a label swap. Interim stylized
 // geometry (Spline has no headless export in this environment), grounded loosely
 // in each real stadium's roof/shape. Rendered in a small always-on canvas with a
 // slow turntable rotation, mirroring CountryEmblem's self-contained scene setup.
 
-const PITCH = 0x2f6f47 // natural turf green — literal pitch colour, not a data channel
+const PITCH = 0x2f6f47 // natural turf green - literal pitch colour, not a data channel
 
 // Footprint point at parameter t∈[0,1). `corner` < 1 bulges the ellipse toward a
 // rectangle (squared stands); aspect elongates one axis (oval vs round).
@@ -68,7 +68,7 @@ function buildBowl(spec) {
   }
   pushBand(seat, g)
   pushBand(wall, g)
-  // Tier step lines — thin darker rings partway up the rake, one per tier.
+  // Tier step lines - thin darker rings partway up the rake, one per tier.
   for (let k = 1; k < spec.tiers; k++) {
     const frac = k / spec.tiers
     const pts = []

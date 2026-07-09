@@ -11,7 +11,7 @@ const reducedMotion = () =>
  * cadence (~1.5s for the whole line, clamped so short lines still read as typed
  * and long ones never drag).
  *
- * Zero layout shift: the FULL text is always in the DOM — the not-yet-typed tail
+ * Zero layout shift: the FULL text is always in the DOM - the not-yet-typed tail
  * is rendered transparent as a "ghost" that reserves the final box, so nothing
  * reflows as characters appear. The visible layer is aria-hidden; a visually
  * hidden copy carries the full sentence to assistive tech (no per-keystroke

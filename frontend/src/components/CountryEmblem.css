@@ -1,5 +1,5 @@
 /* Shared broadcast-graphic container for the three host emblems. One container,
-   one set of timing curves, so Canada/Mexico/USA read as a single system — only
+   one set of timing curves, so Canada/Mexico/USA read as a single system - only
    the 3D emblem and label inside differ. Fixed to the right edge, vertically
    centred, above the globe. */
 .emblem {

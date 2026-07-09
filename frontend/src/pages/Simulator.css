@@ -217,7 +217,7 @@
 }
 .sim-result__verdict {
   margin: 0;
-  /* The whole verdict line — "[COUNTRY] advance" and the level fallback — reads
+  /* The whole verdict line - "[COUNTRY] advance" and the level fallback - reads
      in the display face, so "advance" no longer drops to the body font. */
   font-family: var(--font-display);
   font-size: var(--text-title);
@@ -231,7 +231,7 @@
   text-transform: uppercase;
 }
 
-/* Two-way probability bar — blue is the model's prediction channel, away neutral. */
+/* Two-way probability bar - blue is the model's prediction channel, away neutral. */
 .sim-result__prob {
   display: flex;
   flex-direction: column;

@@ -5,7 +5,7 @@
   background: var(--surface-card);
   border: 1px solid var(--border-divider);
   border-radius: var(--radius-lg);
-  /* More breathing room — broadcast graphic, not data table */
+  /* More breathing room - broadcast graphic, not data table */
   padding: clamp(var(--space-lg), 4vw, 36px);
   transition:
     transform var(--dur-ui) var(--ease-out-quint),
@@ -49,7 +49,7 @@
   text-transform: uppercase;
 }
 
-/* Bold green group identity — the letter is a filled badge, group-data color */
+/* Bold green group identity - the letter is a filled badge, group-data color */
 .mc-chip--group {
   color: var(--mexican-green);
 }
@@ -67,7 +67,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Red Today indicator — live-state color, legitimate "happening today" marker */
+/* Red Today indicator - live-state color, legitimate "happening today" marker */
 .mc-chip--today {
   color: var(--canadian-red);
   background: color-mix(in oklab, var(--canadian-red) 12%, transparent);
@@ -152,14 +152,14 @@
   font-variant-numeric: tabular-nums;
 }
 .mc-team__name {
-  /* Full name, wraps rather than truncates — Bosnia and Herzegovina shows whole */
+  /* Full name, wraps rather than truncates - Bosnia and Herzegovina shows whole */
   font-size: clamp(1.5rem, 4vw, 2rem);
   line-height: 0.95;
   text-transform: uppercase;
   overflow-wrap: break-word;
 }
 
-/* The big number — score or win% — stadium scoreboard scale */
+/* The big number - score or win% - stadium scoreboard scale */
 .mc-team__num {
   line-height: 0.85;
   flex-shrink: 0;
@@ -228,7 +228,7 @@
   width: 11px;
   height: 11px;
 }
-/* The "Called it" tick springs in on mount — a small confirmation flourish on
+/* The "Called it" tick springs in on mount - a small confirmation flourish on
    the model getting it right. Neutral (ink), not green: the verdict stays
    hue-free. */
 .mc-verdict.is-hit .mc-verdict__icon {
@@ -266,7 +266,7 @@
   color: var(--border-strong);
 }
 
-/* Championship odds — neutral, so blue stays concentrated in the probability bar */
+/* Championship odds - neutral, so blue stays concentrated in the probability bar */
 .mc__odds {
   display: flex;
   gap: var(--space-md);

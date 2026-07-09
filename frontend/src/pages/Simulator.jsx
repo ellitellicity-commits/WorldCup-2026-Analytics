@@ -12,11 +12,11 @@ import TEAM_META, { teamMeta, flagUrl } from '../lib/teams'
 import TabHeader from '../components/TabHeader'
 import './Simulator.css'
 
-// Matchup Sandbox — a standalone "what if these two met?" tool. Distinct from the
+// Matchup Sandbox - a standalone "what if these two met?" tool. Distinct from the
 // tournament-level Monte Carlo simulator that feeds Bracket/Odds/Predictor: this
 // never touches the bracket, it just plays one hypothetical tie. (The old
 // bracket-altering "Run Your Own Simulation" mode was removed in dba5ced; this is
-// not that — no bracket impact.)
+// not that - no bracket impact.)
 
 const TEAMS = Object.keys(TEAM_META).sort()
 
@@ -32,7 +32,7 @@ const ROUNDS = [
 ]
 
 // A plausible scoreline consistent with the sampled winner. Group ties may draw;
-// knockouts are forced decisive. Not model output — a broadcast-flavoured result
+// knockouts are forced decisive. Not model output - a broadcast-flavoured result
 // around the model's real win probability (winProb).
 function sampleResult(pHome, roundId) {
   const decisive = roundId !== 'group'
@@ -79,13 +79,13 @@ function ResultCard({ result }) {
       <RefereeVerdict called={called} />
       <div className="sim-result__score">
         <Side name={home} meta={hm} goals={score.home} win={score.outcome === 'home'} dim={score.outcome === 'away'} />
-        <span className="sim-result__dash" aria-hidden="true">–</span>
+        <span className="sim-result__dash" aria-hidden="true">-</span>
         <Side name={away} meta={am} goals={score.away} win={score.outcome === 'away'} dim={score.outcome === 'home'} align="right" />
       </div>
       <p className="sim-result__verdict">
-        {winName ? <><span className="display">{winName}</span> advance</> : 'Level — honours even'}
+        {winName ? <><span className="display">{winName}</span> advance</> : 'Level - honours even'}
       </p>
-      <div className="sim-result__prob" role="img" aria-label={`Win probability — ${hm.code} ${homePct}%, ${am.code} ${awayPct}%.`}>
+      <div className="sim-result__prob" role="img" aria-label={`Win probability - ${hm.code} ${homePct}%, ${am.code} ${awayPct}%.`}>
         <span className="sim-result__prob-label">Model win probability</span>
         <div className="sim-result__bar">
           <span className="sim-result__seg sim-result__seg--home" style={{ flexGrow: Math.max(homePct, 1) }}>
@@ -102,7 +102,7 @@ function ResultCard({ result }) {
 }
 
 // Full match stats after the cutscene (B4): formations, Man of the Match, and a
-// two-sided comparison of every stat. Neutral bars (ink ramp) — never host
+// two-sided comparison of every stat. Neutral bars (ink ramp) - never host
 // accents, which stay role-locked.
 function StatRow({ row }) {
   const { label, home, away, unit = '' } = row
@@ -195,7 +195,7 @@ export default function Simulator() {
 
   // Simulate: compute everything up front (fast, as before), then play the
   // pregame cutscene (B4) as a flourish on top. The cutscene's onComplete reveals
-  // the full result + stats — the sim itself never waits on the animation.
+  // the full result + stats - the sim itself never waits on the animation.
   const simulate = () => {
     if (!canSim) return
     const stad = STADIUMS[venueName]
@@ -227,7 +227,7 @@ export default function Simulator() {
       <TabHeader
         titleId="sim-title"
         title="Matchup Sandbox"
-        description="Pick any two of the 48 nations and a round, then watch them fly in and the model call the tie. A standalone what-if — it never changes the real bracket."
+        description="Pick any two of the 48 nations and a round, then watch them fly in and the model call the tie. A standalone what-if - it never changes the real bracket."
       />
 
       <form
@@ -262,7 +262,7 @@ export default function Simulator() {
         />
         {!panelVenue && (
           <p className="sim__venue-hint" aria-hidden="true">
-            Destination · <strong>{venueName}</strong> — tap any venue to change
+            Destination · <strong>{venueName}</strong> - tap any venue to change
           </p>
         )}
         {panelData && <StadiumPanel venue={panelData} onClose={() => setPanelVenue(null)} />}

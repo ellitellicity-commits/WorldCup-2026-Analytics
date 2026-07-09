@@ -3,19 +3,19 @@ import { gsap } from 'gsap'
 import Typewriter from './Typewriter'
 import './HostMascot.css'
 
-// Original host-nation mascots for the Atlas (Part 2). Bespoke inline SVGs —
-// NOT scraped clipart — so every body part is a clean, named group that GSAP can
+// Original host-nation mascots for the Atlas (Part 2). Bespoke inline SVGs -
+// NOT scraped clipart - so every body part is a clean, named group that GSAP can
 // drive: entrance, a looping idle, blinking eyes, and a species-specific burst
 // with a facial expression on poke. Three characters, one per 2026 host, each
 // wearing its nation's identity colour (the same host-identity treatment the
-// globe HOST_TINTS and CountryEmblem already use — distinct from the role-locked
+// globe HOST_TINTS and CountryEmblem already use - distinct from the role-locked
 // data channels). They pop in on the LEFT of the Atlas stage when a host nation
 // is opened; the 45 non-host nations get none. Everything degrades to a static
 // pose under prefers-reduced-motion, and all timelines are killed on unmount.
 //
-//   Canada  — Maple, a moose in a Canadian-red kit, palmate antlers.
-//   USA     — Clutch, a bison in an American-blue kit, shaggy mane + horns.
-//   Mexico  — Zayu, an armadillo in a Mexican-green kit, sombrero + curl tail.
+//   Canada  - Maple, a moose in a Canadian-red kit, palmate antlers.
+//   USA     - Clutch, a bison in an American-blue kit, shaggy mane + horns.
+//   Mexico  - Zayu, an armadillo in a Mexican-green kit, sombrero + curl tail.
 
 // A tiny football, shared by all three (at the mascot's feet).
 function Ball({ x, y }) {
@@ -29,7 +29,7 @@ function Ball({ x, y }) {
   )
 }
 
-// --- Maple — moose (Canada) ---------------------------------------------------
+// --- Maple - moose (Canada) ---------------------------------------------------
 // Forward-leaning and eager: oversized, slightly asymmetric palmate antlers, huge
 // warm eyes (left larger), a long droopy snout, and one hoof raising the ball
 // aloft like a trophy. Thick hand-drawn outlines throughout.
@@ -44,7 +44,7 @@ function Maple() {
         <ellipse cx="89" cy="238" rx="13" ry="6" fill={furDark} stroke={OL} strokeWidth="2" />
         <ellipse cx="115" cy="238" rx="13" ry="6" fill={furDark} stroke={OL} strokeWidth="2" />
       </g>
-      {/* torso leans forward — its top edge sits right of the base */}
+      {/* torso leans forward - its top edge sits right of the base */}
       <g className="m-torso">
         <path d="M64 150 Q66 116 108 116 Q150 118 144 152 L138 198 Q100 210 62 196Z" fill={kit} stroke={OL} strokeWidth={OLW} strokeLinejoin="round" />
         <text x="103" y="178" className="m-num" textAnchor="middle">26</text>
@@ -62,7 +62,7 @@ function Maple() {
         </g>
         <ellipse className="m-ear m-ear-l" cx="66" cy="72" rx="12" ry="18" fill={fur} stroke={OL} strokeWidth={OLW} transform="rotate(-26 66 72)" />
         <ellipse className="m-ear m-ear-r" cx="138" cy="72" rx="12" ry="18" fill={fur} stroke={OL} strokeWidth={OLW} transform="rotate(26 138 72)" />
-        {/* head — pushed slightly forward of centre for the eager lean */}
+        {/* head - pushed slightly forward of centre for the eager lean */}
         <ellipse cx="103" cy="86" rx="46" ry="40" fill={fur} stroke={OL} strokeWidth={OLW} />
         {/* long droopy snout */}
         <path d="M103 96 Q74 100 72 124 Q80 140 103 140 Q126 140 134 124 Q132 100 103 96Z" fill={snout} stroke={OL} strokeWidth={OLW} strokeLinejoin="round" />
@@ -80,7 +80,7 @@ function Maple() {
   )
 }
 
-// --- Clutch — bison (USA) -----------------------------------------------------
+// --- Clutch - bison (USA) -----------------------------------------------------
 // Wide, low and powerful: a massive shaggy mane, thick curved horns, a head set
 // low and forward, and small, narrowed, determined eyes. Legs planted in a broad
 // power stance with a low centre of gravity.
@@ -132,7 +132,7 @@ function Clutch() {
   )
 }
 
-// --- Zayu — armadillo (Mexico) ------------------------------------------------
+// --- Zayu - armadillo (Mexico) ------------------------------------------------
 // Peeking and playful: head turned toward the viewer (nudged left of centre), a
 // prominent banded shell over one shoulder, a long tail curled up behind like a
 // question mark, big round curious eyes, and an oversized rakishly-tilted sombrero.
@@ -162,7 +162,7 @@ function Zayu() {
       <g className="m-head">
         <ellipse className="m-ear m-ear-l" cx="74" cy="70" rx="7" ry="13" fill={body} stroke={OL} strokeWidth="2" transform="rotate(-20 74 70)" />
         <ellipse className="m-ear m-ear-r" cx="126" cy="70" rx="7" ry="13" fill={body} stroke={OL} strokeWidth="2" transform="rotate(20 126 70)" />
-        {/* head turned slightly toward the viewer — nudged left of centre */}
+        {/* head turned slightly toward the viewer - nudged left of centre */}
         <ellipse cx="96" cy="90" rx="40" ry="37" fill={body} stroke={OL} strokeWidth={OLW} />
         {/* long snout */}
         <path d="M96 98 Q72 102 68 122 Q78 136 96 136 Q114 136 122 122 Q120 102 96 98Z" fill={bodyLt} stroke={OL} strokeWidth={OLW} strokeLinejoin="round" />
@@ -195,25 +195,25 @@ const ORIGINS = {
   MX: { country: 'Mexico', armL: '64 152', armR: '140 154', center: '96 118' },
 }
 
-// Guided-tour scripts (Part 2a) — real, confirmed WC2026 facts only. Each beat
+// Guided-tour scripts (Part 2a) - real, confirmed WC2026 facts only. Each beat
 // names the mascot animation it plays. The mascot speaks directly to the user.
 const TOURS = {
   CA: [
     { line: "Welcome to Canada! 🍁 Co-hosting our very first men's World Cup!", anim: 'wave' },
-    { line: 'Three cities in the mix — Toronto, Vancouver, and Edmonton!', anim: 'jump' },
+    { line: 'Three cities in the mix - Toronto, Vancouver, and Edmonton!', anim: 'jump' },
     { line: "BC Place in Vancouver has one of the world's largest retractable roofs!", anim: 'point' },
     { line: 'We thrashed Qatar 6-0 for our first ever World Cup win. History made!', anim: 'celebrate' },
   ],
   US: [
-    { line: "Welcome to the USA! 🦅 We're hosting 11 of the 16 venues — biggest share!", anim: 'wave' },
+    { line: "Welcome to the USA! 🦅 We're hosting 11 of the 16 venues - biggest share!", anim: 'wave' },
     { line: 'MetLife Stadium in New Jersey hosts the Final on 19 July 2026!', anim: 'point' },
-    { line: "Our first men's World Cup since 1994 — and this time we're IN it!", anim: 'jump' },
+    { line: "Our first men's World Cup since 1994 - and this time we're IN it!", anim: 'jump' },
     { line: 'From Seattle to Miami, the whole country is a football pitch right now!', anim: 'celebrate' },
   ],
   MX: [
     { line: '¡Bienvenidos a México! 🌵 First nation to host or co-host THREE World Cups!', anim: 'wave' },
-    { line: 'Estadio Azteca has seen two World Cup finals — 1970 AND 1986!', anim: 'point' },
-    { line: 'Guadalajara and Monterrey join Mexico City — three iconic football cities!', anim: 'jump' },
+    { line: 'Estadio Azteca has seen two World Cup finals - 1970 AND 1986!', anim: 'point' },
+    { line: 'Guadalajara and Monterrey join Mexico City - three iconic football cities!', anim: 'jump' },
     { line: 'The atmosphere here? Unmatched. The whole country bleeds football!', anim: 'celebrate' },
   ],
 }
@@ -286,7 +286,7 @@ const MASCOTS = {
 const reduced = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
-// A short CSS-only confetti burst for the tour's 'celebrate' beat (Part 2b) —
+// A short CSS-only confetti burst for the tour's 'celebrate' beat (Part 2b) -
 // small coloured dots that fling out from the mascot and fade. Keyed on `fire`
 // so each celebrate remounts and replays. Host identity + gold, restrained count.
 const BURST_COLORS = ['var(--host-colour, var(--ink))', '#f6f6f6', 'var(--trophy-gold)']
@@ -341,7 +341,7 @@ export default function HostMascot({ iso, variant = 'panel', onExplore }) {
   // Scoped to a gsap.context and torn down with ctx.revert() (not a bare kill).
   // Under React StrictMode the effect mounts → cleans up → remounts, and a killed
   // gsap.from() leaves its targets frozen at the from-state (opacity 0, off to the
-  // left) — so on remount a fresh gsap.from({opacity:0}) reads that 0 as its END
+  // left) - so on remount a fresh gsap.from({opacity:0}) reads that 0 as its END
   // value and animates 0→0, leaving the character permanently invisible while the
   // un-animated bubble still shows. revert() restores the original inline styles,
   // so every (re)mount animates in from a clean, visible baseline.

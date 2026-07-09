@@ -4,7 +4,7 @@ import { GEO, MAP_VIEWBOX, project } from '../lib/cutsceneMap'
 import { RefereeNarrator } from './RefereeMascot'
 import './Cutscene.css'
 
-// Short, generated 880Hz whistle blow via the Web Audio API — no external file.
+// Short, generated 880Hz whistle blow via the Web Audio API - no external file.
 // Triggered on the hard cut, inside the user-initiated simulate gesture so the
 // AudioContext is allowed to start. Silently no-ops if audio is unavailable or
 // the user prefers reduced motion.
@@ -25,11 +25,11 @@ function playWhistle() {
     osc.stop(ctx.currentTime + 0.42)
     osc.onended = () => ctx.close?.()
   } catch {
-    /* audio blocked — the visual flash carries the cut */
+    /* audio blocked - the visual flash carries the cut */
   }
 }
 
-// Pregame broadcast cutscene (B4, reworked in Part F) — an EA-Sports-FC-style
+// Pregame broadcast cutscene (B4, reworked in Part F) - an EA-Sports-FC-style
 // intro, not a travel montage. One gsap.timeline() runs four sequenced beats so
 // they never race:
 //   1 VS card clash → 2 paper-map flight to the destination pin → 3 hype text →
@@ -39,7 +39,7 @@ function playWhistle() {
 // aeronautical-chart: an aged parchment map with a graticule + compass, a dashed
 // flight arc that draws as a plane glyph flies along it, ending on a dropped pin
 // at the destination city. Pure SVG + GSAP (no three.js here any more). The map's
-// sepia/parchment palette is a deliberate, self-contained cinematic prop — the
+// sepia/parchment palette is a deliberate, self-contained cinematic prop - the
 // product chrome and its role-locked accents are untouched. All copy stays on the
 // site stack (Barlow Condensed display, Noto Sans body). data-beat exposes the
 // active beat for tests; skippable; degrades to an instant reveal under reduced
@@ -47,7 +47,7 @@ function playWhistle() {
 
 // A top-down airliner glyph centred on its own origin so translate+rotate along
 // the flight path orients it nose-first (nose at +X). Fuselage, swept delta
-// wings and a tailplane — an actual plane silhouette, not an arrow.
+// wings and a tailplane - an actual plane silhouette, not an arrow.
 function PlaneGlyph() {
   return (
     <g className="cut__plane">
@@ -72,7 +72,7 @@ export default function Cutscene({ match, onComplete }) {
   const [beat, setBeat] = useState('vs')
 
   // Destination pin, projected from the venue's real coordinate so it lands on
-  // the actual host city (Part 1b) — never floating in the Atlantic. The plane
+  // the actual host city (Part 1b) - never floating in the Atlantic. The plane
   // then approaches it from off-screen (lower-left), so there is no origin dot:
   // it just enters frame, small and distant, and grows toward the pin (the depth
   // read). The dashed route is a quadratic arc from that off-canvas entry to the
@@ -99,7 +99,7 @@ export default function Cutscene({ match, onComplete }) {
     const q = gsap.utils.selector(root)
 
     if (reduce) {
-      // Reduced motion: hold the VS card briefly, then reveal — no motion.
+      // Reduced motion: hold the VS card briefly, then reveal - no motion.
       const t = setTimeout(finish, 700)
       return () => clearTimeout(t)
     }
@@ -107,7 +107,7 @@ export default function Cutscene({ match, onComplete }) {
     const tl = gsap.timeline({ onComplete: finish })
     tlRef.current = tl
 
-    // --- Beat 1 — VS card clash ---
+    // --- Beat 1 - VS card clash ---
     setBeat('vs')
     tl.fromTo(q('.cut__side--home'), { xPercent: -160, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.5, ease: 'power4.out' }, 0)
     tl.fromTo(q('.cut__side--away'), { xPercent: 160, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.5, ease: 'power4.out' }, 0)
@@ -115,7 +115,7 @@ export default function Cutscene({ match, onComplete }) {
     tl.to(q('.cut__vs-badge'), { scale: 1.12, duration: 0.16, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 0.6)
     tl.to(q('.cut__vs'), { autoAlpha: 0, scale: 1.14, duration: 0.34, ease: 'power2.in' }, '+=0.9')
 
-    // --- Beat 2 — paper-map flight to the destination pin ---
+    // --- Beat 2 - paper-map flight to the destination pin ---
     tl.add(() => setBeat('flight'))
     tl.fromTo(q('.cut__map'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: 'power2.out' }, '<')
     tl.fromTo(q('.cut__caption--venue'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '<0.2')
@@ -138,7 +138,7 @@ export default function Cutscene({ match, onComplete }) {
           const p = path.getPointAtLength(d)
           const p2 = path.getPointAtLength(Math.min(d + 1, len))
           const ang = (Math.atan2(p2.y - p.y, p2.x - p.x) * 180) / Math.PI
-          // Grow as it nears the pin — the "flying toward you" depth read.
+          // Grow as it nears the pin - the "flying toward you" depth read.
           const scale = 0.45 + 0.6 * prog.t
           plane.setAttribute('transform', `translate(${p.x} ${p.y}) rotate(${ang}) scale(${scale})`)
         },
@@ -153,12 +153,12 @@ export default function Cutscene({ match, onComplete }) {
     tl.to(q('.cut__caption--venue'), { opacity: 0, duration: 0.3 }, '+=0.5')
     tl.to(q('.cut__map'), { autoAlpha: 0, duration: 0.35 }, '<')
 
-    // --- Beat 3 — hype (spoken by the referee, inside his bubble) ---
+    // --- Beat 3 - hype (spoken by the referee, inside his bubble) ---
     tl.add(() => setBeat('hype'))
     tl.to({}, { duration: 0.5 }) // bubble + lines stagger in
     tl.to({}, { duration: 0.6 + 0.5 * hype.length }) // dwell long enough to read
 
-    // --- Beat 4 — whistle countdown + hard cut ---
+    // --- Beat 4 - whistle countdown + hard cut ---
     tl.add(() => setBeat('count'))
     for (const n of ['3', '2', '1']) {
       tl.add(() => {
@@ -193,7 +193,7 @@ export default function Cutscene({ match, onComplete }) {
 
   return (
     <div className="cutscene" ref={rootRef} data-beat={beat} role="dialog" aria-label="Pregame sequence">
-      {/* Beat 2 — vintage aeronautical chart */}
+      {/* Beat 2 - vintage aeronautical chart */}
       <div className="cut__map" aria-hidden="true">
         <svg className="cut__chart" viewBox={MAP_VIEWBOX} preserveAspectRatio="xMidYMid slice">
           <defs>
@@ -208,7 +208,7 @@ export default function Cutscene({ match, onComplete }) {
 
           <rect width="1000" height="600" fill="url(#cut-grat)" />
 
-          {/* Host-nation coastlines (6a) — a faint sepia land layer under the route. */}
+          {/* Host-nation coastlines (6a) - a faint sepia land layer under the route. */}
           <g className="cut__geo" aria-hidden="true">
             <path d={GEO.canada} />
             <path d={GEO.usa} />
@@ -231,7 +231,7 @@ export default function Cutscene({ match, onComplete }) {
           </g>
 
           {/* Flight arc: plane enters from off-screen (lower-left) and closes on
-              the projected destination pin. No origin marker — it just arrives. */}
+              the projected destination pin. No origin marker - it just arrives. */}
           <path
             ref={pathRef}
             className="cut__route"
@@ -263,7 +263,7 @@ export default function Cutscene({ match, onComplete }) {
         <span className="cut__caption-city">Arriving · {venue.city}</span>
       </p>
 
-      {/* Beat 1 — VS card */}
+      {/* Beat 1 - VS card */}
       <div className="cut__vs">
         <div className="cut__side cut__side--home">
           {homeFlag && <img className="cut__flag" src={homeFlag} alt="" width="120" height="90" />}
@@ -278,7 +278,7 @@ export default function Cutscene({ match, onComplete }) {
         </div>
       </div>
 
-      {/* Beat 4 — countdown, framed BEHIND the referee as giant background text. */}
+      {/* Beat 4 - countdown, framed BEHIND the referee as giant background text. */}
       <div className="cut__count display" aria-hidden="true" />
       <div className="cut__flash" aria-hidden="true" />
 

@@ -30,7 +30,7 @@
   color: var(--ink-secondary);
 }
 
-/* Green group identity on finished group cards — the filled letter badge is
+/* Green group identity on finished group cards - the filled letter badge is
    green's primary on-screen presence (DESIGN §5), mirroring MatchCard's chip. */
 .koc__group {
   display: inline-flex;
@@ -115,7 +115,7 @@
   color: var(--ink);
 }
 
-/* Finished tie — a quiet full-time marker in place of the kickoff time. */
+/* Finished tie - a quiet full-time marker in place of the kickoff time. */
 .koc__ft {
   font-size: var(--text-label);
   font-weight: 600;
@@ -130,7 +130,7 @@
   color: var(--ink-secondary);
 }
 
-/* Model verdict on a finished tie. Neutral by design — green/red are role-locked,
+/* Model verdict on a finished tie. Neutral by design - green/red are role-locked,
    not success/error; hit vs miss reads by icon + label + ink weight, not hue.
    Mirrors MatchCard's group-card verdict. */
 .koc__pred-head {

@@ -33,7 +33,7 @@
   gap: var(--space-sm);
 }
 
-/* --- Shared button vocabulary (neutral chrome — colour belongs to data) --- */
+/* --- Shared button vocabulary (neutral chrome - colour belongs to data) --- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -247,7 +247,7 @@
   font-weight: 700;
 }
 
-/* Position chip — green fill marks a direct qualifying slot (group-data role);
+/* Position chip - green fill marks a direct qualifying slot (group-data role);
    the number + bold row are the non-colour signals (Colour-Blind Contract). */
 .gpos {
   display: inline-grid;
@@ -272,7 +272,7 @@
   background: var(--mexican-green);
   color: var(--studio-black);
 }
-/* Third place, currently above the best-8 cut — on the bubble to advance.
+/* Third place, currently above the best-8 cut - on the bubble to advance.
    Trophy gold is used here as a deliberate "on track to qualify" status (the
    page carries no champion moment); the number + legend are the non-colour
    signals that keep it Colour-Blind-Contract safe. */
@@ -280,7 +280,7 @@
   background: var(--trophy-gold);
   color: var(--studio-black);
 }
-/* Third place below the cut, or fourth — provisionally out. */
+/* Third place below the cut, or fourth - provisionally out. */
 .gpos.is-out {
   background: transparent;
   color: var(--ink-muted);

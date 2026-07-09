@@ -3,13 +3,13 @@
 // The sim is a hypothetical tie, so there is no real box score to fetch (unlike
 // MatchStatsPanel, which pulls ESPN data for actual fixtures). This generates a
 // plausible, internally-consistent stat line around the sampled scoreline and
-// the model's win probability — possession/shots skew toward the stronger side,
-// shots-on-target never fall below goals. Flavour, not model output — same spirit
+// the model's win probability - possession/shots skew toward the stronger side,
+// shots-on-target never fall below goals. Flavour, not model output - same spirit
 // as sampleResult.
 //
 // NB (Part F): no "Man of the Match" is produced. Neither ESPN nor football-data
 // exposes a player-of-match field, and this tie never happened, so any MOTM pick
-// would be invented — which the brief's data flag explicitly rules out. The
+// would be invented - which the brief's data flag explicitly rules out. The
 // feature is omitted rather than fabricated.
 
 const FORMATIONS = ['4-3-3', '4-2-3-1', '3-5-2', '4-4-2', '3-4-3', '5-3-2', '4-1-4-1']

@@ -5,11 +5,11 @@ import './ProvinceStateSubMap.css'
 
 // Host-nation sub-map (B3). For the three 2026 hosts only, an SVG inset of the
 // nation's real internal provinces/states (Natural Earth 10m admin-1) with its
-// state/provincial capitals plotted and labelled — a richer treatment than the
+// state/provincial capitals plotted and labelled - a richer treatment than the
 // plain silhouette the other 45 nations get. Rendered in the Atlas panel when a
 // host is the active selection. Coloured in the host's national colour (US blue,
-// Canada red, Mexico green — the host-identity treatment, matched to the globe).
-// Scroll/pinch to zoom (1×–6×) and drag to pan a viewport <g>; a reset returns
+// Canada red, Mexico green - the host-identity treatment, matched to the globe).
+// Scroll/pinch to zoom (1×-6×) and drag to pan a viewport <g>; a reset returns
 // the default full-country view.
 
 const HOST_LABEL = { US: 'United States', CA: 'Canada', MX: 'Mexico' }
@@ -28,7 +28,7 @@ export default function ProvinceStateSubMap({ code }) {
   const data = hostSubs[code]
 
   // All geometry, labels and viewBox derive from the (static) subdivision data,
-  // so memoise on `code` — the pointer handlers below read it without recomputing.
+  // so memoise on `code` - the pointer handlers below read it without recomputing.
   const geo = useMemo(() => {
     if (!data) return null
     const ex = EXCLUDE[code]
@@ -66,7 +66,7 @@ export default function ProvinceStateSubMap({ code }) {
     }
 
     // Each subdivision is filled with one of five tonal steps of the host colour
-    // (index-cycled), so neighbours read as distinct shapes — the reference-map
+    // (index-cycled), so neighbours read as distinct shapes - the reference-map
     // effect, kept role-locked to the host hue rather than a rainbow palette.
     let w = 0, h = 0
     const provs = subs.map((s, i) => {
@@ -153,7 +153,7 @@ export default function ProvinceStateSubMap({ code }) {
   const zoomed = view.z > MIN_ZOOM
 
   return (
-    <figure className={`submap submap--${code}`} aria-label={`${HOST_LABEL[code]} — ${geo.subs.length} ${UNIT[code]} and their capitals`}>
+    <figure className={`submap submap--${code}`} aria-label={`${HOST_LABEL[code]} - ${geo.subs.length} ${UNIT[code]} and their capitals`}>
       <svg
         ref={svgRef}
         viewBox={`-1 -1 ${geo.vbW.toFixed(1)} ${geo.vbH.toFixed(1)}`}

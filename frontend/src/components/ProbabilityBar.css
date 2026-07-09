@@ -13,7 +13,7 @@
   overflow: hidden;
   background: var(--surface-elevated);
   gap: 2px;
-  /* Mount wipe — the count-up moment. Resting state (no clip-path) is the full
+  /* Mount wipe - the count-up moment. Resting state (no clip-path) is the full
      bar, so it's never gated: if the animation can't run, the bar is just there. */
   animation: prob-wipe var(--dur-cinematic) var(--ease-out-quint);
 }
@@ -106,7 +106,7 @@
   color: var(--ink);
   font-weight: 600;
 }
-/* Neutral — green is role-locked to group data, so the result marker stays ink */
+/* Neutral - green is role-locked to group data, so the result marker stays ink */
 .prob__check {
   color: var(--ink);
 }

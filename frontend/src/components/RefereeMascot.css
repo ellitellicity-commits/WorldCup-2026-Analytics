@@ -1,4 +1,4 @@
-/* Referee narrator — centre-bottom of the pregame cutscene, speech bubble above.
+/* Referee narrator - centre-bottom of the pregame cutscene, speech bubble above.
    He sits below the VS card / team names and the giant countdown, so he never
    collides with them. */
 .referee--cutscene {
@@ -55,7 +55,7 @@
   fill: #e8e8e8;
 }
 
-/* --- Post-result verdict — sits at the head of the ResultCard. --- */
+/* --- Post-result verdict - sits at the head of the ResultCard. --- */
 .referee--verdict {
   display: flex;
   align-items: center;

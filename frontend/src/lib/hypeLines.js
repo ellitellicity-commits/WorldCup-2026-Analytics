@@ -1,5 +1,5 @@
 // Procedural hype-line pool + selector for the pregame cutscene (B4, beat 4).
-// Broadcast-style commentary rendered on screen (no audio) — the line varies
+// Broadcast-style commentary rendered on screen (no audio) - the line varies
 // with the matchup context so a host-nation opener doesn't read like a random
 // group tie. Each category has a genuinely distinct pool (6 lines); the selector
 // picks the most salient category, then two distinct lines from it.
@@ -9,21 +9,21 @@
 const POOLS = {
   // A 2026 host is on the pitch, on home soil.
   host: [
-    'The hosts take the field — and a nation rises with them.',
+    'The hosts take the field - and a nation rises with them.',
     'Home soil. Home crowd. {home} feel the roar of {city}.',
     'Everything they built toward. {home} walk out at {venue}.',
     'A continent is watching, but this house belongs to {home}.',
-    'The tournament came home — and {home} intend to make it count.',
+    'The tournament came home - and {home} intend to make it count.',
     '{city} is on its feet. The hosts have arrived.',
   ],
   // A classic rivalry / repeat meeting.
   rivalry: [
     'Old rivals, new stakes. {home} and {away} settle it again.',
-    'History between these two — and another chapter starts now.',
+    'History between these two - and another chapter starts now.',
     'They know each other too well. {home} versus {away}, once more.',
     'No love lost. {home} and {away} renew an old grudge.',
     'Some fixtures never lose their edge. This is one of them.',
-    'The rivalry resumes at {venue} — and neither side blinks.',
+    'The rivalry resumes at {venue} - and neither side blinks.',
   ],
   // A heavy favourite against a clear underdog.
   underdog: [
@@ -34,16 +34,16 @@ const POOLS = {
     'Giant-killers are made on nights like this at {venue}.',
     'The odds say one thing. {away} came to argue.',
   ],
-  // Knockout / heavyweight collision — high stakes.
+  // Knockout / heavyweight collision - high stakes.
   highStakes: [
     'Win or fly home. {home} and {away} leave nothing behind.',
     'One match. One winner. The margins are razor-thin.',
     'Two heavyweights, one place in the next round.',
-    'This is what the tournament is built for — {home} versus {away}.',
+    'This is what the tournament is built for - {home} versus {away}.',
     'No second chances now. {venue} braces for the collision.',
     'The stakes could not be higher. Kickoff at {venue}.',
   ],
-  // Everything else — a straight, big-stage opener.
+  // Everything else - a straight, big-stage opener.
   neutral: [
     '{home} versus {away}. The wait is over.',
     'Under the lights at {venue}, the tie is set.',
@@ -54,7 +54,7 @@ const POOLS = {
   ],
 }
 
-// Rivalry pairs (unordered) — classic repeat meetings worth their own lines.
+// Rivalry pairs (unordered) - classic repeat meetings worth their own lines.
 const RIVALRIES = [
   ['Argentina', 'Brazil'], ['Argentina', 'England'], ['Germany', 'Netherlands'],
   ['United States', 'Mexico'], ['Mexico', 'United States'], ['Spain', 'Portugal'],

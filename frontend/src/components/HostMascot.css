@@ -1,4 +1,4 @@
-/* Host mascot — greets at the foot of the Atlas profile panel when a 2026 host
+/* Host mascot - greets at the foot of the Atlas profile panel when a 2026 host
    nation is opened. It flows inside the panel's own scroll box (a solid card
    over the globe), so the character and its speech bubble are fully contained
    and never bleed onto the 3D globe canvas. */
@@ -88,7 +88,7 @@
 
 /* --- Guided-tour variant (Part 2): a fixed left column over the Atlas globe.
    Solid card surface + a single host-identity hairline (the same host-colour
-   treatment the globe tint and CountryEmblem already use — NOT a role-locked
+   treatment the globe tint and CountryEmblem already use - NOT a role-locked
    data channel and NOT a decorative gradient wash, per DESIGN.md). --- */
 .mascot--tour {
   position: absolute;
@@ -100,7 +100,7 @@
   align-items: center;
   margin: 0;
   padding: var(--space-md);
-  /* Uniform host-tinted hairline (no side-tab stripe — a DESIGN.md hard stop);
+  /* Uniform host-tinted hairline (no side-tab stripe - a DESIGN.md hard stop);
      host identity reads through the faint even tint + border, not a bar. */
   border: 1px solid color-mix(in srgb, var(--host-colour, var(--border-strong)) 32%, var(--border-strong));
   border-radius: var(--radius-lg);
@@ -152,7 +152,7 @@
 .mascot__next:hover { background: #ffffff; }
 .mascot__next:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
-/* --- 'celebrate' confetti burst — small dots flung from the mascot. --- */
+/* --- 'celebrate' confetti burst - small dots flung from the mascot. --- */
 .mascot__confetti {
   position: absolute;
   left: 50%;

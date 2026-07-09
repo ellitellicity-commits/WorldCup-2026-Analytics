@@ -13,18 +13,18 @@ import './Encyclopedia.css'
 const NAMES_SORTED = [...COUNTRY_NAMES].sort()
 
 // Real boundary polygons (Natural Earth, baked in scripts/generate_country_shapes.mjs)
-// joined with each nation's flag URL — drives the hover flag-fill on the globe.
+// joined with each nation's flag URL - drives the hover flag-fill on the globe.
 const COUNTRY_SHAPES = Object.fromEntries(
   Object.entries(countryShapesRaw).map(([name, s]) => [name, { ...s, flag: flagUrl(teamMeta(name).iso) }]),
 )
 
-// The three 2026 hosts wear their national colour on the globe (B3) — the
+// The three 2026 hosts wear their national colour on the globe (B3) - the
 // host-identity treatment (see DESIGN note in commit): US blue, Canada red,
 // Mexico green, matched to lib/teams roles.
 const HOST_TINTS = { Canada: 0xed4a49, 'United States': 0x439bf7, Mexico: 0x35c26d }
 const HOST_ISO = new Set(['us', 'ca', 'mx']) // the three 2026 hosts, by ISO alpha-2
 
-// Camera fly-to targets for the three hosts (Part 1c) — each nation's centroid
+// Camera fly-to targets for the three hosts (Part 1c) - each nation's centroid
 // and a zoom framing that fills the globe with the host without clipping it.
 const HOST_COORDS = {
   ca: { lat: 56.1, lng: -106.3, zoom: 1.9 },
@@ -32,7 +32,7 @@ const HOST_COORDS = {
   mx: { lat: 23.6, lng: -102.5, zoom: 2.0 },
 }
 
-// The Atlas — an interactive globe of the 48 qualified nations. Click a marker to
+// The Atlas - an interactive globe of the 48 qualified nations. Click a marker to
 // open that nation's profile: real sourced data (FIFA rank, Elo, group,
 // confederation, championship odds, all-time record, squad). An editorial intro
 // blurb reveals with a typewriter effect. Coach / history stay flagged as pending
@@ -54,7 +54,7 @@ function Stat({ label, value, accent }) {
 }
 
 // Match the Typewriter's own cadence so the history line begins just as the intro
-// finishes — a staggered two-line broadcast reveal rather than two racing at once.
+// finishes - a staggered two-line broadcast reveal rather than two racing at once.
 function typeMs(text) {
   if (!text) return 0
   return 160 + text.length * Math.max(9, Math.min(22, 1500 / text.length))
@@ -62,7 +62,7 @@ function typeMs(text) {
 
 function Panel({ country, onClose }) {
   const c = country
-  const odds = c.championshipOdds != null ? `${(c.championshipOdds * 100).toFixed(1)}%` : '—'
+  const odds = c.championshipOdds != null ? `${(c.championshipOdds * 100).toFixed(1)}%` : '-'
   const rec = c.record
   const winPct = rec && rec.played ? Math.round((rec.w / rec.played) * 100) : null
   const historyDelay = c.intro ? Math.round(typeMs(c.intro) + 140) : 160
@@ -111,10 +111,10 @@ function Panel({ country, onClose }) {
       {c.iso && HOST_ISO.has(c.iso) && <ProvinceStateSubMap code={c.iso.toUpperCase()} />}
 
       <dl className="enc-panel__stats">
-        <Stat label="FIFA Rank" value={c.fifaRank != null ? `#${c.fifaRank}` : '—'} />
-        <Stat label="Elo Rating" value={c.elo != null ? c.elo : '—'} />
-        <Stat label="Group" value={c.group || '—'} />
-        <Stat label="Confederation" value={c.confederation || '—'} />
+        <Stat label="FIFA Rank" value={c.fifaRank != null ? `#${c.fifaRank}` : '-'} />
+        <Stat label="Elo Rating" value={c.elo != null ? c.elo : '-'} />
+        <Stat label="Group" value={c.group || '-'} />
+        <Stat label="Confederation" value={c.confederation || '-'} />
         <Stat label="Title Odds" value={odds} accent />
       </dl>
 

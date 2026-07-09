@@ -9,13 +9,13 @@
   --bk-center-w: 158px;
   /* Connector system (Part D): three tiers tell each team's story on the tree.
      • Faint skeleton (--bk-line): undecided ties, and the leg where a team was
-       knocked out — the dimmed default, unchanged.
+       knocked out - the dimmed default, unchanged.
      • Red (--bk-line-elim): the segments a team EARNED by winning before going
-       out — its "how far it got" trail. Deeper rounds thicken (see below), so a
+       out - its "how far it got" trail. Deeper rounds thicken (see below), so a
        semi-final run reads bolder than an early exit. NB this red and the green
        below are path-depth encodings on the tree, distinct from the app's
        role-locked live-red / group-green; the champion card + trophy keep gold.
-     • Green + glow (--bk-line-win): the champion's full path only — the one team
+     • Green + glow (--bk-line-win): the champion's full path only - the one team
        that never loses, so the only path still lit in a finished bracket. */
   --bk-line-w: 3px;
   --bk-line: var(--border-divider);
@@ -281,7 +281,7 @@
   align-items: center;
   justify-content: center;
 }
-/* A live/finished tie carries a compact hover/tap preview — signal it. */
+/* A live/finished tie carries a compact hover/tap preview - signal it. */
 .bk-match.is-previewable {
   cursor: help;
   outline: none;
@@ -543,7 +543,7 @@
 
 /* A match's vertical merge. One state for the whole bar (+ its stub), owned by
    the match's winner: default faint skeleton while undecided, glowing the moment
-   the match is won, dimmed once that winner is knocked out. The bar spans 25%–75%
+   the match is won, dimmed once that winner is knocked out. The bar spans 25%-75%
    of the box; its ::after stub bridges the midpoint into the box. */
 .bk-match__join {
   position: absolute;
@@ -566,7 +566,7 @@
 }
 
 /* Depth cue on the red "progressed" trail: the further a team got, the thicker
-   its earned segments — a quarter- or semi-final run reads bolder than an early
+   its earned segments - a quarter- or semi-final run reads bolder than an early
    exit. Thickness is `height` on the horizontals (out ::after and the join stub)
    and `width` on the vertical join bar. Champion green stays a uniform weight;
    its glow carries the prominence. R32/R16 keep the 3px base. */
@@ -610,10 +610,10 @@
 .bk-match__join--right::after {
   right: 100%;
 }
-/* R32 has no feeder matches — its two group-stage teams share one box — so its
+/* R32 has no feeder matches - its two group-stage teams share one box - so its
    merge bar hugs the box's OUTGOING edge (mirroring later rounds, whose merge
    sits on the feeder side) and feeds straight into the winner's outgoing
-   horizontal. It brackets the two team rows, not the 25–75% feeder span, and
+   horizontal. It brackets the two team rows, not the 25-75% feeder span, and
    needs no stub into the box. */
 .bk-match__join--r32 {
   top: 30%;
@@ -646,7 +646,7 @@
 /* Anchor the final box to the semi-final feeder line, not the center column's
    own 50%. The grid's fixed rows overflow the canvas's padded content box, so
    the SF match centre (grid centre) sits ~20px below where the flexible
-   center-body would centre this box — leaving the two SF connectors arriving
+   center-body would centre this box - leaving the two SF connectors arriving
    below the box's side stubs. 8 * row-h is the centre of the 16-row match area,
    measured from the match-area top (which the final header aligns to), so the
    box lands exactly on the incoming SF horizontals regardless of padding. */
@@ -881,7 +881,7 @@
   max-width: 90ch;
 }
 
-/* Horizontal-pan affordance — desktop shows the whole tree, so hide it there. */
+/* Horizontal-pan affordance - desktop shows the whole tree, so hide it there. */
 .bk__swipe {
   display: none;
 }

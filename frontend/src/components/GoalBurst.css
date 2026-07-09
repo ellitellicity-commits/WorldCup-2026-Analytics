@@ -1,4 +1,4 @@
-/* Goal animation — a soccer ball flies toward the goal on a live score change.
+/* Goal animation - a soccer ball flies toward the goal on a live score change.
    Overlays the score/teams area of a card; never blocks interaction. Gold is the
    goal / key-moment accent (DESIGN.md), used here for a genuine landmark event. */
 .goal-burst {

@@ -8,7 +8,7 @@ import BracketView from './pages/BracketView'
 import Groups from './pages/Groups'
 import './App.css'
 
-// The globe routes pull in Three.js + the world outline — a heavy, self-contained
+// The globe routes pull in Three.js + the world outline - a heavy, self-contained
 // chunk that the core pages never touch. Lazy-load them so none of that weight
 // lands in the home/bracket bundle; it only downloads when a globe route opens.
 const Simulator = lazy(() => import('./pages/Simulator'))
@@ -20,7 +20,7 @@ function RouteFallback() {
 
 // Reset scroll on navigation (a fresh route should open at the top, not inherit
 // the previous page's scroll). Skipped when the user prefers reduced motion is
-// irrelevant here — this is an instant jump, not an animation.
+// irrelevant here - this is an instant jump, not an animation.
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => {

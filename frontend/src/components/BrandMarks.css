@@ -11,7 +11,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Geometric brand texture — low opacity so it reads as atmosphere, not noise. */
+/* Geometric brand texture - low opacity so it reads as atmosphere, not noise. */
 .brand-field {
   position: absolute;
   inset: 0;

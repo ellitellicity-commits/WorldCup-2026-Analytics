@@ -40,7 +40,7 @@ function TeamRow({ team, pct, favored, score, isWinner, dimmed }) {
   )
 }
 
-// The green group identity badge (DESIGN §5) — reused on finished group cards so
+// The green group identity badge (DESIGN §5) - reused on finished group cards so
 // they share the KO card's compact chrome while keeping green = group data.
 function GroupChip({ letter }) {
   return (
@@ -55,8 +55,8 @@ function GroupChip({ letter }) {
  * Compact card for a knockout tie. For an upcoming tie the probability is
  * two-way (knockout is decided outright, no draw): the model's home advance
  * chance in American Blue (the prediction channel), the away chance in neutral
- * ink. A finished tie instead shows the scoreline — winner in ink, loser dimmed,
- * penalties noted — with the pre-match model kept below and a neutral verdict on
+ * ink. A finished tie instead shows the scoreline - winner in ink, loser dimmed,
+ * penalties noted - with the pre-match model kept below and a neutral verdict on
  * whether the model's favourite actually advanced (mirrors MatchCard's group
  * cards, so finished KO ties read the same as finished group games).
  *
@@ -91,7 +91,7 @@ function KnockoutCard({ view, roundLabel, group = null }) {
   const homePct = isGroup ? Math.round(view.prediction.home_win * 100) : Math.round(view.pHome * 100)
   const awayPct = isGroup ? Math.round(view.prediction.away_win * 100) : 100 - homePct
   // A finished tie ('completed' for R32, 'decided' for R16+) carries both a
-  // scoreline and a resolved winner — the same match-status logic the bracket
+  // scoreline and a resolved winner - the same match-status logic the bracket
   // and live rails use (lib/bracket liveResults / buildViews). A group card is
   // always decided.
   const decided = isGroup || (!live && view.winner != null && view.score != null)
@@ -159,7 +159,7 @@ function KnockoutCard({ view, roundLabel, group = null }) {
 
       {pens && (
         <p className="koc__pens">
-          {view.winner} advance on penalties (<span className="tnum">{pens.home_score}–{pens.away_score}</span>)
+          {view.winner} advance on penalties (<span className="tnum">{pens.home_score}-{pens.away_score}</span>)
         </p>
       )}
 
@@ -185,7 +185,7 @@ function KnockoutCard({ view, roundLabel, group = null }) {
           <div
             className="koc__bar"
             role="img"
-            aria-label={`Model prediction — ${view.home.code} advance ${homePct}%, ${view.away.code} advance ${awayPct}%.`}
+            aria-label={`Model prediction - ${view.home.code} advance ${homePct}%, ${view.away.code} advance ${awayPct}%.`}
           >
             <span className="koc__bar-seg koc__bar-seg--home" style={{ flexGrow: Math.max(homePct, 1) }}>
               {homePct >= 18 && <span className="koc__bar-pct tnum">{homePct}%</span>}

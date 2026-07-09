@@ -1,5 +1,5 @@
 /* ============================================================================
-   Persistent chrome — sticky masthead (all viewports) + bottom tab bar (mobile)
+   Persistent chrome - sticky masthead (all viewports) + bottom tab bar (mobile)
    ========================================================================== */
 
 .nav {
@@ -34,7 +34,7 @@
   height: 40px;
   flex-shrink: 0;
   /* The WC26 mark GIF is black line-art on an opaque white ground. invert(1)
-     flips the white to near-black (it melts into the studio-black nav — no box,
+     flips the white to near-black (it melts into the studio-black nav - no box,
      no seam) and the black line-art to white, so the emblem reads as a crisp
      white logo floating on the bar. contain keeps the whole mark in the 40px
      slot so the wordmark never shifts. */
@@ -73,7 +73,7 @@
      the row fits, it sits centred as before; if the track is ever shorter than
      the row (a wider-rendered wordmark under fullscreen scaling/font fallback ate
      the slim margin), it falls back to start-alignment instead of overflowing
-     LEFT across the brand — which was the title/Home overlap. min-width:0 lets the
+     LEFT across the brand - which was the title/Home overlap. min-width:0 lets the
      track actually shrink so the fallback engages rather than forcing an overflow. */
   justify-self: stretch;
   min-width: 0;
@@ -177,7 +177,7 @@
 }
 
 /* ============================================================================
-   Bottom tab bar — fixed, mobile only
+   Bottom tab bar - fixed, mobile only
    ========================================================================== */
 .tabbar {
   position: fixed;

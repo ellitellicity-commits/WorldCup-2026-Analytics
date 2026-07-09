@@ -17,12 +17,12 @@ function DataSourceChip({ source }) {
       aria-label={
         live
           ? 'Live results from football-data.org'
-          : 'Static snapshot — set FOOTBALL_DATA_API_KEY for live results'
+          : 'Static snapshot - set FOOTBALL_DATA_API_KEY for live results'
       }
       title={
         live
           ? 'Live results from football-data.org'
-          : 'Static snapshot — set FOOTBALL_DATA_API_KEY for live results'
+          : 'Static snapshot - set FOOTBALL_DATA_API_KEY for live results'
       }
     >
       <span className="nav__source-dot" aria-hidden="true" />
@@ -32,7 +32,7 @@ function DataSourceChip({ source }) {
 }
 
 // Coherent hand-drawn line-icon set (matches the project's inline-SVG idiom:
-// 1.6px stroke, round joins). One glyph per destination — icons reinforce the
+// 1.6px stroke, round joins). One glyph per destination - icons reinforce the
 // label on the bottom tab bar, they never stand alone.
 const ICONS = {
   home: 'M3 9.5 10 4l7 5.5M5 8.5V16h10V8.5',
@@ -66,7 +66,7 @@ const TABS = [
  * Persistent app chrome. A slim sticky masthead carries the brand and the model
  * badge on every route; the route tabs ride a second row on desktop and drop to
  * a fixed bottom tab bar on narrow viewports. Active route is marked with a 2px
- * American-blue rule — blue is the product's wayfinding / prediction channel
+ * American-blue rule - blue is the product's wayfinding / prediction channel
  * (DESIGN.md §5); trophy gold stays reserved for genuine championship moments.
  */
 function AppNav() {
@@ -76,7 +76,7 @@ function AppNav() {
     <>
       <header className="nav">
         <div className="nav__inner">
-          <NavLink to="/" className="nav__brand" aria-label="World Cup 26 — home">
+          <NavLink to="/" className="nav__brand" aria-label="World Cup 26 - home">
             <img className="nav__mark" src={wcMark} alt="" width="40" height="40" aria-hidden="true" />
             <span className="nav__wordmark">
               <span className="nav__title display">

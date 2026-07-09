@@ -3,12 +3,12 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import './FloatingShapes.css'
 
-// Low-poly geometric shapes drifting behind the home hero — the FIFA 26
+// Low-poly geometric shapes drifting behind the home hero - the FIFA 26
 // "unify / amplify" language extended into 3D. Raw three.js (the project has no
 // R3F; this mirrors GlobeHero's renderer setup) with GSAP driving every drift and
 // spin, and rendering pinned to GSAP's ticker so the two never fight.
 //
-// Colours come from the FIFA multicolour brand palette (tokens.css) — designated
+// Colours come from the FIFA multicolour brand palette (tokens.css) - designated
 // "brand chrome, never a data encoding," so it stays clear of the role-locked
 // green/red/blue/gold. Opacity is deliberately low: this is atmosphere behind the
 // text, never a competing surface, and never a neon glow.
@@ -16,7 +16,7 @@ import './FloatingShapes.css'
 // Lazy-loaded by Home so three.js never lands in the initial home bundle; the
 // canvas simply fades in once the chunk arrives.
 
-// Brand-chrome hues (no purple/teal — those are DESIGN.md hard stops).
+// Brand-chrome hues (no purple/teal - those are DESIGN.md hard stops).
 const HUES = [0x304fff, 0x00c752, 0xff3d00, 0x2196f2, 0xb0eb00, 0x1a247d, 0xedff42]
 
 // Each shape: a low-poly primitive, a spot in space, a size. Hand-placed so they
@@ -68,7 +68,7 @@ export default function FloatingShapes({ className = '' }) {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
     } catch {
-      return // No WebGL — the hero just keeps its flat ground, no error.
+      return // No WebGL - the hero just keeps its flat ground, no error.
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(width, height)
@@ -78,7 +78,7 @@ export default function FloatingShapes({ className = '' }) {
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100)
     camera.position.set(0, 0, 6)
 
-    // Low matte light — enough to face the facets, never enough to gloss or glow.
+    // Low matte light - enough to face the facets, never enough to gloss or glow.
     scene.add(new THREE.AmbientLight(0xffffff, 0.6))
     const key = new THREE.DirectionalLight(0xffffff, 0.7)
     key.position.set(-2, 3, 4)
@@ -132,7 +132,7 @@ export default function FloatingShapes({ className = '' }) {
       render() // one static frame, no ticker
     } else {
       // Pin rendering to GSAP's ticker so the scene redraws exactly when GSAP
-      // advances the tweens — one clock, no drift.
+      // advances the tweens - one clock, no drift.
       gsap.ticker.add(render)
     }
 
@@ -149,7 +149,7 @@ export default function FloatingShapes({ className = '' }) {
     }
     window.addEventListener('resize', onResize)
 
-    // Mouse-parallax — glide the camera a hair toward the pointer so the field
+    // Mouse-parallax - glide the camera a hair toward the pointer so the field
     // gains a subtle "3D glasses" depth read: perspective makes the nearer shapes
     // shift more than the far ones. The move is tiny and eased, never a lurch,
     // and rendering already rides the ticker so it updates for free. Skipped
@@ -165,7 +165,7 @@ export default function FloatingShapes({ className = '' }) {
     }
 
     // Pause the ticker work when the tab is hidden (and when the hero scrolls out
-    // of view) — no point burning GPU on shapes nobody can see.
+    // of view) - no point burning GPU on shapes nobody can see.
     const io = new IntersectionObserver(
       ([entry]) => {
         if (reduce) return

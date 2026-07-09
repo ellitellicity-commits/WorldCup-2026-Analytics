@@ -15,17 +15,17 @@ import './GlobeHero.css'
 //                     fires onFlightComplete at the end.
 //   - 'interactive' : free orbit/zoom; clicking a plotted marker calls
 //                     onCountryClick with that marker's payload.
-// Palette is the app's own (studio black ground, neutral land, blue flight arc) —
+// Palette is the app's own (studio black ground, neutral land, blue flight arc) -
 // intentionally a broadcast data-globe, not a photo-textured Earth.
 
 const R = 1 // globe radius in world units
 const COL = {
   ocean: 0x121417, // sphere fill, just above studio-black
-  land: 0x3d4045, // coastlines — border-strong-ish neutral
+  land: 0x3d4045, // coastlines - border-strong-ish neutral
   grat: 0x24262b, // graticule, very faint
   marker: 0xa8a8a8, // ink-secondary
-  markerHot: 0xf6f6f6, // ink — active/endpoint
-  arc: 0x439bf7, // american-blue — the prediction/flight channel
+  markerHot: 0xf6f6f6, // ink - active/endpoint
+  arc: 0x439bf7, // american-blue - the prediction/flight channel
   plane: 0xf6f6f6,
 }
 
@@ -44,7 +44,7 @@ function buildLand() {
   return new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: COL.land, transparent: true, opacity: 0.9 }))
 }
 
-// Faint graticule every 30° — reads as an analyst/broadcast globe.
+// Faint graticule every 30° - reads as an analyst/broadcast globe.
 function buildGraticule() {
   const positions = []
   const push = (lat1, lng1, lat2, lng2) => {
@@ -64,11 +64,11 @@ function buildGraticule() {
 // mesh just above the coastline lines (R*1.002) so it never z-fights them, and
 // stays below the marker dots (R*1.01) so the point stays visible on top.
 const FLAG_LIFT = R * 1.006
-// Hovered country pops radially off the surface (G2) — the globe's answer to a
+// Hovered country pops radially off the surface (G2) - the globe's answer to a
 // card hover-lift. Scaling the flag mesh about the globe centre lifts it outward
 // and grows the silhouette ~4%; subtle, not dramatic.
 const HOVER_LIFT_SCALE = 1.04
-// The three 2026 hosts rise higher and more slowly on hover — a monumental,
+// The three 2026 hosts rise higher and more slowly on hover - a monumental,
 // weighted lift versus the quick page-turn pop the other 45 nations get.
 const HOST_LIFT_SCALE = 1.09
 // Chords of a flat triangle sink toward the sphere centre; subdividing every
@@ -82,7 +82,7 @@ const MAX_EDGE_DEG = 2.5
 // France's metropolitan shape fell entirely inside the tricolour's right band and
 // filled solid red (its bbox reached French Guiana at lng −54.5); the USA's did
 // the same via Alaska. Mapping across the dominant polygon restores the true fill.
-// Single-landmass nations are unaffected — their main bbox equals shape.bbox.
+// Single-landmass nations are unaffected - their main bbox equals shape.bbox.
 function mainBBox(shape) {
   let best = null
   let bestArea = -1
@@ -104,7 +104,7 @@ function mainBBox(shape) {
 // Build a flag-fill geometry for one country shape ({ bbox, polys }): triangulate
 // each ring in lng/lat space, subdivide long edges, project to the sphere, and
 // UV-map the flag across the main-landmass bounding box so the pattern stretches
-// to fill the true silhouette (Argentina's bands run north–south across the shape).
+// to fill the true silhouette (Argentina's bands run north-south across the shape).
 function buildFlagGeometry(shape, lift = FLAG_LIFT) {
   const [minLng, minLat, maxLng, maxLat] = mainBBox(shape)
   const w = maxLng - minLng || 1
@@ -163,7 +163,7 @@ function buildFlagGeometry(shape, lift = FLAG_LIFT) {
   return geo
 }
 
-// Rasterize a flag (SVG or raster URL) to a fixed-size CanvasTexture — reliable
+// Rasterize a flag (SVG or raster URL) to a fixed-size CanvasTexture - reliable
 // across browsers that won't texture an unsized <img> SVG directly.
 function loadFlagTexture(url, onReady) {
   const img = new Image()
@@ -180,7 +180,7 @@ function loadFlagTexture(url, onReady) {
   img.src = url
 }
 
-// A small broadcast-white airliner built from primitives (B1) — fuselage, swept
+// A small broadcast-white airliner built from primitives (B1) - fuselage, swept
 // wings, tail fin + tailplane, nose cone. Nose points along +Z: Object3D.lookAt
 // aims a non-camera object's +Z at its target (verified against three@0.185), so
 // after the flight loop's lookAt(nextPoint) the nose leads the direction of
@@ -214,7 +214,7 @@ export function buildPlane() {
 // camera along a power3 curve, holding the look at the origin each frame so
 // OrbitControls stays consistent and the user can still drag afterward. Callers
 // freeze auto-rotate for the duration (E.flyFreeze) so the target doesn't drift
-// out from under the camera. No glow, no dolly tricks — a weighted broadcast push.
+// out from under the camera. No glow, no dolly tricks - a weighted broadcast push.
 function flyTo(E, lat, lng, zoom = 1.9, duration = 1.4) {
   const [lx, ly, lz] = llToXYZ(lat, lng, 1)
   const world = E.globe.localToWorld(new THREE.Vector3(lx, ly, lz)).normalize().multiplyScalar(zoom)
@@ -280,7 +280,7 @@ function GlobeHero({
     renderer.setSize(width, height)
     mount.appendChild(renderer.domElement)
 
-    // Subtle form-giving light — a globe needs to read as a sphere. Kept low and
+    // Subtle form-giving light - a globe needs to read as a sphere. Kept low and
     // matte (roughness 1) so it's shape, not gloss or glow.
     scene.add(new THREE.AmbientLight(0xffffff, 0.55))
     const key = new THREE.DirectionalLight(0xffffff, 0.9)
@@ -303,7 +303,7 @@ function GlobeHero({
     globe.add(markerGroup)
     const arcGroup = new THREE.Group()
     globe.add(arcGroup)
-    // Persistent host-nation tint layer (B3) — the three 2026 hosts always
+    // Persistent host-nation tint layer (B3) - the three 2026 hosts always
     // wear their national colour; sits just under the hover flag layer.
     const hostGroup = new THREE.Group()
     globe.add(hostGroup)
@@ -336,7 +336,7 @@ function GlobeHero({
     // --- Interaction: click a marker ---
     const onClick = (e) => {
       const E = eng.current
-      // Marker clicks fire in both modes — the Atlas opens a country, the
+      // Marker clicks fire in both modes - the Atlas opens a country, the
       // Matchup globe selects a venue (B2). Callers gate by app state as needed.
       if (!E) return
       const rect = renderer.domElement.getBoundingClientRect()
@@ -403,7 +403,7 @@ function GlobeHero({
       if (cached) apply(cached)
       else if (shapes[name].flag) loadFlagTexture(shapes[name].flag, (tex) => { if (tex) { E.flagTex.set(name, tex); apply(tex) } })
       gsap.to(mat, { opacity: 1, duration: reduceMotion ? 0 : 0.3, ease: 'power2.out' })
-      // Part 1b — the rise. Hosts rise higher and slower (monumental, weighted);
+      // Part 1b - the rise. Hosts rise higher and slower (monumental, weighted);
       // the 45 others get the quick page-turn pop. No emissive glow (DESIGN.md):
       // the host's national colour instead *builds* via its persistent tint layer,
       // whose opacity swells 0.5 → 0.9 as the silhouette lifts.
@@ -427,7 +427,7 @@ function GlobeHero({
 
     // Perf (P8): pointermove can fire ~120×/s, but the sphere raycast + point-in-
     // polygon hit test only needs to resolve once per rendered frame. Coalesce to
-    // one rAF — latest cursor position wins — so fast hovers don't queue redundant
+    // one rAF - latest cursor position wins - so fast hovers don't queue redundant
     // hit tests. No perceptible latency (still resolves every frame).
     let pendingPointer = null
     let pointerScheduled = false
@@ -471,7 +471,7 @@ function GlobeHero({
     // The globe is one WebGL canvas with an orbiting camera, so Playwright can't
     // aim at a country by DOM ref. These helpers let a test face a known point,
     // project a lat/lng to screen px (to drive a real mouse), and read back the
-    // live hover/flag state — the hover path itself runs unmodified.
+    // live hover/flag state - the hover path itself runs unmodified.
     if (import.meta.env.DEV) {
       window.__eng = () => eng.current
       window.__atlas = {
@@ -511,7 +511,7 @@ function GlobeHero({
       controls.autoRotateSpeed = 0.35
       controls.update()
 
-      // Staggered venue-dot pulse (Part 5g) — a soft breathing scale, 1 → ~1.22.
+      // Staggered venue-dot pulse (Part 5g) - a soft breathing scale, 1 → ~1.22.
       if (!reduceMotion && E.markerMeshes.length) {
         const pt = performance.now() * 0.0028
         for (const m of E.markerMeshes) {
@@ -602,7 +602,7 @@ function GlobeHero({
       const [x, y, z] = llToXYZ(mk.lat, mk.lng, R * 1.01)
       mesh.position.set(x, y, z)
       mesh.userData.payload = mk
-      // Part 5g — venue dots breathe with a gentle, staggered pulse (each offset
+      // Part 5g - venue dots breathe with a gentle, staggered pulse (each offset
       // by a phase so they never pulse in unison). Country markers stay steady.
       if (mk.kind === 'venue') { mesh.userData.pulse = true; mesh.userData.phase = venueN++ * 0.7 }
       E.markerGroup.add(mesh)

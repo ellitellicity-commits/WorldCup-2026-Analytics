@@ -1,5 +1,5 @@
 /* Host-nation province/state sub-map (B3). Coloured in the host's national
-   colour — the deliberate host-identity treatment (see commit), scoped to the
+   colour - the deliberate host-identity treatment (see commit), scoped to the
    three hosts only. Strokes use non-scaling-stroke so they stay crisp under the
    degree-scale viewBox. */
 .submap {
@@ -60,7 +60,7 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* Province / state abbreviations — Barlow Condensed, centred in each shape, with
+/* Province / state abbreviations - Barlow Condensed, centred in each shape, with
    a dark ink halo so the two-letter code stays legible over any tone. Drawn in
    SVG user units so they scale with the viewport group as you zoom in. */
 .submap__abbr {
@@ -77,7 +77,7 @@
   user-select: none;
 }
 
-/* Reset control — quiet chip, top-right, only present while zoomed/panned. */
+/* Reset control - quiet chip, top-right, only present while zoomed/panned. */
 .submap__reset {
   position: absolute;
   top: calc(var(--space-md) + 4px);

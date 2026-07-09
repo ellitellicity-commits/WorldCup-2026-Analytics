@@ -3,8 +3,8 @@
 // MediaWiki pageimages API so the width is guaranteed to render) plus a link to
 // the Commons file page, which carries the photographer credit and licence.
 //
-// Sourcing discipline (Part F): imagery comes ONLY from Wikimedia Commons — never
-// from MLS / Liga MX / club or league sites — matching the project's
+// Sourcing discipline (Part F): imagery comes ONLY from Wikimedia Commons - never
+// from MLS / Liga MX / club or league sites - matching the project's
 // trademark-and-copyright caution. Keyed by the same stadium name as
 // lib/stadiumData.js and lib/stadiumInfo.js.
 //

@@ -7,11 +7,11 @@ import './TabHeader.css'
 // Bracket, Groups, Matchup Sandbox, Atlas) renders its title + description
 // through this component, so the motion is defined once and never copy-pasted.
 //
-// Motion: the inner block scales up from nothing, overshoots once, then settles —
+// Motion: the inner block scales up from nothing, overshoots once, then settles -
 // "inflate then settle." back.out(1.7) gives that single overshoot; elastic.out
 // oscillates (spring/wobble), which the brief explicitly rules out, so back wins.
 // Only transform + opacity animate, so the layout box stays at its natural size
-// the whole time — no reflow, no post-settle shift. If GSAP never runs (reduced
+// the whole time - no reflow, no post-settle shift. If GSAP never runs (reduced
 // motion, JS-off, headless), the natural state is already the finished state, so
 // the header ships visible either way.
 function TabHeader({ title, description, titleId, as: Tag = 'h1', children, className = '' }) {

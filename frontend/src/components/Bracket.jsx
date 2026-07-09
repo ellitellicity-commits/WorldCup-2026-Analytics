@@ -24,7 +24,7 @@ const pct = (v) => `${Math.round(v * 100)}%`
 const fmtOdds = (v) => {
   const p = v * 100
   if (p >= 0.1) return `${p.toFixed(1)}%`
-  return p > 0 ? '<0.1%' : '—'
+  return p > 0 ? '<0.1%' : '-'
 }
 
 const ALL_IDS = [
@@ -71,7 +71,7 @@ function TeamLine({ c, prob, score, decided, isWinner, isLoser, championGold, ho
         {c.group}
       </span>
       {host && (
-        <span className="bk-team__host" title="Host nation playing at home — venue advantage applied">
+        <span className="bk-team__host" title="Host nation playing at home - venue advantage applied">
           <span className="visually-hidden">Host nation at home</span>
         </span>
       )}
@@ -91,7 +91,7 @@ function TeamLine({ c, prob, score, decided, isWinner, isLoser, championGold, ho
   )
 }
 
-// Penalty-shootout note, e.g. "PAR win 4–3 pens". The team lines already show
+// Penalty-shootout note, e.g. "PAR win 4-3 pens". The team lines already show
 // the regulation/extra-time score; this reports who won the shootout separately
 // (never a combined number). Null when the tie wasn't decided on penalties.
 function penNote(view) {
@@ -99,7 +99,7 @@ function penNote(view) {
   if (!p) return null
   const homeWon = p.home_score > p.away_score
   const winCode = homeWon ? view.home.code : view.away.code
-  return `${winCode} win ${Math.max(p.home_score, p.away_score)}–${Math.min(p.home_score, p.away_score)} pens`
+  return `${winCode} win ${Math.max(p.home_score, p.away_score)}-${Math.min(p.home_score, p.away_score)} pens`
 }
 
 function MatchCaption({ view, mode }) {
@@ -148,7 +148,7 @@ function MatchCaption({ view, mode }) {
 function BracketMatch({ view, side, revealed, championName, style, hideCaption = false, outState = null, vertState = null }) {
   const decided = !!view.winner
   const live = view.status === 'live'
-  // Any tie carrying a score shows goal digits — real R32 results, real knockout
+  // Any tie carrying a score shows goal digits - real R32 results, real knockout
   // results, and re-rolled ties alike. In-play ties keep the running score; a
   // finished tie (completed) gets the dimmed-loser / "Full time" treatment.
   const showScore = view.score != null
@@ -170,7 +170,7 @@ function BracketMatch({ view, side, revealed, championName, style, hideCaption =
   const justRevealed = revealed?.has?.(view.id)
 
   // Live/finished R32 ties (real tournament only) reveal a compact hover/tap
-  // preview — state, score and a short line-up — without expanding the tree.
+  // preview - state, score and a short line-up - without expanding the tree.
   const previewable = revealed === null && view.round === 'r32' && (live || completed) && both
 
   const outClass = outState ? ` is-out-${outState}` : ''
@@ -277,7 +277,7 @@ function Trophy({ lit }) {
 
 function Bracket({ groups }) {
   const { fixtures } = useTournamentData()
-  // Two modes only: 'live' (the real tournament — real results + model
+  // Two modes only: 'live' (the real tournament - real results + model
   // probabilities, the default that respects reality) and 'reimagine' (a
   // full from-scratch re-roll what-if). The old respect-reality "simulate"
   // playout was removed: the live view already respects reality.
@@ -376,7 +376,7 @@ function Bracket({ groups }) {
   // loser somewhere). The champion is the only team that never loses, so their
   // path is the only one still glowing in a finished bracket. Derived fresh from
   // the current results every render, so re-simulating any match recomputes the
-  // whole tree — no stale state carried forward. Every connector is the same
+  // whole tree - no stale state carried forward. Every connector is the same
   // thickness; only brightness (and length) tells paths apart.
   const eliminated = useMemo(() => {
     const s = new Set()
@@ -391,13 +391,13 @@ function Bracket({ groups }) {
 
   // Two segment types, three states (default / glowing `win` / dimmed `elim`):
   //
-  // • Vertical (a match's merge): glows the moment the match is won — while that
-  //   winner is still alive — and dims, all at once, once that winner is knocked
+  // • Vertical (a match's merge): glows the moment the match is won - while that
+  //   winner is still alive - and dims, all at once, once that winner is knocked
   //   out. Owned by the match's winner (one colour for the whole join), so a
   //   beaten team's earned verticals dim together while the champion's stay lit.
   //
   // • Outgoing horizontal (winner carries forward into PARENT_OF[id]): only
-  //   "earned" — and lit — once that winner ALSO wins the next match. A horizontal
+  //   "earned" - and lit - once that winner ALSO wins the next match. A horizontal
   //   into a match the team lost was never earned, so it stays default forever
   //   (never dims), and nothing renders past it for that team.
   const stateAlive = (name) => (name ? (eliminated.has(name) ? 'elim' : 'win') : null)
@@ -445,8 +445,8 @@ function Bracket({ groups }) {
           title="Tournament Bracket"
           description={
             mode === 'live'
-              ? `The real tournament — ${META.final.stadium} final on ${fmtDay(META.final.date)}. Played matches show the result; upcoming ties show the model’s win probability.`
-              : 'A from-scratch re-roll: every match — including the group games already played — is randomised, so the whole tournament diverges from what really happened. Run it again for a new what-if.'
+              ? `The real tournament - ${META.final.stadium} final on ${fmtDay(META.final.date)}. Played matches show the result; upcoming ties show the model’s win probability.`
+              : 'A from-scratch re-roll: every match - including the group games already played - is randomised, so the whole tournament diverges from what really happened. Run it again for a new what-if.'
           }
         >
           <div className="bk__modes" role="tablist" aria-label="Bracket mode">
@@ -492,7 +492,7 @@ function Bracket({ groups }) {
 
       <p className="bk__legend">
         <span className="bk__legend-dot" aria-hidden="true" />
-        Gold dot marks a match played in the host nation’s own country (USA · Canada · Mexico) — where the venue advantage applies.
+        Gold dot marks a match played in the host nation’s own country (USA · Canada · Mexico) - where the venue advantage applies.
       </p>
 
       {/* Narrow viewports pan the full tree horizontally; announce the gesture so
@@ -508,7 +508,7 @@ function Bracket({ groups }) {
         <div className="bk__canvas">
           <BracketTexture />
 
-          <GroupRail groups={groups.slice(0, 6)} header="Groups A–F" />
+          <GroupRail groups={groups.slice(0, 6)} header="Groups A-F" />
 
           <div className="bk-grid bk-grid--left">
             {renderRound('left', 'r32')}
@@ -567,7 +567,7 @@ function Bracket({ groups }) {
             {renderRound('right', 'sf')}
           </div>
 
-          <GroupRail groups={groups.slice(6, 12)} header="Groups G–L" />
+          <GroupRail groups={groups.slice(6, 12)} header="Groups G-L" />
 
           <Confetti fire={champion ? runId : 0} />
         </div>

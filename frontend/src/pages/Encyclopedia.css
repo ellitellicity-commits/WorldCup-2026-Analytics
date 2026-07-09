@@ -106,7 +106,7 @@
   animation: enc-panel-in 300ms var(--ease-out-quint) both;
 }
 /* The panel is a scrolling flex column; without this, an overflowing panel lets
-   flex shrink crush its sections — the CSS-grid stats block has no intrinsic
+   flex shrink crush its sections - the CSS-grid stats block has no intrinsic
    min-height and collapses to just its gap lines. Keep every section at natural
    height and let the panel scroll instead. (.enc-panel__close is absolute, so
    it's out of flow and unaffected.) */
@@ -146,7 +146,7 @@
 .enc-panel__flag {
   border-radius: var(--radius-sm);
   flex-shrink: 0;
-  /* Part 3c — the flag spins-scales in as the panel opens. */
+  /* Part 3c - the flag spins-scales in as the panel opens. */
   animation: enc-flag-in 450ms var(--ease-out-quint) both;
 }
 @keyframes enc-flag-in {
@@ -216,7 +216,7 @@
   color: var(--ink);
 }
 
-/* All-time record — a neutral lightness ramp (W brightest → L dimmest), never
+/* All-time record - a neutral lightness ramp (W brightest → L dimmest), never
    green/red, which stay role-locked to group data / live state. */
 .enc-panel__record {
   display: flex;
@@ -276,7 +276,7 @@
   color: var(--ink-secondary);
   text-wrap: pretty;
 }
-/* The World Cup record — subordinate to the intro: quieter and a touch smaller,
+/* The World Cup record - subordinate to the intro: quieter and a touch smaller,
    so the pair reads as headline + footnote rather than two equal lines. */
 .enc-panel__history {
   font-family: var(--font-body);
@@ -286,7 +286,7 @@
   text-wrap: pretty;
 }
 
-/* Fun facts — real, sourced "Did you know" lines that type in after the brief.
+/* Fun facts - real, sourced "Did you know" lines that type in after the brief.
    Neutral treatment (no confederation colour-coding: a 6-colour palette + gradient
    wash would break DESIGN.md's palette + rarity rules). The lightning glyph is
    the only flourish; text stays in the ink ramp. */
@@ -332,7 +332,7 @@
   text-wrap: pretty;
 }
 
-/* Head coach — sourced identity data, set in the display face like the other
+/* Head coach - sourced identity data, set in the display face like the other
    headline figures. Falls back to an honest, muted "pending" when unsourced. */
 .enc-panel__coach {
   display: flex;
@@ -353,7 +353,7 @@
   font-style: italic;
 }
 
-/* Notable players — real, sourced squad data. */
+/* Notable players - real, sourced squad data. */
 .enc-panel__squad {
   display: flex;
   flex-direction: column;
@@ -432,7 +432,7 @@
     max-height: 62%;
   }
   /* Panel (bottom sheet) and the idle mascot (bottom strip) share the lower edge
-     on phones — hide the strip once the panel is open so they never collide. */
+     on phones - hide the strip once the panel is open so they never collide. */
   .enc__stage--panel .mascot--tour {
     display: none;
   }

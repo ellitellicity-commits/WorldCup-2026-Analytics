@@ -1,7 +1,7 @@
 import './BrandMarks.css'
 
 /**
- * Geometric gold "26" emblem — the recurring FIFA World Cup 26 motif rendered
+ * Geometric gold "26" emblem - the recurring FIFA World Cup 26 motif rendered
  * in the brand's ultra-bold condensed style (not the official logo). Pure SVG,
  * copyright-safe: a rounded-square tile with a quarter-circle cut and the "26"
  * numeral in Barlow Condensed Ultra Bold.
@@ -26,8 +26,8 @@ export function Mark26({ className = '' }) {
   )
 }
 
-// One tile of the official "unify / amplify" geometric language — quarter
-// circles, rounded squares, concentric arcs, stadium pills — in the FIFA
+// One tile of the official "unify / amplify" geometric language - quarter
+// circles, rounded squares, concentric arcs, stadium pills - in the FIFA
 // multicolour palette. Driven to a low opacity by CSS so it reads as texture.
 export function BrandField({ className = '' }) {
   return (

@@ -9,10 +9,10 @@ function fmtPct(v) {
   const p = v * 100
   if (p >= 0.1) return `${p.toFixed(1)}%`
   if (p > 0) return '<0.1%'
-  return '—'
+  return '-'
 }
 
-// The descending path to the trophy — every stage already lives in odds.json.
+// The descending path to the trophy - every stage already lives in odds.json.
 const STAGES = [
   { key: 'round_of_32_odds', label: 'R32' },
   { key: 'round_of_16_odds', label: 'R16' },
@@ -24,7 +24,7 @@ const STAGES = [
 
 function survivalLabel(team) {
   const parts = STAGES.map((s) => `${s.label} ${fmtPct(team[s.key])}`).join(', ')
-  return `${team.team} run probability — ${parts}.`
+  return `${team.team} run probability - ${parts}.`
 }
 
 function SurvivalCurve({ team }) {
@@ -126,7 +126,7 @@ function OddsRow({ team, meta, rank, barPct, isLeader, open, onToggle, index }) 
 }
 
 /**
- * Championship Odds leaderboard — all 48 nations ranked by Monte Carlo title
+ * Championship Odds leaderboard - all 48 nations ranked by Monte Carlo title
  * probability. Bar length is relative to the favourite (legible across a long
  * tail); the percentage is the absolute title chance. Rows expand to the full
  * survival curve. American blue owns the bar (prediction channel); the single

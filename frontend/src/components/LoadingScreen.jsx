@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Typewriter from './Typewriter'
 import './LoadingScreen.css'
 
-// Faint host-city skylines behind the loading content — Toronto (CN Tower),
+// Faint host-city skylines behind the loading content - Toronto (CN Tower),
 // New York / New Jersey (Empire State + Manhattan blocks) and Mexico City
 // (Metropolitan Cathedral beneath Popocatépetl). Inline SVG so it renders
 // instantly with no asset fetch; filled in a tonal surface step so it reads as
@@ -24,16 +24,16 @@ function CitySkylines() {
           {CITY_BUILDINGS.map(([x, top, w]) => (
             <rect key={`${x}-${top}`} x={x} y={top} width={w} height={260 - top} />
           ))}
-          {/* Toronto — CN Tower: shaft, observation pod, antenna spire */}
+          {/* Toronto - CN Tower: shaft, observation pod, antenna spire */}
           <rect x="194" y="96" width="12" height="164" />
           <ellipse cx="200" cy="98" rx="26" ry="12" />
           <rect x="198" y="28" width="4" height="70" />
-          {/* New York — Empire State: stepped setbacks + mast */}
+          {/* New York - Empire State: stepped setbacks + mast */}
           <rect x="536" y="150" width="60" height="110" />
           <rect x="548" y="96" width="36" height="60" />
           <rect x="558" y="54" width="16" height="46" />
           <rect x="565" y="18" width="4" height="40" />
-          {/* Mexico City — Popocatépetl behind the cathedral */}
+          {/* Mexico City - Popocatépetl behind the cathedral */}
           <polygon points="990,260 1110,64 1200,140 1200,260" />
           {/* Metropolitan Cathedral: nave, twin bell towers, central dome + finial */}
           <rect x="846" y="196" width="96" height="64" />
@@ -93,7 +93,7 @@ const FACTS = [
   'The World Cup only comes around every 4 years. Soak. Every. Moment. In!',
 ]
 
-// Rotating eyebrow labels — a new one per fact, matched to the excited register.
+// Rotating eyebrow labels - a new one per fact, matched to the excited register.
 const LABELS = ['DID YOU KNOW', 'FUN FACT', 'HEADS UP', 'QUICK STAT', 'HOLD ON', 'WAIT FOR IT']
 
 // Time to type a fact (mirrors Typewriter's own cadence, including its 80ms
@@ -105,7 +105,7 @@ function factDuration(text) {
   return 160 + text.length * perChar + pauses + 2000
 }
 
-// Fisher-Yates — a fresh, unbiased order each time the loader mounts.
+// Fisher-Yates - a fresh, unbiased order each time the loader mounts.
 function shuffle(arr) {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -151,7 +151,7 @@ function FunFacts() {
  * Full-screen gate shown while tournament data resolves (and for a 3s minimum,
  * so it never flashes past). The broadcast register: studio-black surface, faint
  * host-city skylines, a rolling match ball, and a rotating reel of real
- * tournament facts — "coming on air", not a generic spinner.
+ * tournament facts - "coming on air", not a generic spinner.
  */
 function LoadingScreen({ failed = false }) {
   return (

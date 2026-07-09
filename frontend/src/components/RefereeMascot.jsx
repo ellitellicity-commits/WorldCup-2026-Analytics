@@ -2,17 +2,17 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import './RefereeMascot.css'
 
-// The Referee — the pregame cutscene's narrator (Part 4). A bespoke inline SVG,
+// The Referee - the pregame cutscene's narrator (Part 4). A bespoke inline SVG,
 // same craft standard as the host mascots: stocky, authoritative, black kit,
 // silver whistle on a lanyard, a card in the raised hand. Every moving part is a
 // named group so GSAP can drive it. He is NOT wired into the main cutscene
-// timeline (that choreography is tuned) — instead he reacts to the `beat` the
+// timeline (that choreography is tuned) - instead he reacts to the `beat` the
 // Cutscene already publishes, running his own gsap.context (StrictMode-safe via
 // revert). Two uses: `variant="cutscene"` (animated narrator, centre-bottom) and
 // `variant="verdict"` (a still pose that shows the post-result card).
 //
 // Card colours are literal football semantics (red/yellow/green cards), not the
-// app's role-locked data channels — a domain-appropriate use, per DESIGN.md.
+// app's role-locked data channels - a domain-appropriate use, per DESIGN.md.
 const SKIN = '#d4956a'
 const SKIN_DK = '#b97b52'
 const KIT = '#1a1a1a'
@@ -95,7 +95,7 @@ function RefereeArt() {
         </g>
         {/* nose */}
         <path d="M100 82 Q97 90 100 94" fill="none" stroke={SKIN_DK} strokeWidth="2" strokeLinecap="round" />
-        {/* thin serious mouth — scales to an "O" on the whistle blow */}
+        {/* thin serious mouth - scales to an "O" on the whistle blow */}
         <path className="ref-mouth" d="M91 100 Q100 103 109 100" stroke="#7a3b2a" strokeWidth="3" fill="none" strokeLinecap="round" />
       </g>
     </g>

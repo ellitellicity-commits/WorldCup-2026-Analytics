@@ -7,16 +7,16 @@
 //   - championship odds→ odds.json (the 10k-run Monte Carlo output)
 //   - group / code / iso→ lib/teams.js
 //
-// Data sources (all real / honestly attributed — nothing fabricated):
+// Data sources (all real / honestly attributed - nothing fabricated):
 //   - fifa_rank, elo, confederation, record: sourced from prior corrections
 //     (fifa_rankings.json = real 11-Jun-2026 world ranking; profiles from the
 //     model pipeline's elo_ratings_wc2026.csv). See git log.
-//   - squad: data/countrySquads.json — real WC2026 squads, the team_id→country
+//   - squad: data/countrySquads.json - real WC2026 squads, the team_id→country
 //     join resolved by scripts/generate_squads.py (match_team_stats x matches_detailed).
-//   - intro: data/countryIntros.json — unique, hand-written editorial blurbs (no template).
-//   - history: data/countryHistory.json — one-sentence World Cup record per team,
+//   - intro: data/countryIntros.json - unique, hand-written editorial blurbs (no template).
+//   - history: data/countryHistory.json - one-sentence World Cup record per team,
 //     grounded in each nation's "X at the FIFA World Cup" Wikipedia page + synthesis.
-//   - coach: data/countryCoaches.json — current manager from the football-data.org
+//   - coach: data/countryCoaches.json - current manager from the football-data.org
 //     API (v4/teams/{teamId}). Teams the API had no coach for stay null → "pending".
 //
 // `coach` and `history` were previously null placeholders; both are now sourced.
@@ -42,7 +42,7 @@ const FUN_FACTS = funFacts.funFacts
 const ODDS = Object.fromEntries(getOdds().teams.map((t) => [t.team, t]))
 
 // The 48 qualified nations, in ascending real FIFA-rank order (the globe plots
-// them anyway). Ranks are non-contiguous — the qualifiers sit at their true world
+// them anyway). Ranks are non-contiguous - the qualifiers sit at their true world
 // positions, so the list is not a 1..48 sequence.
 export const COUNTRY_NAMES = Object.keys(RANKS)
 
@@ -72,7 +72,7 @@ export function getCountry(name) {
     // Sourced squad data (join resolved via scripts/generate_squads.py):
     squadSize: sq?.squadSize ?? null,
     notablePlayers: sq?.notablePlayers ?? null,
-    // Editorial broadcast intro copy — powers the typewriter reveal:
+    // Editorial broadcast intro copy - powers the typewriter reveal:
     intro: INTROS[name] ?? null,
     // Sourced: Wikipedia World Cup record (history) + football-data.org API (coach).
     // null when the source had none for this team → panel shows "pending".

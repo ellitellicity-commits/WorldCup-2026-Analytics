@@ -18,7 +18,7 @@
 }
 
 /* Faint host-city skylines anchored to the bottom edge, behind the content.
-   A tonal surface step over studio-black — depth from lightness, not glow. */
+   A tonal surface step over studio-black - depth from lightness, not glow. */
 .loading__skyline {
   position: absolute;
   inset: auto 0 0 0;
@@ -35,7 +35,7 @@
   height: 100%;
 }
 
-/* Rolling match ball — the loader's motion. Rolls across a short track and back
+/* Rolling match ball - the loader's motion. Rolls across a short track and back
    (alternate), the spin matched to the travel so it reads as a real roll. */
 .loading__ball {
   display: block;

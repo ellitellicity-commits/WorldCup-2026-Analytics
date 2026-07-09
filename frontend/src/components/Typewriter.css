@@ -1,7 +1,7 @@
 /* Broadcast typewriter reveal. The typed + ghost spans together always contain
    the full text, so the box never reflows as characters land. The caret is a
    zero-width element with an absolutely-positioned bar, so it adds no layout
-   width — the reveal is pure recolouring, not layout animation.
+   width - the reveal is pure recolouring, not layout animation.
 
    Caret colour is neutral ink on purpose: red is role-locked to live state and
    green/blue/gold to their data roles, so a decorative caret uses none of them. */
@@ -11,7 +11,7 @@
 }
 
 .typewriter__visual {
-  /* the visible, animated layer — hidden from assistive tech; the full sentence
+  /* the visible, animated layer - hidden from assistive tech; the full sentence
      is exposed once via the adjacent .visually-hidden copy */
   color: var(--ink-secondary);
 }

@@ -1,5 +1,5 @@
 // Live group standings + FIFA qualification logic, computed entirely from the
-// data in fixtures.json. Nothing is hardcoded as qualified or eliminated — the
+// data in fixtures.json. Nothing is hardcoded as qualified or eliminated - the
 // status of every team is DERIVED from results, so this keeps working unchanged
 // when fixtures.json is swapped for live API data (more completed matches just
 // flip provisional statuses to final).
@@ -51,7 +51,7 @@ function blankRow(side) {
 
 // Accumulate group-stage record for every team, keep the contributing matches
 // per group (head-to-head needs them). `scoreOf(fixture)` returns the result to
-// count, or null to skip — the real table counts completed results only; the
+// count, or null to skip - the real table counts completed results only; the
 // simulator also counts a sampled score for each remaining fixture.
 function buildGroups(scoreOf, fixtures) {
   const groups = {}
@@ -176,7 +176,7 @@ function rankGroup(g) {
 }
 
 // Cross-group ranking of the twelve third-placed teams. No head-to-head (they
-// come from different groups) — full group record only.
+// come from different groups) - full group record only.
 function rankThirdPlace(thirds) {
   return [...thirds].sort(
     (x, y) =>
@@ -209,10 +209,10 @@ function rankAll(scoreOf, fixtures) {
 }
 
 // The live view: stamps each row with its qualification status.
-//   q     — top two: qualified for the Round of 32
-//   q3in  — third place, currently inside the best-8 cut: provisionally through
-//   q3out — third place, currently outside the cut: provisionally out
-//   out   — fourth place: eliminated
+//   q     - top two: qualified for the Round of 32
+//   q3in  - third place, currently inside the best-8 cut: provisionally through
+//   q3out - third place, currently outside the cut: provisionally out
+//   out   - fourth place: eliminated
 function compute(fixtures) {
   const { ranked, thirdTable } = rankAll(realScoreOf, fixtures)
   const thirdStatusByGroup = Object.fromEntries(
@@ -246,7 +246,7 @@ function compute(fixtures) {
 
 // Memoised by fixtures-object identity. The loaded fixtures are stable for a
 // session (one object from loadFixtures), so this recomputes once when the data
-// resolves — but re-derives correctly if a different fixtures set is passed
+// resolves - but re-derives correctly if a different fixtures set is passed
 // (e.g. static → live).
 let _cache = null
 let _cacheFor = null
@@ -274,7 +274,7 @@ export const THIRD_PLACE_QUALIFIERS = THIRD_PLACE_SLOTS
 /**
  * One Monte Carlo realisation of how the group stage finishes, then the FIFA
  * tiebreakers decide each group and the third-place race. Returns the 32
- * qualifiers by slot — different teams and seeds essentially every run.
+ * qualifiers by slot - different teams and seeds essentially every run.
  * @param {boolean} [fromScratch]  when true, re-roll every match including
  *   already-played ones (the "Reimagine" mode); otherwise real results stand and
  *   only unplayed fixtures are sampled.

@@ -45,9 +45,9 @@ function buildDemoItems({ completed, allFixtures, todaysMatches }) {
   const upset = completed.filter((f) => modelCalledIt(f) === false).sort((a, b) => probOfActual(a) - probOfActual(b))[0]
   const longName = [...allFixtures].sort((a, b) => b.home.name.length + b.away.name.length - (a.home.name.length + a.away.name.length))[0]
   return [
-    { label: 'Today — live indicator', fixture: todaysMatches[0], today: true },
-    { label: 'Completed — model called it', fixture: calledIt },
-    { label: 'Completed — upset', fixture: upset },
+    { label: 'Today - live indicator', fixture: todaysMatches[0], today: true },
+    { label: 'Completed - model called it', fixture: calledIt },
+    { label: 'Completed - upset', fixture: upset },
     { label: 'Long team names', fixture: longName },
   ].filter((i) => i.fixture)
 }
@@ -136,7 +136,7 @@ function Predictor() {
     // In-play ties lead; the rest are the genuine upcoming knockout matches.
     const liveKO = openKO.filter((v) => v.status === 'live')
     const upcomingKO = openKO.filter((v) => v.status !== 'live')
-    // Finished knockout ties — decided ('completed' for R32, 'decided' for R16+),
+    // Finished knockout ties - decided ('completed' for R32, 'decided' for R16+),
     // both teams known. Same match-status logic as the live/upcoming split above;
     // these previously had no home on this page and now join Finished Matches.
     // Most-advanced round first (a Final reads as more recent than an R32).
@@ -156,14 +156,14 @@ function Predictor() {
       <TabHeader
         titleId="predictor-title"
         title="Match Predictor"
-        description="The model’s win probabilities for what’s next, up top. Completed matches — with the result against the call — sit in Finished Matches below."
+        description="The model’s win probabilities for what’s next, up top. Completed matches - with the result against the call - sit in Finished Matches below."
       />
 
       {liveKO.length > 0 && <KnockoutRail title="Live now" ties={liveKO} />}
 
       {liveGroup.length > 0 && (
         <FixturesRail
-          title={liveKO.length > 0 ? 'Live now — Group Stage' : 'Live now'}
+          title={liveKO.length > 0 ? 'Live now - Group Stage' : 'Live now'}
           eyebrow={`${liveGroup.length} in play`}
           fixtures={liveGroup}
           todayDate={TODAY}
@@ -191,12 +191,12 @@ function Predictor() {
       )}
 
       {finishedKO.length > 0 && (
-        <KnockoutRail title={finished.length > 0 ? 'Finished — Knockouts' : 'Finished Matches'} ties={finishedKO} />
+        <KnockoutRail title={finished.length > 0 ? 'Finished - Knockouts' : 'Finished Matches'} ties={finishedKO} />
       )}
 
       {finished.length > 0 && (
         <GroupFinishedRail
-          title={finishedKO.length > 0 ? 'Finished — Group Stage' : 'Finished Matches'}
+          title={finishedKO.length > 0 ? 'Finished - Group Stage' : 'Finished Matches'}
           fixtures={finished}
         />
       )}
@@ -205,7 +205,7 @@ function Predictor() {
         <section className="gallery" aria-label="Match card states">
           <div className="gallery__head">
             <h2 className="gallery__title display">Card States</h2>
-            <p className="gallery__sub">Component demo — every state driven by the same card and real model output.</p>
+            <p className="gallery__sub">Component demo - every state driven by the same card and real model output.</p>
           </div>
           <div className="gallery__grid">
             {buildDemoItems(view).map((item) => (

@@ -29,7 +29,12 @@
 
 ## Under the Hood
 
-React 19, Vite, Three.js, GSAP, XGBoost, Monte Carlo simulation engine, football-data.org, ESPN API, Natural Earth, D3
+| Frontend | Data & ML | Maps & Animation |
+|---|---|---|
+| React 19 | XGBoost | Three.js |
+| Vite | Monte Carlo | GSAP |
+| | football-data.org | Natural Earth |
+| | ESPN API | D3 |
 
 ## Run Process
 

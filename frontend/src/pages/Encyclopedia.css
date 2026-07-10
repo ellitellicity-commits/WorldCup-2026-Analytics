@@ -68,7 +68,9 @@
 .enc__stage {
   position: relative;
   width: 100%;
-  height: min(74vh, 700px);
+  /* Capped so the globe never swallows the whole viewport on a 13-15" laptop -
+     the profile panel has to read alongside it, not fight it for the fold. */
+  height: clamp(300px, 60vh, 620px);
 }
 /* The globe sits at the base of the stage's stacking context (z-index 0); the
    profile panel and mascot layer above it in DOM/tree order. (It formerly cleared
@@ -80,6 +82,12 @@
    the panel (or the exposed globe edge) never rotates it out from under the
    reader; it resumes the moment the panel closes. */
 .enc__stage--panel > .globe-hero { pointer-events: none; }
+/* On a laptop the open globe also yields the right rail so the panel sits beside
+   it with no overlap; below 700px the panel is a bottom sheet (see the 640px
+   block) and the globe stays full-bleed behind it. */
+@media (min-width: 700px) {
+  .enc__stage--panel > .globe-hero { width: calc(100% - 372px); }
+}
 .enc__hint {
   position: absolute;
   left: 50%;

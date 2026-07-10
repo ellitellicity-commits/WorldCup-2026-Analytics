@@ -148,7 +148,17 @@
   /* On narrow screens the panel drops below the globe (static), so let the
      stage grow to fit it rather than clipping. */
   .sim__stage { height: auto; }
-  .sim__stage .globe-hero { height: min(60vh, 560px); }
+  /* Globe capped at <=50vh on phones so the venue bar and everything below it
+     stay within a scroll's reach - it no longer fills the whole viewport. */
+  .sim__stage .globe-hero { height: min(46vh, 420px); }
+  /* The destination hint can wrap instead of forcing a nowrap line wider than
+     the viewport (which caused a horizontal scroll on the narrowest phones). */
+  .sim__venue-hint {
+    white-space: normal;
+    max-width: calc(100% - 2 * var(--space-md));
+    text-align: center;
+    line-height: 1.35;
+  }
 }
 
 /* --- Result card --- */

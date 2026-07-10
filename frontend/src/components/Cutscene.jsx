@@ -158,16 +158,13 @@ export default function Cutscene({ match, onComplete }) {
     tl.to({}, { duration: 0.5 }) // bubble + lines stagger in
     tl.to({}, { duration: 0.6 + 0.5 * hype.length }) // dwell long enough to read
 
-    // --- Beat 4 - whistle countdown + hard cut ---
+    // --- Beat 4 - the referee owns the countdown, then the whistle + hard cut ---
+    // COUNTDOWN NUMBER REMOVED - the referee raising the whistle IS the countdown,
+    // so the 3-2-1 no longer flashes on screen. This single dwell preserves the
+    // original beat's total length (3 * 0.6s) so the whistle still fires on the
+    // exact same cue and the rest of the sequence timing is unchanged.
     tl.add(() => setBeat('count'))
-    for (const n of ['3', '2', '1']) {
-      tl.add(() => {
-        const el = q('.cut__count')[0]
-        if (el) el.textContent = n
-      })
-      tl.fromTo(q('.cut__count'), { scale: 1.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.2, ease: 'power2.out' })
-      tl.to(q('.cut__count'), { opacity: 0, duration: 0.18, ease: 'power2.in' }, '+=0.22')
-    }
+    tl.to({}, { duration: 1.8 })
     // The whistle blow: referee reacts (beat → 'whistle'), audio fires, screen flash.
     tl.add(() => { setBeat('whistle'); playWhistle() })
     tl.to(q('.cut__flash'), { opacity: 1, duration: 0.14, ease: 'power2.in' })
@@ -185,8 +182,8 @@ export default function Cutscene({ match, onComplete }) {
   // bubble carries the hype lines themselves, so all pregame copy lives in one
   // place above his head rather than floating loose across the screen.
   // No line on the count beat: the referee raises the whistle in silence, so the
-  // bubble is hidden and only he (over the giant background number) reads on the
-  // 3-2-1. His arm-raise is the focus; the whistle blow lands on the next beat.
+  // bubble is hidden and he alone owns the moment (there is no on-screen 3-2-1
+  // number any more). His arm-raise is the focus; the whistle blow lands next beat.
   const refLine =
     beat === 'vs' ? `${homeCode} versus ${awayCode}. Let's have a clean game.`
       : beat === 'flight' ? `Next stop: ${venue.city}.`
@@ -280,8 +277,8 @@ export default function Cutscene({ match, onComplete }) {
         </div>
       </div>
 
-      {/* Beat 4 - countdown, framed BEHIND the referee as giant background text. */}
-      <div className="cut__count display" aria-hidden="true" />
+      {/* Beat 4 - COUNTDOWN REMOVED; the referee owns this moment (see Beat 4 above). */}
+      {/* <div className="cut__count display" aria-hidden="true" /> */}
       <div className="cut__flash" aria-hidden="true" />
 
       {/* The referee narrates from centre-bottom, reacting to each beat. The hype

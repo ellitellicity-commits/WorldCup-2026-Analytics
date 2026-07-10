@@ -112,6 +112,22 @@
   font-size: var(--text-label);
 }
 
+/* Loading skeleton - shimmer bars standing in for the stats/line-up rows while
+   ESPN data is in flight (uses the global .skeleton shimmer primitive). */
+.lsp__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+}
+.lsp__skeleton-row {
+  display: block;
+  height: 14px;
+  width: 100%;
+}
+.lsp__skeleton-row--wide { width: 70%; }
+.lsp__skeleton-row--narrow { width: 45%; }
+
 /* Line-ups | Stats tabs - neutral chrome (colour belongs to data). Active tab
    carries a 2px ink underline, no hue. */
 .lsp__tabs {

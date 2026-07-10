@@ -241,7 +241,12 @@ function MatchStatsPanel({ homeName, awayName, homeTeam, awayTeam, status, date 
 
       <div className="lsp__body">
         {!loaded ? (
-          <p className="lsp__note lsp__note--loading">Loading match data…</p>
+          <div className="lsp__skeleton" role="status" aria-live="polite">
+            <span className="skeleton lsp__skeleton-row lsp__skeleton-row--wide" />
+            <span className="skeleton lsp__skeleton-row" />
+            <span className="skeleton lsp__skeleton-row lsp__skeleton-row--narrow" />
+            <span className="visually-hidden">Loading match data…</span>
+          </div>
         ) : !data || (!data.hasLineups && !data.hasStats) ? (
           <p className="lsp__note">{meta.empty}</p>
         ) : (

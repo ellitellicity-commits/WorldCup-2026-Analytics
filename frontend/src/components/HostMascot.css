@@ -96,6 +96,9 @@
   top: 50%;
   transform: translateY(-50%);
   width: min(240px, 40vw);
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
   z-index: 15;
   align-items: center;
   margin: 0;
@@ -148,7 +151,13 @@
   font: 600 var(--text-label) / 1 var(--font-body);
   letter-spacing: 0.02em;
   cursor: pointer;
+  /* Shrink to fit the card rather than forcing it wider; ellipsize if ever needed. */
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: background 150ms var(--ease-out-quint), border-color 150ms var(--ease-out-quint);
 }
 .mascot__next:hover { background: var(--surface-elevated); border-color: var(--ink-secondary); }

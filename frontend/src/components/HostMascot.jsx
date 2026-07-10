@@ -239,9 +239,9 @@ function Zayu() {
 // Per-mascot SVG pivots (svgOrigin) for the shared tour-beat animations, plus the
 // full nation name for the "Explore …" hand-off button.
 const ORIGINS = {
-  CA: { country: 'Canada', armL: '67 141', armR: '137 141', center: '100 120' },
-  US: { country: 'United States', armL: '62 152', armR: '138 152', center: '100 128' },
-  MX: { country: 'Mexico', armL: '64 150', armR: '136 150', center: '100 130' },
+  CA: { country: 'Canada', explore: 'Explore Canada', armL: '67 141', armR: '137 141', center: '100 120' },
+  US: { country: 'United States', explore: 'Explore the US', armL: '62 152', armR: '138 152', center: '100 128' },
+  MX: { country: 'Mexico', explore: 'Explore Mexico', armL: '64 150', armR: '136 150', center: '100 130' },
 }
 
 // Guided-tour scripts (Part 2a) - real, confirmed WC2026 facts only. Each beat
@@ -548,7 +548,7 @@ export default function HostMascot({ iso, variant = 'panel', onExplore }) {
               ))}
             </span>
             <button type="button" className="mascot__next" onClick={nextBeat}>
-              {lastBeat ? `Explore ${origins.country} →` : 'Next →'}
+              {lastBeat ? origins.explore : 'Next →'}
             </button>
           </div>
         )}

@@ -77,17 +77,23 @@ function buildGraticule() {
 // Province/state borders for the three 2026 hosts only (paper globe) - built the
 // same way as buildLand but from hostSubdivisions.json's admin-1 rings, sitting
 // just under the coastline layer and reading finer + fainter so it stays clearly
-// subordinate to the dominant, single-weight country outline.
+// subordinate to the dominant, single-weight country outline. hostSubdivisions.json
+// is detailed enough for the zoomed-in 2D Atlas sub-maps (every island ring, full
+// point density) - both are too dense for this small overview globe, so this
+// layer only draws each subdivision's one primary ring (dropping minor island
+// slivers, which read as noise at this scale) and strides every other point
+// (halving segment count) while always keeping the ring's closing point.
+const PROVINCE_STRIDE = 2
 function buildProvinceBorders() {
   const positions = []
   for (const host of Object.values(hostSubdivisions)) {
     for (const sub of host.subs) {
-      for (const ring of sub.rings) {
-        for (let i = 0; i < ring.length - 1; i++) {
-          const a = llToXYZ(ring[i][1], ring[i][0], R * 1.0015)
-          const b = llToXYZ(ring[i + 1][1], ring[i + 1][0], R * 1.0015)
-          positions.push(a[0], a[1], a[2], b[0], b[1], b[2])
-        }
+      const ring = sub.rings.reduce((a, b) => (b.length > a.length ? b : a))
+      const pts = ring.filter((_, i) => i % PROVINCE_STRIDE === 0 || i === ring.length - 1)
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = llToXYZ(pts[i][1], pts[i][0], R * 1.0015)
+        const b = llToXYZ(pts[i + 1][1], pts[i + 1][0], R * 1.0015)
+        positions.push(a[0], a[1], a[2], b[0], b[1], b[2])
       }
     }
   }

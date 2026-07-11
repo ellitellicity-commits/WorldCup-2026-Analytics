@@ -29,8 +29,15 @@ module.exports = async function handler(req, res) {
     })
     const body = await upstream.text()
     res.setHeader('Content-Type', 'application/json')
-    // Short cache so live scores stay fresh but repeat loads are cheap.
-    res.setHeader('Cache-Control', 'public, max-age=60')
+    // `no-cache` forces the browser to revalidate on every poll instead of
+    // silently reusing its own disk/memory copy for up to max-age - with the old
+    // `public, max-age=60` a client's own HTTP cache (independent of the app's
+    // poll timer) could hand back a same-origin response cached a full minute
+    // earlier, which is how a finished/next match briefly "regressed" back to
+    // the previous live fixture. `s-maxage` still lets Vercel's edge cache the
+    // upstream response for a short window (well under football-data.org's
+    // shared 10 req/min limit) without that browser-side staleness.
+    res.setHeader('Cache-Control', 'no-cache, s-maxage=20, stale-while-revalidate=10')
     res.status(upstream.status).send(body)
   } catch (err) {
     res.status(502).json({ error: 'proxy request failed', detail: String((err && err.message) || err) })

@@ -89,9 +89,13 @@ async function fetchLiveMatches() {
   try {
     // No auth header here by design: the same-origin proxy injects the
     // server-side token (see vite.config.js). The browser must never send it.
+    // `cache: 'no-store'` so each poll actually reaches the proxy rather than the
+    // browser silently replaying its own cached response from a previous tick
+    // (see api/index.js for the matching server-side Cache-Control fix).
     const res = await fetch(LIVE_MATCHES_URL, {
       headers: { Accept: 'application/json' },
       signal: controller.signal,
+      cache: 'no-store',
     })
     if (!res.ok) throw new Error(`football-data.org responded ${res.status}`)
     const json = await res.json()

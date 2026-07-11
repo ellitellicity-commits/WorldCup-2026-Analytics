@@ -26,6 +26,13 @@ const LEGEND = { US: '48 contiguous states + DC', CA: 'provinces & territories',
 const MIN_ZOOM = 1
 const MAX_ZOOM = 6
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
+// Abbreviation base size in SVG user units at 1x zoom. Counter-scaled by 1/z in
+// applyTransform - the same data-r/dotZRef pattern already used for the capital
+// and venue dots - so labels read as a constant, modest size on screen instead
+// of growing with the map, and stay small enough at the default view to not
+// obscure the province/state geometry underneath.
+const ABBR_BASE_FS = 1.15
+const pointerDist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y)
 
 export default function ProvinceStateSubMap({ code }) {
   const data = hostSubs[code]
@@ -132,6 +139,15 @@ export default function ProvinceStateSubMap({ code }) {
   // re-render mid-gesture (the old setState-per-pixel caused frame drops/crash).
   const viewRef = useRef({ z: 1, x: 0, y: 0 })
   const drag = useRef(null)
+  // Active pointer positions for two-finger pinch-to-zoom, keyed by pointerId.
+  const pointers = useRef(new Map())
+  // Pinch state: the zoom level and SVG-user-unit anchor point captured when the
+  // second finger lands, so the map zooms around the midpoint between the two
+  // touches rather than the viewport origin.
+  const pinch = useRef(null)
+  // Last zoom level the dot radii/label sizes were rescaled for - lets
+  // applyTransform skip the rescale loop on pure pans (drag changes x/y but not z).
+  const dotZRef = useRef(1)
   // The only reactive bit: a boolean that flips just once when zoom crosses the
   // 1x threshold, to swap the grab cursor and mount the reset button.
   const [zoomed, setZoomed] = useState(false)
@@ -168,10 +184,28 @@ export default function ProvinceStateSubMap({ code }) {
     vp.setAttribute('transform', `translate(${x.toFixed(3)} ${y.toFixed(3)}) scale(${z.toFixed(3)})`)
     const isZoomed = z > MIN_ZOOM
     setZoomed((prev) => (prev === isZoomed ? prev : isZoomed))
+    // Capital/venue dots and the province abbreviations all live inside the
+    // scaled viewport group, so both radius and font size would otherwise
+    // balloon or shrink with the map. Counter-scale each by 1/z so they read as
+    // a constant size on screen at any zoom level. Skipped on a pure pan (z
+    // unchanged) to avoid walking every dot/label on each pointermove.
+    if (z !== dotZRef.current) {
+      dotZRef.current = z
+      const svg = svgRef.current
+      if (svg) {
+        for (const el of svg.querySelectorAll('[data-r]')) {
+          el.setAttribute('r', (Number(el.dataset.r) / z).toFixed(3))
+        }
+        for (const el of svg.querySelectorAll('[data-fs]')) {
+          el.style.fontSize = `${(Number(el.dataset.fs) / z).toFixed(3)}px`
+        }
+      }
+    }
   }, [])
 
   // Reset to the full-country view whenever the selected host changes.
   useEffect(() => {
+    gsap.killTweensOf(viewRef.current)
     viewRef.current = { z: 1, x: 0, y: 0 }
     applyTransform()
   }, [code, applyTransform])
@@ -233,12 +267,38 @@ export default function ProvinceStateSubMap({ code }) {
   if (!geo) return null
 
   const onPointerDown = (e) => {
-    if (viewRef.current.z <= MIN_ZOOM) return // nothing to pan at the default full view
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     e.currentTarget.setPointerCapture?.(e.pointerId)
-    const v = viewRef.current
-    drag.current = { px: e.clientX, py: e.clientY, ox: v.x, oy: v.y }
+    if (pointers.current.size === 2) {
+      // Second finger down: start a pinch. Freeze the midpoint in SVG user-space
+      // as the zoom anchor, so it stays under the fingers as they spread/pinch.
+      drag.current = null
+      const [a, b] = [...pointers.current.values()]
+      pinch.current = {
+        startDist: pointerDist(a, b),
+        startZ: viewRef.current.z,
+        anchor: toUser((a.x + b.x) / 2, (a.y + b.y) / 2),
+      }
+    } else if (pointers.current.size === 1) {
+      if (viewRef.current.z <= MIN_ZOOM) return // nothing to pan at the default full view
+      const v = viewRef.current
+      drag.current = { px: e.clientX, py: e.clientY, ox: v.x, oy: v.y }
+    }
   }
   const onPointerMove = (e) => {
+    if (pointers.current.has(e.pointerId)) pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    if (pinch.current && pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()]
+      const d = pointerDist(a, b)
+      if (d < 1) return
+      const { startDist, startZ, anchor } = pinch.current
+      const nz = clamp(startZ * (d / startDist), MIN_ZOOM, MAX_ZOOM)
+      const v = viewRef.current
+      const ratio = nz / v.z
+      viewRef.current = clampViewRaw({ z: nz, x: anchor.x - (anchor.x - v.x) * ratio, y: anchor.y - (anchor.y - v.y) * ratio })
+      applyTransform()
+      return
+    }
     if (!drag.current) return
     const svg = svgRef.current
     const r = svg.getBoundingClientRect()
@@ -247,8 +307,18 @@ export default function ProvinceStateSubMap({ code }) {
     viewRef.current = clampViewRaw({ ...viewRef.current, x: drag.current.ox + dx, y: drag.current.oy + dy })
     applyTransform()
   }
-  const endDrag = () => { drag.current = null }
-  const reset = () => { viewRef.current = { z: 1, x: 0, y: 0 }; applyTransform() }
+  const endDrag = (e) => {
+    if (e?.pointerId != null) pointers.current.delete(e.pointerId)
+    if (pointers.current.size < 2) pinch.current = null
+    if (pointers.current.size === 0) drag.current = null
+  }
+  // Eased reset (double-click or the Reset chip) - tweens the shared view object
+  // in place via GSAP so applyTransform's onUpdate reads the live values, instead
+  // of the instant jump cuts wheel/drag/pinch use.
+  const reset = () => {
+    gsap.killTweensOf(viewRef.current)
+    gsap.to(viewRef.current, { z: 1, x: 0, y: 0, duration: 0.35, ease: 'power2.out', onUpdate: applyTransform })
+  }
 
   return (
     <figure ref={figRef} className={`submap submap--${code}`} aria-label={`${HOST_LABEL[code]} - ${geo.subs.length} ${UNIT[code]} and their capitals`}>
@@ -263,6 +333,7 @@ export default function ProvinceStateSubMap({ code }) {
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
         onPointerCancel={endDrag}
+        onDoubleClick={reset}
       >
         <g ref={vpRef} className="submap__viewport" transform="translate(0 0) scale(1)">
           <g className="submap__provs">
@@ -281,6 +352,7 @@ export default function ProvinceStateSubMap({ code }) {
               <circle
                 key={`${c.name}-${c.region || 'nat'}`}
                 cx={c.x.toFixed(2)} cy={c.y.toFixed(2)} r={c.national ? 1.2 : 0.5}
+                data-r={c.national ? 1.2 : 0.5}
                 className={`submap__cap${c.national ? ' submap__cap--nat' : ''}`}
                 onMouseEnter={showTip(`${c.name}${c.region ? ` · ${c.region}` : ''}${c.national ? ' (capital)' : ''}`)}
                 onMouseMove={showTip(`${c.name}${c.region ? ` · ${c.region}` : ''}${c.national ? ' (capital)' : ''}`)}
@@ -296,6 +368,7 @@ export default function ProvinceStateSubMap({ code }) {
               <circle
                 key={v.name}
                 cx={v.x.toFixed(2)} cy={v.y.toFixed(2)} r={0.95}
+                data-r={0.95}
                 className="submap__venue"
                 onMouseEnter={showTip(`${v.city} · World Cup venue`)}
                 onMouseMove={showTip(`${v.city} · World Cup venue`)}
@@ -311,6 +384,8 @@ export default function ProvinceStateSubMap({ code }) {
                 key={p.name}
                 x={p.cx.toFixed(2)} y={p.cy.toFixed(2)}
                 className="submap__abbr"
+                data-fs={ABBR_BASE_FS}
+                style={{ fontSize: `${ABBR_BASE_FS}px` }}
                 textAnchor="middle" dominantBaseline="middle"
               >
                 {p.abbr}

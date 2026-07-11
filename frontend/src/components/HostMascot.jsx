@@ -16,9 +16,9 @@ import './HostMascot.css'
 // Each is one cohesive silhouette (a single body mass with internal detail
 // linework) built around a landmark that reads at thumbnail size, not a pile of
 // primitives. GSAP drives organic idle breathing, a hover lift, and the tour:
-//   Canada  - Maple, a moose in a Canadian-red kit; palmate antlers landmark.
-//   USA     - Clutch, a bison in an American-blue kit; shaggy shoulder-hump landmark.
-//   Mexico  - Zayu, an armadillo in a Mexican-green kit; banded shell landmark + curled tail.
+//   Canada  - Moswa, a moose in a Canadian-red kit; palmate antlers landmark.
+//   USA     - Tatanka, a bison in an American-blue kit; shaggy shoulder-hump landmark.
+//   Mexico  - Ayotoch, an armadillo in a Mexican-green kit; banded shell landmark + curled tail.
 
 // A tiny football, shared by all three (at the mascot's feet).
 function Ball({ x, y }) {
@@ -32,11 +32,11 @@ function Ball({ x, y }) {
   )
 }
 
-// --- Maple - moose (Canada) ---------------------------------------------------
+// --- Moswa - moose (Canada) ---------------------------------------------------
 // The chill host: broad palmate antlers frame the head (the landmark), a hip-cocked
 // stance with one arm relaxed at the side and an easy head-tilt, huge warm eyes
 // (left larger), and a long droopy moose snout. One cohesive fur-and-kit mass.
-function Maple() {
+function Moswa() {
   const fur = '#7c5836', furDark = '#4d3722', snout = '#9c7850', antler = '#d9c39a', antlerDark = '#a98f63', kit = 'var(--canadian-red)'
   const OL = '#171a1e', OLW = 3
   return (
@@ -99,11 +99,11 @@ function Maple() {
   )
 }
 
-// --- Clutch - bison (USA) -----------------------------------------------------
+// --- Tatanka - bison (USA) -----------------------------------------------------
 // The hype man: a massive shaggy shoulder-hump dominates the upper silhouette
 // (the landmark), with the small determined face peeking from it, thick curved
 // horns, a shaggy beard, arms flung wide, and legs planted in a broad power stance.
-function Clutch() {
+function Tatanka() {
   const fur = '#6b4f3c', furDark = '#372a1f', mane = '#4a3628', muzzle = '#8a6a4e', horn = '#e6dbc2', kit = 'var(--american-blue)'
   const OL = '#171a1e', OLW = 3
   return (
@@ -174,13 +174,13 @@ function Clutch() {
   )
 }
 
-// --- Zayu - armadillo (Mexico) ------------------------------------------------
+// --- Ayotoch - armadillo (Mexico) ------------------------------------------------
 // Peeking and playful: head turned toward the viewer (nudged left of centre), a
 // prominent banded shell over one shoulder, a long tail curled up behind like a
 // question mark, big round curious eyes, and an oversized rakishly-tilted sombrero.
 // (Restored old hat model. Reconnected to the current idle system - .m-breath /
 // .m-shadow wrappers and the .m-shell hover landmark - without touching its paths.)
-function Zayu() {
+function Ayotoch() {
   const body = '#cba473', bodyLt = '#ddc196', shell = '#9d7546', shellDark = '#6f5030', kit = 'var(--mexican-green)'
   const straw = '#e6c884', strawDark = '#bd9346', OL = '#20242a', OLW = 2.5
   return (
@@ -203,8 +203,11 @@ function Zayu() {
             <path d="M104 130 Q124 128 140 134M104 146 Q124 144 141 150M104 162 Q123 160 138 166M107 178 Q122 176 134 180" stroke={shellDark} strokeWidth="2.4" fill="none" strokeLinecap="round" />
           </g>
           <text x="84" y="176" className="m-num" textAnchor="middle">10</text>
-          <g className="m-arm-l"><path d="M64 152 Q40 148 34 122" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /><circle cx="34" cy="120" r="9" fill={body} stroke={OL} strokeWidth={OLW} /></g>
-          <g className="m-arm-r"><path d="M140 154 Q160 158 162 182" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /><circle cx="162" cy="184" r="9" fill={body} stroke={OL} strokeWidth={OLW} /></g>
+          {/* Hand circle drawn BEFORE its forearm stroke (not after) so the stroke's
+              round cap occludes the near side of the circle's own outline - a
+              seamless joint instead of the circle's ring cutting across the limb. */}
+          <g className="m-arm-l"><circle cx="34" cy="120" r="9" fill={body} stroke={OL} strokeWidth={OLW} /><path d="M64 152 Q40 148 34 122" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /></g>
+          <g className="m-arm-r"><circle cx="162" cy="184" r="9" fill={body} stroke={OL} strokeWidth={OLW} /><path d="M140 154 Q160 158 162 182" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /></g>
         </g>
         <Ball x={150} y={226} />
         <g className="m-head">
@@ -242,6 +245,30 @@ const ORIGINS = {
   CA: { country: 'Canada', explore: 'Explore Canada', armL: '67 141', armR: '137 141', center: '100 120' },
   US: { country: 'United States', explore: 'Explore the US', armL: '62 152', armR: '138 152', center: '100 128' },
   MX: { country: 'Mexico', explore: 'Explore Mexico', armL: '64 150', armR: '136 150', center: '100 130' },
+}
+
+// Hip/tail pivots for the independent idle limb sway (below) - the arm pivots
+// above (armL/armR) are reused as-is. Not present on a mascot means that limb
+// is skipped (Moswa/Tatanka have no tail).
+const IDLE_PIVOTS = {
+  CA: { legL: '91 194', legR: '115 198' },
+  US: { legL: '78 200', legR: '122 200' },
+  MX: { legL: '91 200', legR: '114 200', tail: '138 192' },
+}
+
+// Estimated speaking duration (ms) for a bubble line, mirroring Typewriter's own
+// per-char cadence + punctuation beats + its startDelay, so the mouth talks for
+// roughly as long as the line takes to type out rather than a fixed/random span.
+const speakDuration = (text) => {
+  const full = text || ''
+  if (!full) return 0
+  const perChar = Math.max(9, Math.min(22, 1500 / full.length))
+  let acc = 160
+  for (const ch of full) {
+    acc += perChar
+    if (ch === '!' || ch === '?') acc += 80
+  }
+  return acc
 }
 
 // Guided-tour scripts (Part 2a) - real, confirmed WC2026 facts only. Each beat
@@ -308,7 +335,7 @@ const BEAT_ANIM = {
 // iso → mascot definition. Facts are real, checkable World Cup 2026 / host notes.
 const MASCOTS = {
   CA: {
-    name: 'Maple', kind: 'the Moose', Art: Maple,
+    name: 'Moswa', kind: 'the Moose', Art: Moswa,
     facts: [
       'Canada co-hosts its first men’s World Cup in 2026.',
       'Toronto’s BMO Field and Vancouver’s BC Place stage the Canadian matches.',
@@ -324,7 +351,7 @@ const MASCOTS = {
     },
   },
   US: {
-    name: 'Clutch', kind: 'the Bison', Art: Clutch,
+    name: 'Tatanka', kind: 'the Bison', Art: Tatanka,
     facts: [
       'The USA stages 11 of the 16 tournament venues.',
       'MetLife Stadium in New Jersey hosts the Final on 19 July 2026.',
@@ -340,7 +367,7 @@ const MASCOTS = {
     },
   },
   MX: {
-    name: 'Zayu', kind: 'the Armadillo', Art: Zayu,
+    name: 'Ayotoch', kind: 'the Armadillo', Art: Ayotoch,
     facts: [
       'Mexico is the first nation to host or co-host three men’s World Cups.',
       'Estadio Azteca has staged two World Cup finals: 1970 and 1986.',
@@ -441,6 +468,22 @@ export default function HostMascot({ iso, variant = 'panel', onExplore }) {
       if (q('.m-breath').length) gsap.to(q('.m-breath'), { scaleY: 1.014, duration: 2.4, transformOrigin: '50% 100%', ease: 'sine.inOut', repeat: -1, yoyo: true })
       if (q('.m-shadow').length) gsap.to(q('.m-shadow'), { scaleX: 1.035, duration: 2.4, transformOrigin: '50% 50%', ease: 'sine.inOut', repeat: -1, yoyo: true })
 
+      // Independent limb idle sway, layered on top of the shared .m-breath scale.
+      // Each limb gets its own duration/delay (mirroring the reference cadence in
+      // the CLAUDE.md brief) so the character reads as loosely, independently
+      // alive rather than a single puppeted mass. Small rotation amplitudes keep
+      // it a subtle "alive" tell, not a wave. Gated per-target existing, and any
+      // tour-beat/hover/poke tween on the same limb naturally takes over via
+      // GSAP's default overwrite when it fires.
+      const pivots = IDLE_PIVOTS[code]
+      if (pivots) {
+        if (q('.m-arm-l').length) gsap.to(q('.m-arm-l'), { rotation: 3, duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true, svgOrigin: origins.armL })
+        if (q('.m-arm-r').length) gsap.to(q('.m-arm-r'), { rotation: -4, duration: 2.2, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 0.4, svgOrigin: origins.armR })
+        if (pivots.legL && q('.m-leg-l').length) gsap.to(q('.m-leg-l'), { rotation: 2, duration: 1.6, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 0.8, svgOrigin: pivots.legL })
+        if (pivots.legR && q('.m-leg-r').length) gsap.to(q('.m-leg-r'), { rotation: -2, duration: 1.9, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 0.2, svgOrigin: pivots.legR })
+        if (pivots.tail && q('.m-tail').length) gsap.to(q('.m-tail'), { rotation: -3, duration: 2.4, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 0.6, svgOrigin: pivots.tail })
+      }
+
       // Blink loop with a wink on every third blink. A single repeating timeline
       // (blink, blink, wink) keeps it deterministic and fully inside the context,
       // so revert() tears it down with no stray delayedCalls left running.
@@ -478,6 +521,34 @@ export default function HostMascot({ iso, variant = 'panel', onExplore }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def, isTour])
+
+  // Mouth-sync: whenever the bubble's line changes (tour beat advances, or a
+  // poke cycles to the next fun fact), open/close the mouth on a fast loop for
+  // roughly as long as that line takes to type out (speakDuration mirrors
+  // Typewriter's own per-char cadence), then close it again. Not wired to
+  // Typewriter directly - keeps this component independent of it - but timed to
+  // track the same visible "speaking" window.
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root || reduced() || !def) return undefined
+    const line = isTour && phase === 'tour' ? tour?.[beat]?.line : def.facts[factIdx]
+    const q = gsap.utils.selector(root)
+    const mouth = q('.m-mouth')
+    if (!mouth.length) return undefined
+    gsap.killTweensOf(mouth)
+    const dur = speakDuration(line)
+    if (!dur) return undefined
+    const talk = gsap.to(mouth, { scaleY: 1.4, duration: 0.12, ease: 'power1.inOut', transformOrigin: '50% 0%', repeat: -1, yoyo: true })
+    const stop = gsap.delayedCall(dur / 1000, () => {
+      talk.kill()
+      gsap.to(mouth, { scaleY: 1, duration: 0.1 })
+    })
+    return () => {
+      talk.kill()
+      stop.kill()
+      gsap.set(mouth, { scaleY: 1 })
+    }
+  }, [def, isTour, phase, beat, factIdx, tour])
 
   if (!def) return null
 

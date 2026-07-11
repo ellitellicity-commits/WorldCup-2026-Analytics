@@ -203,8 +203,11 @@ function Ayotoch() {
             <path d="M104 130 Q124 128 140 134M104 146 Q124 144 141 150M104 162 Q123 160 138 166M107 178 Q122 176 134 180" stroke={shellDark} strokeWidth="2.4" fill="none" strokeLinecap="round" />
           </g>
           <text x="84" y="176" className="m-num" textAnchor="middle">10</text>
-          <g className="m-arm-l"><path d="M64 152 Q40 148 34 122" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /><circle cx="34" cy="120" r="9" fill={body} stroke={OL} strokeWidth={OLW} /></g>
-          <g className="m-arm-r"><path d="M140 154 Q160 158 162 182" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /><circle cx="162" cy="184" r="9" fill={body} stroke={OL} strokeWidth={OLW} /></g>
+          {/* Hand circle drawn BEFORE its forearm stroke (not after) so the stroke's
+              round cap occludes the near side of the circle's own outline - a
+              seamless joint instead of the circle's ring cutting across the limb. */}
+          <g className="m-arm-l"><circle cx="34" cy="120" r="9" fill={body} stroke={OL} strokeWidth={OLW} /><path d="M64 152 Q40 148 34 122" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /></g>
+          <g className="m-arm-r"><circle cx="162" cy="184" r="9" fill={body} stroke={OL} strokeWidth={OLW} /><path d="M140 154 Q160 158 162 182" stroke={body} strokeWidth="14" strokeLinecap="round" fill="none" /></g>
         </g>
         <Ball x={150} y={226} />
         <g className="m-head">

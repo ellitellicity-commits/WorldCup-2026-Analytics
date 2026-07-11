@@ -3,12 +3,16 @@
 // three match states: pre-match (confirmed line-ups), in-play (live stats + the
 // running minute), and finished (final stats + the full goal/card summary).
 // football-data.org's free tier exposes none of this (see lib/data.js), so ESPN
-// is layered on ONLY for the expanded panel; scores/results stay on
-// football-data.org. The browser calls ESPN directly (no key, no proxy).
+// is layered on for the expanded panel; scores/results are football-data.org's
+// job, EXCEPT the live-in-play score specifically, which lib/data.js also reads
+// from here (getLiveScoresByPair) as a cross-check - football-data.org's own
+// running score has been observed to disagree with reality mid-match while
+// still correctly flagging the match IN_PLAY. The browser calls ESPN directly
+// (no key, no proxy).
 //
 // ESPN uses its own event ids, so a match is reconciled to an ESPN event by
-// team pair - its team names use the same long-forms we already alias in
-// lib/data.js, so resolveTeamName() maps both sides back to our canonical names.
+// team pair - its team names use the same long-forms lib/teamNames.js already
+// aliases, so resolveTeamName() maps both sides back to our canonical names.
 // A finished match drops off the live scoreboard, so when a fixture date is known
 // we query that day's board first (which still lists it), then fall back to the
 // live board.
@@ -17,15 +21,13 @@
 // or shape change, and the panel renders an "unavailable"/pre-match state rather
 // than break.
 
-import { resolveTeamName } from './data'
+import { resolveTeamName, pairKey } from './teamNames'
 
 const BASE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world'
 const SCOREBOARD_URL = `${BASE}/scoreboard`
 const summaryUrl = (id) => `${BASE}/summary?event=${id}`
 const TIMEOUT_MS = 6000
 const SCOREBOARD_TTL_MS = 20_000
-
-const pairKey = (a, b) => [a, b].sort().join('|')
 // A fixture date (ISO, "2026-06-11" or a full instant) → ESPN's "YYYYMMDD" board
 // filter. Null when there's no usable date, so the caller falls back to the board.
 const boardDate = (iso) => (typeof iso === 'string' && /^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10).replace(/-/g, '') : null)
@@ -72,6 +74,38 @@ function matchEvent(board, want) {
     if (a && b && pairKey(a, b) === want) return ev.id
   }
   return null
+}
+
+// Every match ESPN's live board currently has in progress ("in" state, i.e. not
+// pre-kickoff or final), indexed by team pair with just the running score - a
+// cross-check for lib/data.js against football-data.org's own live score,
+// which has been observed to disagree with reality mid-match (see data.js's
+// indexLive). Shares the same 20s-cached "today" scoreboard fetch as the
+// per-match stats panel, so this adds no extra network traffic beyond one call
+// per cache window. Best-effort like everything else here: a board that fails
+// to load, or a match ESPN doesn't have, just yields no entry for that pair -
+// callers fall back to their own score in that case, never lose one they had.
+export async function getLiveScoresByPair() {
+  const board = await getScoreboard(null)
+  const events = board?.events
+  const idx = new Map()
+  if (!Array.isArray(events)) return idx
+  for (const ev of events) {
+    const state = STATE_MAP[ev.competitions?.[0]?.status?.type?.state]
+    if (state !== 'live') continue
+    const cs = ev.competitions?.[0]?.competitors
+    if (!Array.isArray(cs) || cs.length < 2) continue
+    const homeC = cs.find((c) => c.homeAway === 'home')
+    const awayC = cs.find((c) => c.homeAway === 'away')
+    const home = resolveTeamName(homeC?.team?.displayName)
+    const away = resolveTeamName(awayC?.team?.displayName)
+    if (!home || !away) continue
+    const hs = Number.parseInt(homeC.score, 10)
+    const as = Number.parseInt(awayC.score, 10)
+    if (!Number.isFinite(hs) || !Number.isFinite(as)) continue
+    idx.set(pairKey(home, away), { scores: { [home]: hs, [away]: as } })
+  }
+  return idx
 }
 
 // Resolve an ESPN event id for a fixture from its two canonical team names. When

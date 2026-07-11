@@ -19,7 +19,8 @@
 import staticFixtures from '../data/fixtures.json'
 import oddsData from '../data/odds.json'
 import bracketData from '../data/bracket.json'
-import TEAM_META from './teams'
+import { resolveTeamName, pairKey } from './teamNames'
+import { getLiveScoresByPair } from './espn'
 
 // Compiled in by vite.config.js: true only when FOOTBALL_DATA_API_KEY is set.
 // Guarded so non-Vite runtimes (tests, node) don't throw on the missing global.
@@ -29,38 +30,6 @@ const HAS_LIVE_DATA = typeof __HAS_LIVE_DATA__ !== 'undefined' && __HAS_LIVE_DAT
 // returns every tournament match with live status and scores.
 const LIVE_MATCHES_URL = '/football-api/v4/competitions/WC/matches'
 const FETCH_TIMEOUT_MS = 6000
-
-// --- Team-name reconciliation ----------------------------------------------
-// football-data.org uses FIFA/UEFA long-forms that differ from our names. Map
-// the known divergences; anything already matching our set passes through. If a
-// live name can't be resolved to one of our teams, that match is simply skipped
-// (the fixture keeps its static result), so an unmapped name degrades gracefully
-// rather than corrupting the table. Extend this map as real live data surfaces.
-// Verified against the live football-data.org WC response: the API's 48 team
-// names match ours except for the entries below. Only two actually diverge in
-// live data today - Bosnia and Cape Verde - and each silently dropped every one
-// of that team's matches (both sides of a pairing must resolve). The rest are
-// defensive mappings for naming football-data.org uses across competitions.
-const NAME_ALIASES = {
-  'Korea Republic': 'South Korea',
-  'Korea DPR': 'North Korea',
-  'IR Iran': 'Iran',
-  Iran: 'Iran',
-  'United States': 'United States',
-  USA: 'United States',
-  'Côte d’Ivoire': 'Ivory Coast',
-  "Côte d'Ivoire": 'Ivory Coast',
-  'Cape Verde Islands': 'Cape Verde', // live API form
-  'Cabo Verde': 'Cape Verde',
-  'Bosnia-Herzegovina': 'Bosnia and Herzegovina', // live API form
-  'Bosnia and Herzegovina': 'Bosnia and Herzegovina',
-  'Czech Republic': 'Czechia',
-  Türkiye: 'Turkey',
-  'DR Congo': 'DR Congo',
-  'Congo DR': 'DR Congo',
-}
-
-const OUR_NAMES = new Set(Object.keys(TEAM_META))
 
 // A match football-data.org reports as currently being played. IN_PLAY is an
 // active half; PAUSED is half-time (and other in-match stoppages). The docs also
@@ -74,19 +43,6 @@ const LIVE_STATUSES = new Set(['IN_PLAY', 'PAUSED'])
 // from "this string is a real, current, non-final status" - the latter must
 // never be promoted to finished no matter what else is in the payload.
 const NOT_FINISHED_STATUSES = new Set(['SCHEDULED', 'TIMED', 'POSTPONED', 'SUSPENDED', ...LIVE_STATUSES])
-
-// Reconcile a provider's team name to our canonical name (or null if unmapped).
-// Exported because the ESPN live-stats feed (lib/espn.js) needs the same mapping
-// to match its events back to our fixtures - ESPN uses the same long-forms.
-export function resolveTeamName(liveName) {
-  if (!liveName) return null
-  if (OUR_NAMES.has(liveName)) return liveName
-  const aliased = NAME_ALIASES[liveName]
-  if (aliased && OUR_NAMES.has(aliased)) return aliased
-  return null
-}
-
-const pairKey = (a, b) => [a, b].sort().join('|')
 
 // --- Live fetch -------------------------------------------------------------
 
@@ -194,7 +150,15 @@ function indexFinished(matches) {
 // `score.fullTime`; the free tier can omit `minute`, so it degrades to null (the
 // UI then shows a plain LIVE state without the clock). Winners are NOT read here
 // - an in-play tie has no result yet, so it never feeds knockout resolution.
-function indexLive(matches) {
+// `espnByPair` (see lib/espn.js's getLiveScoresByPair) corrects the one field
+// football-data.org has been observed to get wrong mid-match: its `fullTime`
+// score can disagree with the real running score for a match it otherwise
+// correctly flags IN_PLAY/PAUSED (seen live: Norway v England reported 2-1
+// while ESPN's independent board - and the actual broadcast - had it 1-1 at
+// 74'). Optional and additive: with no ESPN entry for a pair (fetch failed, or
+// ESPN simply doesn't have the match), football-data.org's own number is used
+// unchanged, so this can never make a live score less available than before.
+function indexLive(matches, espnByPair = new Map()) {
   const idx = new Map()
   for (const m of matches) {
     if (!LIVE_STATUSES.has(m.status)) continue
@@ -202,8 +166,13 @@ function indexLive(matches) {
     const away = resolveTeamName(m.awayTeam?.name)
     if (!home || !away) continue
     const ft = m.score?.fullTime || {}
-    idx.set(pairKey(home, away), {
-      scores: { [home]: typeof ft.home === 'number' ? ft.home : 0, [away]: typeof ft.away === 'number' ? ft.away : 0 },
+    const key = pairKey(home, away)
+    const espn = espnByPair.get(key)
+    const scores = espn
+      ? espn.scores
+      : { [home]: typeof ft.home === 'number' ? ft.home : 0, [away]: typeof ft.away === 'number' ? ft.away : 0 }
+    idx.set(key, {
+      scores,
       minute: typeof m.minute === 'number' ? m.minute : null,
       injuryTime: typeof m.injuryTime === 'number' ? m.injuryTime : null,
       paused: m.status === 'PAUSED',
@@ -258,15 +227,18 @@ const koName = (m) => ({ home: m.home, away: m.away })
 /**
  * Pure transform: given a football-data.org matches array, produce the merged
  * fixtures + knockout model. Exported so the live path is testable without a key.
+ * `espnByPair` is an optional pairKey-keyed score correction (see indexLive) -
+ * still a pure, synchronous transform when it's omitted or empty, so existing
+ * callers/tests that only pass `matches` see no change in behaviour.
  *   - fixtures: static group fixtures with live results overlaid (1-72)
  *   - knockout.r32: static R32 with live results overlaid (73-88)
  *   - knockout.resultsByPair: every finished live result by team pair - lets the
  *     bracket resolve R16→final once each round's teams are known (see bracket.js)
  *   - applied: how many static matches got a live result (0 ⇒ treat as static)
  */
-export function mergeLiveData(matches) {
+export function mergeLiveData(matches, espnByPair = new Map()) {
   const finished = indexFinished(matches)
-  const live = indexLive(matches)
+  const live = indexLive(matches, espnByPair)
   const group = overlayResults(staticFixtures.fixtures, finished, live, groupName)
   const ko = overlayResults(bracketData.r32, finished, live, koName)
   return {
@@ -297,7 +269,15 @@ export async function loadFixtures() {
   if (!HAS_LIVE_DATA) return { ...staticFixtures, knockout: staticKnockout(), source: 'static', liveCount: 0 }
   try {
     const matches = await fetchLiveMatches()
-    const merged = mergeLiveData(matches)
+    // Cross-check football-data.org's live score against ESPN's independent
+    // board (see indexLive) - but only when something is actually IN_PLAY/
+    // PAUSED, so a quiet matchday doesn't add an extra request every poll.
+    // Best-effort: ESPN failing/timing out must never block the
+    // football-data.org merge, which stays the source of truth for who's live
+    // and who's finished either way.
+    const hasLive = matches.some((m) => LIVE_STATUSES.has(m.status))
+    const espnByPair = hasLive ? await getLiveScoresByPair().catch(() => new Map()) : new Map()
+    const merged = mergeLiveData(matches, espnByPair)
     // If the feed matched nothing (wrong competition window, all-unmapped names),
     // treat it as static - a "live" badge over untouched static data would lie.
     if (merged.applied === 0) return { ...staticFixtures, knockout: staticKnockout(), source: 'static', liveCount: 0 }

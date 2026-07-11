@@ -84,7 +84,7 @@ function measureAtWhistleBeat() {
 }
 
 try {
-  cli(['open', `${BASE_URL}/simulator`])
+  cli(['open', '--browser=chromium', `${BASE_URL}/simulator`])
 
   const count = measureAtCount()
   record('count-whistle-above-head', !count.missing && count.whistleZ > count.headZ, JSON.stringify(count))

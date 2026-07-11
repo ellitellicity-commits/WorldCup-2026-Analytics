@@ -38,7 +38,8 @@ const round2 = (n) => Math.round(n * 100) / 100
 
 // Douglas–Peucker simplification in lng/lat degrees. Tolerance ~0.12° keeps
 // province shapes recognizable as an inset while cutting the 10m point count
-// (and file size) by an order of magnitude.
+// (and file size) by an order of magnitude. Assumes an open polyline whose
+// endpoints differ - see rdpClosed below for the ring (closed-loop) entry point.
 function rdp(points, eps) {
   if (points.length < 3) return points
   let maxD = 0, idx = 0
@@ -59,6 +60,31 @@ function rdp(points, eps) {
   return [points[0], points[points.length - 1]]
 }
 
+// GeoJSON polygon rings are closed loops (first coordinate === last), so
+// feeding one straight into rdp() is degenerate: its anchor chord has zero
+// length, every point's "distance" from that chord computes to 0, and the
+// whole ring collapses to its (identical) first/last point. Split the ring at
+// its two farthest-apart vertices into two open chains first, simplify each
+// independently (now with a real chord to measure against), then rejoin.
+function farthestIndex(pts, from) {
+  let bestI = 0, bestD = -1
+  for (let i = 0; i < pts.length; i++) {
+    const dx = pts[i][0] - from[0], dy = pts[i][1] - from[1]
+    const d = dx * dx + dy * dy
+    if (d > bestD) { bestD = d; bestI = i }
+  }
+  return bestI
+}
+function rdpClosed(ring, eps) {
+  const closed = ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1]
+  const pts = closed ? ring.slice(0, -1) : ring
+  if (pts.length < 3) return ring
+  const k = farthestIndex(pts, pts[0])
+  const chainA = rdp(pts.slice(0, k + 1), eps) // pts[0] .. pts[k]
+  const chainB = rdp(pts.slice(k).concat([pts[0]]), eps) // pts[k] .. pts[end] .. back to pts[0]
+  return chainA.slice(0, -1).concat(chainB)
+}
+
 function largestRing(geom) {
   const rings = geom.type === 'Polygon' ? [geom.coordinates[0]]
     : geom.type === 'MultiPolygon' ? geom.coordinates.map((p) => p[0]) : []
@@ -70,7 +96,7 @@ function largestRing(geom) {
     if (area > bestA) { bestA = area; best = r }
   }
   if (!best) return null
-  const simplified = rdp(best, 0.12)
+  const simplified = rdpClosed(best, 0.12)
   return simplified.map(([x, y]) => [round2(x), round2(y)])
 }
 

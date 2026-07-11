@@ -68,6 +68,13 @@ const OUR_NAMES = new Set(Object.keys(TEAM_META))
 // concrete statuses so a single match object is enough to classify.
 const LIVE_STATUSES = new Set(['IN_PLAY', 'PAUSED'])
 
+// Every status football-data.org uses to mean "not finished yet". Matched
+// against explicitly (rather than just checking `!== 'FINISHED'`) because the
+// corrupted-status fallback below needs to tell "this string is garbage" apart
+// from "this string is a real, current, non-final status" - the latter must
+// never be promoted to finished no matter what else is in the payload.
+const NOT_FINISHED_STATUSES = new Set(['SCHEDULED', 'TIMED', 'POSTPONED', 'SUSPENDED', ...LIVE_STATUSES])
+
 // Reconcile a provider's team name to our canonical name (or null if unmapped).
 // Exported because the ESPN live-stats feed (lib/espn.js) needs the same mapping
 // to match its events back to our fixtures - ESPN uses the same long-forms.
@@ -117,13 +124,18 @@ function indexFinished(matches) {
     // `status` is normally a reliable enum, but football-data.org has been
     // observed to hand back a raw timestamp string (e.g. "2026-07-06
     // 01:00:00Z") in place of "FINISHED" for an otherwise-complete match - the
-    // score and a decided `winner` are still present and correct. Trust either
-    // signal: a single corrupted status field must not freeze the knockout
-    // bracket on that round forever, since no later round (including whichever
-    // one is actually live right now) can resolve its teams until this match's
-    // winner is known.
+    // score and a decided `winner` are still present and correct there, so an
+    // unrecognized status is trusted as finished when paired with a decisive
+    // winner (a corrupted status field must not freeze the knockout bracket on
+    // that round forever). But the same API has ALSO been seen populating
+    // `score.winner`/`fullTime` on a match it still reports as IN_PLAY (a real
+    // one: 2-1 with a winner set, mid-second-half, true score still 1-1) - so
+    // this fallback only fires for a status this API has never legitimately
+    // used for a live/pending match. A recognized not-finished status always
+    // wins, whatever the score object claims.
     const hasDecidedWinner = m.score?.winner === 'HOME_TEAM' || m.score?.winner === 'AWAY_TEAM' || m.score?.winner === 'DRAW'
-    if (m.status !== 'FINISHED' && !hasDecidedWinner) continue
+    const unrecognizedStatus = m.status !== 'FINISHED' && !NOT_FINISHED_STATUSES.has(m.status)
+    if (m.status !== 'FINISHED' && !(unrecognizedStatus && hasDecidedWinner)) continue
     const home = resolveTeamName(m.homeTeam?.name)
     const away = resolveTeamName(m.awayTeam?.name)
     const s = m.score || {}

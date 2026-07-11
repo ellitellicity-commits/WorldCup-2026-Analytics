@@ -74,7 +74,9 @@
 .submap__abbr {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 2.1px;
+  /* Base size set inline per-element (data-fs) and counter-scaled with zoom in
+     ProvinceStateSubMap.jsx's applyTransform - not fixed here, so it doesn't
+     fight the JS-driven value on every zoom tick. */
   letter-spacing: 0.04em;
   fill: var(--studio-black);
   paint-order: stroke;

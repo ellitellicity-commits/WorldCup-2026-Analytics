@@ -34,12 +34,13 @@ Golazo26 is a broadcast-grade analytics ecosystem for the 2026 FIFA World Cup, b
 **Matchup Sandbox: Pregame Cutscene**
 Pick any two nations, any round. Watch the VS card, plane flight, stadium flyover, and referee whistle play out before the model delivers its call.
 
-https://github.com/user-attachments/assets/PLACEHOLDER-REPLACE-AFTER-UPLOAD
+<video src="https://raw.githubusercontent.com/ellitellicity-commits/Golazo26/main/assets/matchup-sandbox-demo.mp4" controls width="600"></video>
+
 
 **Live During the Real Tournament**
 The Predictor tab tracking the actual Third Place match, France vs England, with live ESPN-sourced stats and match events while the game was in progress.
 
-![Live match predictor: France vs England Bronze Final](./assets/predictor-live-bronze-final.png)
+<img src="./assets/predictor-live-bronze-final.png" alt="Live match predictor: France vs England Bronze Final" width="500">
 
 ---
 
